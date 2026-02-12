@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { RoadmapPanel } from './RoadmapPanel';
 import { RoadmapSidebarProvider } from './RoadmapSidebarProvider';
-import { consumeSuppression } from './fileOps';
+import { consumeSuppression } from './backend/_core/db';
 
 export function activate(context: vscode.ExtensionContext) {
   // Sidebar provider

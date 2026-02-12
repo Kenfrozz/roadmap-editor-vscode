@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { WebviewMessage } from './types';
-import { handleMessage } from './messageHandler';
+import { handleMessage } from './api';
 
 export class RoadmapPanel {
   public static currentPanel: RoadmapPanel | undefined;

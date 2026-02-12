@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { WebviewMessage } from './types';
-import { handleMessage } from './messageHandler';
+import { handleMessage } from './api';
 
 export class RoadmapSidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'roadmapEditor.sidebar';
