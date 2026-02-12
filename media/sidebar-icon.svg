@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Road/path line -->
+  <path d="M4 5 L4 19" stroke="#C5C5C5" stroke-width="2" stroke-linecap="round"/>
+  <!-- Milestone dots -->
+  <circle cx="4" cy="5" r="2.5" fill="#C5C5C5"/>
+  <circle cx="4" cy="12" r="2.5" fill="#C5C5C5"/>
+  <circle cx="4" cy="19" r="2.5" fill="#C5C5C5"/>
+  <!-- Task lines -->
+  <rect x="9" y="3.5" width="11" height="3" rx="1.5" fill="#C5C5C5"/>
+  <rect x="9" y="10.5" width="8" height="3" rx="1.5" fill="#C5C5C5"/>
+  <rect x="9" y="17.5" width="5" height="3" rx="1.5" fill="#C5C5C5"/>
+</svg>
