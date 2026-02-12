@@ -35,6 +35,7 @@
 | **PRD Entegrasyonu** | PRD.md dosyasini satir bazli goruntuleme ve duzenleme |
 | **Terminal Entegrasyonu** | Komutlari dogrudan VS Code terminalinde calistirin |
 | **Backup & Restore** | Otomatik yedekleme ve geri yukleme |
+| **Git Entegrasyonu** | Branch durumu, commit, push, pull islemlerini arayuzden yonetin |
 | **Tema Uyumu** | VS Code temanizla otomatik renk senkronizasyonu |
 | **Claude AI** | Ozellik bazli Claude komutu calistirma |
 
@@ -155,25 +156,55 @@ npm run package
 
 ```
 kairos-vscode/
-├── src/                    # Extension backend (TypeScript)
-│   ├── extension.ts        # Activation & komut kayitlari
-│   ├── KairosPanel.ts      # Tab webview paneli
-│   ├── KairosSidebarProvider.ts  # Sidebar webview
-│   ├── api/index.ts        # Mesaj router
-│   ├── types.ts            # Tip tanimlari
-│   └── backend/            # Is mantigi modulleri
-├── webview/                # React frontend (JSX)
-│   ├── App.jsx             # Ana uygulama bileseni
-│   ├── main.jsx            # React entry point
-│   ├── vscodeApi.js        # VS Code API koprüsü
-│   ├── index.css           # Tailwind CSS & tema
-│   ├── components/ui/      # shadcn/ui bilesenleri
-│   └── lib/                # Yardimci fonksiyonlar
-├── media/                  # Ikon dosyalari
-├── esbuild.mjs             # Build yapilandirmasi
-├── tailwind.config.js      # Tailwind yapilandirmasi
-└── package.json            # Extension manifest
+├── src/                           # Extension backend (TypeScript)
+│   ├── extension.ts               # Activation & komut kayitlari
+│   ├── KairosPanel.ts             # Tab webview paneli
+│   ├── KairosSidebarProvider.ts   # Sidebar webview
+│   ├── api/index.ts               # Mesaj router
+│   ├── types.ts                   # Tip tanimlari
+│   └── backend/                   # Is mantigi modulleri
+│       ├── _core/db.ts            # Dosya I/O wrapper
+│       ├── plan/                  # KAIROS.md CRUD islemleri
+│       ├── yedek/                 # Yedekleme & geri yukleme
+│       ├── prd/                   # PRD.md islemleri
+│       ├── ayarlar/               # Ayarlar yonetimi
+│       ├── terminal/              # Terminal entegrasyonu
+│       └── git/                   # Git islemleri (durum, commit, push, pull)
+├── webview/                       # React frontend (JSX)
+│   ├── App.jsx                    # Ana uygulama bileseni
+│   ├── main.jsx                   # React entry point
+│   ├── vscodeApi.js               # VS Code API koprusu
+│   ├── index.css                  # Tailwind CSS & tema
+│   ├── components/                # UI bilesenleri
+│   │   ├── ui/                    # shadcn/ui primitifleri
+│   │   ├── GitPanel.jsx           # Git panel & durum badge
+│   │   ├── FazTable.jsx           # Faz tablosu (DnD, collapse)
+│   │   ├── SortableRow.jsx        # Suruklenebilir satirlar
+│   │   └── ...                    # Diger bilesenler
+│   ├── pages/                     # Tam sayfa gorunumler
+│   │   ├── SettingsView.jsx       # Ayarlar sayfasi
+│   │   └── SetupWizard.jsx        # Ilk kurulum sihirbazi
+│   └── lib/                       # Yardimci fonksiyonlar
+├── media/                         # Ikon dosyalari
+├── esbuild.mjs                    # Build yapilandirmasi
+├── tailwind.config.js             # Tailwind yapilandirmasi
+└── package.json                   # Extension manifest
 ```
+
+## Mimari
+
+Kairos, **3-Katmanli Lokal-First Mimari** kullanir. Frontend, backend'den tamamen izole calisir:
+
+```
+webview/ (React)  →  postMessage  →  src/api/ (Router)  →  src/backend/ (Is Mantigi)
+```
+
+- Frontend asla backend modullerini import etmez
+- Tum iletisim `postMessage` tabanlı API katmani uzerinden yapilir
+- Her backend dosyasi tek bir `execute()` fonksiyonu icerir
+- Dosya sistemine erisim `_core/db.ts` uzerinden yapilir
+
+Detaylar icin [ARCHITECTURE.md](ARCHITECTURE.md) dosyasina bakin.
 
 ## Gereksinimler
 
