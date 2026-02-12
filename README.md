@@ -1,10 +1,23 @@
-# Roadmap Editor
+<p align="center">
+  <img src="media/icon.png" alt="Roadmap Editor" width="128" height="128">
+</p>
 
-**ROADMAP.md** dosyalarini VS Code icinde gorsel olarak duzenleyin. Projenizin yol haritasini tablolar, fazlar ve durum ikonlariyla yonetin — tek bir markdown dosyasindan.
+<h1 align="center">Roadmap Editor</h1>
 
-[![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visual-studio-code&logoColor=white)](https://code.visualstudio.com/)
-[![Version](https://img.shields.io/badge/version-1.0.0-28a745)](https://github.com/Kenfrozz/roadmap-editor-vscode/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  <strong>ROADMAP.md</strong> dosyalarini VS Code icinde gorsel olarak duzenleyin.<br>
+  Projenizin yol haritasini tablolar, fazlar ve durum ikonlariyla yonetin — tek bir markdown dosyasindan.
+</p>
+
+<p align="center">
+  <a href="https://code.visualstudio.com/"><img src="https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visual-studio-code&logoColor=white" alt="VS Code"></a>
+  <a href="https://github.com/Kenfrozz/roadmap-editor-vscode/releases"><img src="https://img.shields.io/badge/version-1.0.0-28a745" alt="Version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+  <img src="media/screenshot.png" alt="Roadmap Editor Screenshot" width="800">
+</p>
 
 ---
 
