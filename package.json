@@ -1,50 +1,47 @@
 {
-  "name": "roadmap-editor",
-  "displayName": "Roadmap Editor",
-  "description": "ROADMAP.md dosyalarini gorsel olarak duzenleyin",
+  "name": "kairos",
+  "displayName": "Kairos",
+  "description": "Proje gelistirme kokpiti — PRD, roadmap, Git ve AI araclari tek arayuzden",
   "version": "1.0.0",
-  "publisher": "roadmap-editor",
+  "publisher": "Kenfrozz",
   "engines": {
     "vscode": "^1.85.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kenfrozz/roadmap-editor-vscode"
+    "url": "https://github.com/Kenfrozz/kairos-vscode"
   },
   "icon": "media/icon.png",
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:roadmapEditor.open"
-  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "roadmapEditor.open",
-        "title": "Roadmap Editor: Open (Tab)"
+        "command": "kairos.open",
+        "title": "Kairos: Open (Tab)"
       },
       {
-        "command": "roadmapEditor.openSidebar",
-        "title": "Roadmap Editor: Open in Sidebar"
+        "command": "kairos.openSidebar",
+        "title": "Kairos: Open in Sidebar"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "roadmap-editor",
-          "title": "Roadmap Editor",
+          "id": "kairos",
+          "title": "Kairos",
           "icon": "media/sidebar-icon.svg"
         }
       ]
     },
     "views": {
-      "roadmap-editor": [
+      "kairos": [
         {
           "type": "webview",
-          "id": "roadmapEditor.sidebar",
-          "name": "Roadmap"
+          "id": "kairos.sidebar",
+          "name": "Kairos"
         }
       ]
     }

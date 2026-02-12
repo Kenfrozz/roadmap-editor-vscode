@@ -1,4 +1,4 @@
-import { RoadmapItem, ChangelogEntry, FazData, ParseResult, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
+﻿import { RoadmapItem, ChangelogEntry, FazData, ParseResult, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
 
 const DEFAULT_FAZ_NAMES: Record<string, string> = {
   faz1: 'PLANLAMA & ALTYAPI',
@@ -11,7 +11,7 @@ function generateId(): string {
   return Date.now().toString() + Math.random().toString(36).substr(2, 9);
 }
 
-// ROADMAP.md icerigini parse eder
+// KAIROS.md icerigini parse eder
 // [content] - Markdown dosya icerigi
 // [columns] - Sutun yapilandirmasi
 export function execute(content: string, columns?: ColumnConfig[]): ParseResult {

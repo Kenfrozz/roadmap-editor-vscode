@@ -1,22 +1,22 @@
-<p align="center">
-  <img src="media/icon.png" alt="Roadmap Editor" width="128" height="128">
+﻿<p align="center">
+  <img src="media/icon.png" alt="Kairos" width="128" height="128">
 </p>
 
-<h1 align="center">Roadmap Editor</h1>
+<h1 align="center">Kairos</h1>
 
 <p align="center">
-  <strong>ROADMAP.md</strong> dosyalarini VS Code icinde gorsel olarak duzenleyin.<br>
-  Projenizin yol haritasini tablolar, fazlar ve durum ikonlariyla yonetin — tek bir markdown dosyasindan.
+  <strong>Proje gelistirme kokpiti</strong> — PRD, roadmap, Git ve AI araclari tek arayuzden.<br>
+  Dosyalarla ve terminalle ugrasma, projenizi gorsel arayuzden yonetin.
 </p>
 
 <p align="center">
   <a href="https://code.visualstudio.com/"><img src="https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visual-studio-code&logoColor=white" alt="VS Code"></a>
-  <a href="https://github.com/Kenfrozz/roadmap-editor-vscode/releases"><img src="https://img.shields.io/badge/version-1.0.0-28a745" alt="Version"></a>
+  <a href="https://github.com/Kenfrozz/kairos-vscode/releases"><img src="https://img.shields.io/badge/version-1.0.0-28a745" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
 <p align="center">
-  <img src="media/screenshot.png" alt="Roadmap Editor Screenshot" width="800">
+  <img src="media/screenshot.png" alt="Kairos Screenshot" width="800">
 </p>
 
 ---
@@ -25,7 +25,7 @@
 
 | Ozellik | Aciklama |
 |---------|----------|
-| **Gorsel Editor** | Tab veya sidebar panelinde ROADMAP.md dosyanizi gorsel olarak yonetin |
+| **Gorsel Editor** | Tab veya sidebar panelinde KAIROS.md dosyanizi gorsel olarak yonetin |
 | **Surekle & Birak** | Satir ve fazlari surukleyerek kolayca siralama |
 | **Faz Yonetimi** | Projenizi fazlara bolun, isimlendirin ve renklendirin |
 | **Durum Takibi** | Her oge icin durum belirleyin (Tamamlandi, Devam Ediyor, Yapilmadi, N/A) |
@@ -42,13 +42,13 @@
 
 ### Marketplace'den (yakin zamanda)
 
-VS Code Extensions bolumunden **Roadmap Editor** aratarak yukleyin.
+VS Code Extensions bolumunden **Kairos** aratarak yukleyin.
 
 ### Manuel Kurulum
 
 ```bash
-git clone https://github.com/Kenfrozz/roadmap-editor-vscode.git
-cd roadmap-editor-vscode
+git clone https://github.com/Kenfrozz/kairos-vscode.git
+cd kairos-vscode
 npm install
 npm run build
 ```
@@ -57,19 +57,19 @@ Olusturulan `.vsix` dosyasini VS Code'a yukleyin:
 
 ```bash
 npm run package
-code --install-extension roadmap-editor-*.vsix
+code --install-extension kairos-*.vsix
 ```
 
 ## Kullanim
 
-### Roadmap Editoru Acma
+### Kairos'u Acma
 
-1. **Komut Paleti** (`Ctrl+Shift+P`) > `Roadmap Editor: Open (Tab)`
-2. Veya sol kenar cubugundaki **Roadmap Editor** ikonuna tiklayin
+1. **Komut Paleti** (`Ctrl+Shift+P`) > `Kairos: Open (Tab)`
+2. Veya sol kenar cubugundaki **Kairos** ikonuna tiklayin
 
 ### Yeni Roadmap Olusturma
 
-Workspace'inizde bir `ROADMAP.md` dosyasi yoksa, editor otomatik olarak yeni bir tane olusturmanizi onerir. Ilk acilista sutun yapilandirmanizi da yapabilirsiniz.
+Workspace'inizde bir `KAIROS.md` dosyasi yoksa, editor otomatik olarak yeni bir tane olusturmanizi onerir. Ilk acilista sutun yapilandirmanizi da yapabilirsiniz.
 
 ### Durum Ikonlari
 
@@ -105,7 +105,7 @@ Faz sayisi ve isimleri tamamen ozellestirilebilir.
 
 ## Ayarlar
 
-Workspace kokunde `.roadmap-settings.json` dosyasi ile kisisellestirebilirsiniz:
+Workspace kokunde `.kairos-settings.json` dosyasi ile kisisellestirebilirsiniz:
 
 ```jsonc
 {
@@ -154,23 +154,21 @@ npm run package
 ### Proje Yapisi
 
 ```
-roadmap-editor-vscode/
+kairos-vscode/
 ├── src/                    # Extension backend (TypeScript)
 │   ├── extension.ts        # Activation & komut kayitlari
-│   ├── RoadmapPanel.ts     # Tab webview paneli
-│   ├── RoadmapSidebarProvider.ts  # Sidebar webview
-│   ├── messageHandler.ts   # Webview <-> Extension mesajlasma
-│   ├── parser.ts           # ROADMAP.md parse & generate
-│   ├── fileOps.ts          # Dosya islemleri & backup
-│   ├── settings.ts         # Ayar yonetimi
-│   └── types.ts            # Tip tanimlari
+│   ├── KairosPanel.ts      # Tab webview paneli
+│   ├── KairosSidebarProvider.ts  # Sidebar webview
+│   ├── api/index.ts        # Mesaj router
+│   ├── types.ts            # Tip tanimlari
+│   └── backend/            # Is mantigi modulleri
 ├── webview/                # React frontend (JSX)
 │   ├── App.jsx             # Ana uygulama bileseni
 │   ├── main.jsx            # React entry point
 │   ├── vscodeApi.js        # VS Code API koprüsü
 │   ├── index.css           # Tailwind CSS & tema
 │   ├── components/ui/      # shadcn/ui bilesenleri
-│   └── lib/utils.js        # Yardimci fonksiyonlar
+│   └── lib/                # Yardimci fonksiyonlar
 ├── media/                  # Ikon dosyalari
 ├── esbuild.mjs             # Build yapilandirmasi
 ├── tailwind.config.js      # Tailwind yapilandirmasi
@@ -183,7 +181,7 @@ roadmap-editor-vscode/
 
 ## Sorun Bildirme & Katkida Bulunma
 
-Bir hata buldunuz veya yeni bir ozellik istiyorsunuz? [GitHub Issues](https://github.com/Kenfrozz/roadmap-editor-vscode/issues) uzerinden bildirebilirsiniz.
+Bir hata buldunuz veya yeni bir ozellik istiyorsunuz? [GitHub Issues](https://github.com/Kenfrozz/kairos-vscode/issues) uzerinden bildirebilirsiniz.
 
 Katkida bulunmak icin:
 

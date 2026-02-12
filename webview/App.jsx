@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import {
@@ -16,12 +16,10 @@ import {
 } from '@dnd-kit/sortable'
 import {
   Plus,
-  Check,
   X,
   Loader2,
   Activity,
   Terminal,
-  RefreshCw,
   Search,
   Menu,
   Zap,
@@ -29,10 +27,8 @@ import {
   Cog,
   AlertTriangle,
   CircleDot,
-  Cloud,
   FileCode,
   Sparkles,
-  Rocket,
 } from 'lucide-react'
 import { Button } from './components/ui/button'
 import { Input } from './components/ui/input'
@@ -68,6 +64,7 @@ import { ChangelogSection } from './components/ChangelogSection'
 import { PrdModal } from './components/PrdModal'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
+import { GitStatusBadge, GitPanel } from './components/GitPanel'
 
 export default function App() {
   const dark = useTheme()
@@ -88,7 +85,6 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const searchInputRef = useRef(null)
   const [fileNotFound, setFileNotFound] = useState(false)
-  const [fileChangedBanner, setFileChangedBanner] = useState(false)
   const [activePhaseDrag, setActivePhaseDrag] = useState(null)
   const [viewMode, setViewMode] = useState('main')
   const [settingsData, setSettingsData] = useState(null)
@@ -96,6 +92,8 @@ export default function App() {
   const [resetting, setResetting] = useState(false)
   const [firstRunDialog, setFirstRunDialog] = useState(false)
   const [firstRunProcessing, setFirstRunProcessing] = useState(false)
+  const [gitPanelOpen, setGitPanelOpen] = useState(false)
+  const [gitDurum, setGitDurum] = useState(null)
   const saveTimer = useRef(null)
   const fazOrderRef = useRef(fazOrder)
 
@@ -157,10 +155,25 @@ export default function App() {
 
   useEffect(() => {
     const cleanup = onMessage('fileChanged', () => {
-      setFileChangedBanner(true)
+      loadData()
     })
     return cleanup
+  }, [loadData])
+
+  const refreshGitDurum = useCallback(async () => {
+    try {
+      const d = await api.gitDurum()
+      setGitDurum(d)
+    } catch {
+      setGitDurum(null)
+    }
   }, [])
+
+  useEffect(() => {
+    refreshGitDurum()
+    const interval = setInterval(refreshGitDurum, 5000)
+    return () => clearInterval(interval)
+  }, [refreshGitDurum])
 
   const autoSave = useCallback((newData, newFazConfig, newChangelog, newFazOrder) => {
     setSaveStatus('unsaved')
@@ -375,12 +388,12 @@ export default function App() {
             <FileCode className="w-8 h-8 text-muted-foreground/40" />
           </div>
           <div>
-            <h2 className="text-base font-bold tracking-tight mb-2">Mevcut ROADMAP.md Tespit Edildi</h2>
+            <h2 className="text-base font-bold tracking-tight mb-2">Mevcut KAIROS.md Tespit Edildi</h2>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Bu projede zaten bir ROADMAP.md dosyasi mevcut. Bu dosya eklentiyle uyumlu olmayabilir.
+              Bu projede zaten bir KAIROS.md dosyasi mevcut. Bu dosya eklentiyle uyumlu olmayabilir.
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-              Devam etmek icin mevcut dosya yedeklenecek ve kurulum sihirbaziyla uyumlu yeni bir ROADMAP.md olusturulacak.
+              Devam etmek icin mevcut dosya yedeklenecek ve kurulum sihirbaziyla uyumlu yeni bir KAIROS.md olusturulacak.
               Orijinal dosyaniz Ayarlar &gt; Yedekler sekmesinden geri yuklenebilir.
             </p>
           </div>
@@ -446,18 +459,15 @@ export default function App() {
           <div className="flex items-center gap-3 min-w-0">
             {!isCompact && (
               <div>
-                <h1 className="text-xs font-semibold tracking-tight leading-none text-muted-foreground">ROADMAP</h1>
+                <h1 className="text-xs font-semibold tracking-tight leading-none text-muted-foreground">KAIROS</h1>
                 <p className="text-[10px] font-mono-code text-muted-foreground leading-none mt-0.5">
                   {format(new Date(), 'dd.MM.yyyy', { locale: tr })}
                 </p>
               </div>
             )}
 
-            <div className={cn('flex items-center gap-1.5', !isCompact && 'pl-3 border-l')}>
-              <div className="hidden md:block w-16 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${overallPct}%` }} />
-              </div>
-              <span className="text-[11px] font-mono-code font-bold text-primary">{overallPct}%</span>
+            <div className="pl-2 border-l border-border/50">
+              <GitStatusBadge durum={gitDurum} onClick={() => setGitPanelOpen(!gitPanelOpen)} />
             </div>
           </div>
 
@@ -497,41 +507,6 @@ export default function App() {
               </button>
             )}
 
-            {/* Refresh / Save Status */}
-            <button
-              onClick={() => { setLoading(true); loadData() }}
-              className={cn(
-                'group/ref relative flex items-center justify-center h-7 w-7 rounded-md transition-colors cursor-pointer overflow-hidden',
-                saveStatus === 'saved' && 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10',
-                saveStatus === 'saving' && 'text-amber-600 dark:text-amber-400',
-                saveStatus === 'unsaved' && 'text-muted-foreground hover:bg-muted'
-              )}
-              title={saveStatus === 'saved' ? 'Kaydedildi — tikla yenile' : saveStatus === 'saving' ? 'Kaydediliyor...' : 'Kaydedilmedi — tikla yenile'}
-            >
-              {saveStatus === 'saving' ? (
-                <Cloud className="w-3.5 h-3.5 animate-pulse" />
-              ) : (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 absolute opacity-0 group-hover/ref:opacity-100 transition-opacity" />
-                  {saveStatus === 'saved'
-                    ? <Check className="w-3.5 h-3.5 group-hover/ref:opacity-0 transition-opacity" />
-                    : <RefreshCw className="w-3.5 h-3.5" />
-                  }
-                </>
-              )}
-            </button>
-
-            {/* Claude Code */}
-            {!isCompact && (
-              <button
-                onClick={() => api.runTerminal(claudeMainCmd, 'Claude Code')}
-                className="flex items-center justify-center h-7 w-7 rounded-md text-[#D97757] hover:text-[#E8956F] hover:bg-muted transition-colors"
-                title="Claude Code"
-              >
-                <ClaudeIcon className="w-3.5 h-3.5" />
-              </button>
-            )}
-
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button className="h-7 w-7 rounded-md flex items-center justify-center hover:bg-muted transition-colors">
@@ -539,6 +514,11 @@ export default function App() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => api.runTerminal(claudeMainCmd, 'Claude Code')} className="gap-2.5 text-xs">
+                  <ClaudeIcon className="w-3.5 h-3.5 text-[#D97757]" />
+                  Claude Code
+                </DropdownMenuItem>
+
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="gap-2.5 text-xs">
                     <Zap className="w-3.5 h-3.5 text-muted-foreground" />
@@ -582,56 +562,45 @@ export default function App() {
         </div>
       </header>
 
-      {/* === FILE CHANGED BANNER === */}
-      {fileChangedBanner && (
-        <div className="bg-amber-500/15 border-b border-amber-500/30 px-1 py-2 flex items-center justify-between">
-          <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
-            Dosya disaridan degistirildi. Verileri yenilemek ister misiniz?
-          </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6 text-[11px] border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20"
-              onClick={() => { setFileChangedBanner(false); setLoading(true); loadData() }}
-            >
-              <RefreshCw className="w-3 h-3 mr-1" />
-              Yenile
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 text-[11px] text-amber-700 dark:text-amber-300"
-              onClick={() => setFileChangedBanner(false)}
-            >
-              <X className="w-3 h-3" />
-            </Button>
-          </div>
-        </div>
-      )}
+      {/* === GIT PANEL === */}
+      <GitPanel open={gitPanelOpen} onClose={() => setGitPanelOpen(false)} durum={gitDurum} onRefresh={refreshGitDurum} />
+
 
       {/* === MAIN CONTENT === */}
       <main className="w-full px-0.5 py-5">
         {/* Stats Card */}
         {total > 0 && (statusBreakdowns.length > 0 || dateStats) && (
-          <div className={cn(
-            'grid rounded-lg border border-border/60 bg-card/80 mb-5',
-            isCompact
-              ? 'grid-cols-1 gap-3 px-3 py-3'
-              : `${GRID_COLS_MAP[statusBreakdowns.length + (dateStats ? 1 : 0)] || 'grid-cols-4'} gap-4 px-4 py-4`
-          )}>
-            {statusBreakdowns.map(col => (
-              <StatusStatCard
-                key={col.key}
-                label={col.label}
-                breakdown={col.breakdown}
-                icon={CircleDot}
-                isCompact={isCompact}
-              />
-            ))}
-            {dateStats && (
-              <DateStatCard dateStats={dateStats} isCompact={isCompact} />
-            )}
+          <div className="rounded-lg border border-border/60 bg-card/80 mb-5 overflow-hidden">
+            {/* Overall Progress Bar */}
+            <div className="px-4 pt-3 pb-2">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Genel Ilerleme</span>
+                <span className="text-xs font-mono-code font-bold text-primary">{overallPct}%</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${overallPct}%` }} />
+              </div>
+            </div>
+            {/* Stat Columns */}
+            <div className={cn(
+              'grid',
+              isCompact
+                ? 'grid-cols-1 gap-3 px-3 py-3'
+                : `${GRID_COLS_MAP[statusBreakdowns.length + (dateStats ? 1 : 0)] || 'grid-cols-4'} gap-4 px-4 py-3`
+            )}>
+              {statusBreakdowns.map(col => (
+                <StatusStatCard
+                  key={col.key}
+                  label={col.label}
+                  breakdown={col.breakdown}
+                  icon={CircleDot}
+                  isCompact={isCompact}
+                />
+              ))}
+              {dateStats && (
+                <DateStatCard dateStats={dateStats} isCompact={isCompact} />
+              )}
+            </div>
           </div>
         )}
 
@@ -707,7 +676,7 @@ export default function App() {
         {/* Footer */}
         <div className="mt-6 pb-4 text-center">
           <p className="text-[10px] font-mono-code text-muted-foreground/60 uppercase tracking-widest">
-            Roadmap Editor v2.0 — VS Code
+            Kairos v2.0 — VS Code
           </p>
         </div>
       </main>
@@ -753,18 +722,18 @@ export default function App() {
         </DialogContent>
       </Dialog>
 
-      {/* Reset Roadmap Dialog */}
+      {/* Reset Kairos Dialog */}
       <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-sm">
               <AlertTriangle className="w-4 h-4 text-destructive" />
-              Roadmap Sifirla
+              Kairos Sifirla
             </DialogTitle>
           </DialogHeader>
           <div className="py-2">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Mevcut ROADMAP.md dosyaniz yedeklenecek ve yeni bos bir roadmap olusturulacak.
+              Mevcut KAIROS.md dosyaniz yedeklenecek ve yeni bos bir kairos olusturulacak.
               Yedekler "Ayarlar &gt; Yedekler" sekmesinden geri yuklenebilir.
             </p>
           </div>
@@ -781,7 +750,7 @@ export default function App() {
                   setLoading(true)
                   loadData()
                 } catch (err) {
-                  console.error('Reset roadmap error:', err)
+                  console.error('Reset kairos error:', err)
                 } finally {
                   setResetting(false)
                 }

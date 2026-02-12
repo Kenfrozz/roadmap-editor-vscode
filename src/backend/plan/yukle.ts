@@ -1,4 +1,4 @@
-import { readFile } from '../_core/db';
+﻿import { readFile } from '../_core/db';
 import { execute as parsele } from './parsele';
 import { execute as ayarYukle } from '../ayarlar/yukle';
 import { settingsFileExists } from '../ayarlar/yukle';
@@ -9,11 +9,11 @@ interface YukleResult {
   notFound: boolean;
 }
 
-// ROADMAP.md dosyasini yukler ve parse eder
+// KAIROS.md dosyasini yukler ve parse eder
 export async function execute(): Promise<YukleResult> {
   const settings = ayarYukle();
   const columns = settings.roadmap.columns;
-  const content = await readFile('ROADMAP.md');
+  const content = await readFile('KAIROS.md');
   const { data, fazNames, changelog, fazOrder } = parsele(content, columns);
   const firstRun = !settingsFileExists();
 

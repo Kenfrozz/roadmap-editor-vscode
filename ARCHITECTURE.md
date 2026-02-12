@@ -1,6 +1,6 @@
-# Mimari Dokümantasyonu - Roadmap Editor VS Code
+﻿# Mimari Dokümantasyonu - Kairos VS Code
 
-Bu doküman, Roadmap Editor VS Code eklentisinin mimari yapısını açıklar. Tüm geliştiriciler bu kurallara uymalıdır.
+Bu doküman, Kairos VS Code eklentisinin mimari yapısını açıklar. Tüm geliştiriciler bu kurallara uymalıdır.
 
 ---
 
@@ -20,7 +20,7 @@ Bu doküman, Roadmap Editor VS Code eklentisinin mimari yapısını açıklar. T
 
 ## Genel Bakış
 
-Proje, **3-Katmanlı Lokal-First Mimari** prensibine dayanan bir VS Code eklentisidir. ROADMAP.md dosyalarını görsel olarak düzenler. Frontend, backend teknolojilerinden tamamen habersizdir ve tüm işlemlerini `postMessage` tabanlı API katmanı üzerinden gerçekleştirir.
+Proje, **3-Katmanlı Lokal-First Mimari** prensibine dayanan bir VS Code eklentisidir. PRD, roadmap, Git ve AI araçlarını tek arayüzden yönetir. Frontend, backend teknolojilerinden tamamen habersizdir ve tüm işlemlerini `postMessage` tabanlı API katmanı üzerinden gerçekleştirir.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -43,7 +43,7 @@ Proje, **3-Katmanlı Lokal-First Mimari** prensibine dayanan bir VS Code eklenti
 │                      BACKEND                            │
 │  src/backend/                                           │
 │  • Her işlem = 1 dosya, 1 execute() fonksiyonu          │
-│  • Dosya sistemi = veritabanı (ROADMAP.md)              │
+│  • Dosya sistemi = veritabanı (KAIROS.md)              │
 │  • Remote katman yok (tamamen lokal)                    │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -62,12 +62,12 @@ Proje, **3-Katmanlı Lokal-First Mimari** prensibine dayanan bir VS Code eklenti
 ## Klasör Yapısı
 
 ```
-roadmap-editor-vscode/
+kairos-vscode/
 ├── src/                               # Extension (TypeScript, Node.js)
 │   ├── extension.ts                   # Aktivasyon, komutlar, FileSystemWatcher
 │   ├── types.ts                       # Tüm TypeScript tipleri
-│   ├── RoadmapPanel.ts                # Tab webview panel (CSP, nonce)
-│   ├── RoadmapSidebarProvider.ts      # Sidebar webview provider
+│   ├── KairosPanel.ts                 # Tab webview panel (CSP, nonce)
+│   ├── KairosSidebarProvider.ts       # Sidebar webview provider
 │   │
 │   ├── api/                           # Mesaj yönlendirici
 │   │   └── index.ts                   # WebviewMessage → backend modülü eşlemesi
@@ -76,12 +76,12 @@ roadmap-editor-vscode/
 │       ├── _core/
 │       │   └── db.ts                  # Dosya I/O wrapper (readFile, writeFile, vb.)
 │       │
-│       ├── roadmap/
-│       │   ├── parsele.ts             # ROADMAP.md → yapılandırılmış veri
-│       │   ├── uret.ts               # Yapılandırılmış veri → ROADMAP.md
-│       │   ├── yukle.ts              # Roadmap yükle (parse + metadata)
-│       │   ├── kaydet.ts             # Roadmap kaydet
-│       │   ├── olustur.ts            # Boş ROADMAP.md oluştur
+│       ├── plan/
+│       │   ├── parsele.ts             # KAIROS.md → yapılandırılmış veri
+│       │   ├── uret.ts               # Yapılandırılmış veri → KAIROS.md
+│       │   ├── yukle.ts              # Plan yükle (parse + metadata)
+│       │   ├── kaydet.ts             # Plan kaydet
+│       │   ├── olustur.ts            # Boş KAIROS.md oluştur
 │       │   ├── olusturAyarli.ts      # Wizard ile özelleştirilmiş oluştur
 │       │   └── sifirla.ts            # Yedekle + sıfırla
 │       │
@@ -96,7 +96,7 @@ roadmap-editor-vscode/
 │       │   └── guncelle.ts           # Satır aralığı güncelle
 │       │
 │       ├── ayarlar/
-│       │   ├── yukle.ts              # .roadmap-settings.json yükle
+│       │   ├── yukle.ts              # .kairos-settings.json yükle
 │       │   └── kaydet.ts             # Ayarları kaydet
 │       │
 │       └── terminal/
@@ -154,7 +154,7 @@ Tüm dosya işlemlerini saran wrapper. Backend modülleri doğrudan `vscode.work
 ```typescript
 // Dışa açılan fonksiyonlar:
 readFile(filename)              // Workspace'ten dosya oku
-writeFile(filename, content)    // Workspace'e dosya yaz (ROADMAP.md → auto suppress)
+writeFile(filename, content)    // Workspace'e dosya yaz (KAIROS.md → auto suppress)
 readLineRange(filename, start, end)    // Satır aralığı oku
 updateLineRange(filename, start, end, content)  // Satır aralığı güncelle
 ensureDir(dirPath)              // Dizin oluştur
@@ -187,20 +187,20 @@ export async function execute(params): Promise<Result> {
 
 | Modül | Dosya | İşlev |
 |-------|-------|-------|
-| `roadmap/parsele` | parsele.ts | ROADMAP.md içeriğini ParseResult'a dönüştürür |
-| `roadmap/uret` | uret.ts | ParseResult'ı ROADMAP.md markdown'a dönüştürür |
-| `roadmap/yukle` | yukle.ts | Dosyayı okur + parse eder, firstRun/columns bilgisi döner |
-| `roadmap/kaydet` | kaydet.ts | Veriyi markdown'a çevirip kaydeder |
-| `roadmap/olustur` | olustur.ts | Varsayılan boş ROADMAP.md oluşturur |
-| `roadmap/olusturAyarli` | olusturAyarli.ts | Wizard ayarlarıyla özelleştirilmiş oluşturur |
-| `roadmap/sifirla` | sifirla.ts | Mevcut dosyayı yedekler + yeni boş oluşturur |
-| `yedek/olustur` | olustur.ts | `.roadmap-backups/` dizinine yedek alır |
+| `plan/parsele` | parsele.ts | KAIROS.md içeriğini ParseResult'a dönüştürür |
+| `plan/uret` | uret.ts | ParseResult'ı KAIROS.md markdown'a dönüştürür |
+| `plan/yukle` | yukle.ts | Dosyayı okur + parse eder, firstRun/columns bilgisi döner |
+| `plan/kaydet` | kaydet.ts | Veriyi markdown'a çevirip kaydeder |
+| `plan/olustur` | olustur.ts | Varsayılan boş KAIROS.md oluşturur |
+| `plan/olusturAyarli` | olusturAyarli.ts | Wizard ayarlarıyla özelleştirilmiş oluşturur |
+| `plan/sifirla` | sifirla.ts | Mevcut dosyayı yedekler + yeni boş oluşturur |
+| `yedek/olustur` | olustur.ts | `.kairos-backups/` dizinine yedek alır |
 | `yedek/listele` | listele.ts | Yedekleri timestamp'e göre sıralı listeler |
-| `yedek/geriYukle` | geriYukle.ts | Yedekten ROADMAP.md'yi geri yükler |
+| `yedek/geriYukle` | geriYukle.ts | Yedekten KAIROS.md'yi geri yükler |
 | `prd/yukle` | yukle.ts | PRD.md dosyasını yükler |
 | `prd/satirOku` | satirOku.ts | PRD.md'den satır aralığı okur |
 | `prd/guncelle` | guncelle.ts | PRD.md'de satır aralığını günceller |
-| `ayarlar/yukle` | yukle.ts | `.roadmap-settings.json` yükler (senkron) |
+| `ayarlar/yukle` | yukle.ts | `.kairos-settings.json` yükler (senkron) |
 | `ayarlar/kaydet` | kaydet.ts | Ayarları JSON olarak kaydeder |
 | `terminal/calistir` | calistir.ts | VS Code terminalinde komut çalıştırır |
 | `terminal/algila` | algila.ts | Kurulu terminalleri algılar (cmd, ps, pwsh, gitbash, wsl) |
@@ -214,7 +214,7 @@ export async function execute(params): Promise<Result> {
 Tek dosya. Tüm `WebviewMessage` komutlarını ilgili backend `execute()` fonksiyonuna yönlendirir.
 
 ```typescript
-import { execute as roadmapYukle } from '../backend/roadmap/yukle';
+import { execute as planYukle } from '../backend/plan/yukle';
 // ... diğer importlar
 
 export async function handleMessage(
@@ -223,7 +223,7 @@ export async function handleMessage(
 ): Promise<void> {
   switch (message.command) {
     case 'load': {
-      const result = await roadmapYukle();
+      const result = await planYukle();
       webview.postMessage({ command: 'loadResponse', data: result.data });
       break;
     }
@@ -237,11 +237,11 @@ export async function handleMessage(
 ```
 WebviewMessage.command    →    API case    →    Backend execute()
 ─────────────────────────────────────────────────────────────────
-'load'                    →    'load'      →    roadmap/yukle
-'save'                    →    'save'      →    roadmap/kaydet
-'createRoadmap'           →    ...         →    roadmap/olustur
-'createRoadmapWithSettings' →  ...         →    roadmap/olusturAyarli
-'resetRoadmap'            →    ...         →    roadmap/sifirla
+'load'                    →    'load'      →    plan/yukle
+'save'                    →    'save'      →    plan/kaydet
+'createRoadmap'           →    ...         →    plan/olustur
+'createRoadmapWithSettings' →  ...         →    plan/olusturAyarli
+'resetRoadmap'            →    ...         →    plan/sifirla
 'listBackups'             →    ...         →    yedek/listele
 'restoreBackup'           →    ...         →    yedek/geriYukle
 'prdLoad'                 →    ...         →    prd/yukle
@@ -349,10 +349,10 @@ Frontend (App.jsx)           vscodeApi.js              API (index.ts)           
      │  api.save(data)           │                          │                      │
      ├──────────────────────────►│ postMessage('save')      │                      │
      │                           ├─────────────────────────►│                      │
-     │                           │                          │ roadmapKaydet(data)  │
+     │                           │                          │ planKaydet(data)     │
      │                           │                          ├─────────────────────►│
      │                           │                          │                      │ uret.execute(data) → markdown
-     │                           │                          │                      │ db.writeFile('ROADMAP.md', md)
+     │                           │                          │                      │ db.writeFile('KAIROS.md', md)
      │                           │                          │                      │ suppressNextFileChange()
      │                           │                          │◄─────────────────────┤
      │                           │◄─────────────────────────┤ postMessage('saveResponse')
@@ -367,9 +367,9 @@ Frontend (App.jsx)           vscodeApi.js              API (index.ts)           
      │  api.load()               │                          │                      │
      ├──────────────────────────►│ postMessage('load')      │                      │
      │                           ├─────────────────────────►│                      │
-     │                           │                          │ roadmapYukle()       │
+     │                           │                          │ planYukle()          │
      │                           │                          ├─────────────────────►│
-     │                           │                          │                      │ db.readFile('ROADMAP.md')
+     │                           │                          │                      │ db.readFile('KAIROS.md')
      │                           │                          │                      │ parsele.execute(content)
      │                           │                          │◄─────────────────────┤
      │                           │◄─────────────────────────┤ postMessage('loadResponse')
@@ -379,7 +379,7 @@ Frontend (App.jsx)           vscodeApi.js              API (index.ts)           
 ### Dış Değişiklik Algılama
 
 ```
-Harici Editör → ROADMAP.md değişir
+Harici Editör → KAIROS.md değişir
      │
      ▼
 FileSystemWatcher (extension.ts)
@@ -465,7 +465,7 @@ const result = await api.yeniIslem(param)
 | **API Üzerinden Erişim** | Frontend asla backend modüllerini doğrudan import etmez |
 | **`_core/db.ts` Kullan** | Backend modülleri doğrudan `vscode.workspace.fs` çağırmaz |
 | **Tip Güvenliği** | Yeni mesajlar `types.ts`'de tanımlanmalı |
-| **Suppression** | ROADMAP.md yazarken `db.writeFile` kullan (otomatik suppress) |
+| **Suppression** | KAIROS.md yazarken `db.writeFile` kullan (otomatik suppress) |
 
 ### YAPILMAMASI GEREKENLER
 
@@ -491,7 +491,7 @@ const result = await api.yeniIslem(param)
 ```
 # Format: [katman/modul]: açıklama
 
-[backend/roadmap]: faz sıralama desteği eklendi
+[backend/plan]: faz sıralama desteği eklendi
 [api]: yeni mesaj tipi eklendi
 [frontend/components]: FazTable collapse animasyonu düzeltildi
 [frontend/pages]: SettingsView yedek sekmesi eklendi

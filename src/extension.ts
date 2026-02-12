@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
-import { RoadmapPanel } from './RoadmapPanel';
-import { RoadmapSidebarProvider } from './RoadmapSidebarProvider';
+import { KairosPanel } from './KairosPanel';
+import { KairosSidebarProvider } from './KairosSidebarProvider';
 import { consumeSuppression } from './backend/_core/db';
 
 export function activate(context: vscode.ExtensionContext) {
   // Sidebar provider
-  const sidebarProvider = new RoadmapSidebarProvider(context.extensionUri);
+  const sidebarProvider = new KairosSidebarProvider(context.extensionUri);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
-      RoadmapSidebarProvider.viewType,
+      KairosSidebarProvider.viewType,
       sidebarProvider,
       { webviewOptions: { retainContextWhenHidden: true } }
     )
@@ -16,27 +16,27 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Tab olarak acma komutu
   context.subscriptions.push(
-    vscode.commands.registerCommand('roadmapEditor.open', () => {
-      RoadmapPanel.createOrShow(context.extensionUri);
+    vscode.commands.registerCommand('kairos.open', () => {
+      KairosPanel.createOrShow(context.extensionUri);
     })
   );
 
   // Sidebar'i focuslama komutu
   context.subscriptions.push(
-    vscode.commands.registerCommand('roadmapEditor.openSidebar', () => {
-      vscode.commands.executeCommand('roadmapEditor.sidebar.focus');
+    vscode.commands.registerCommand('kairos.openSidebar', () => {
+      vscode.commands.executeCommand('kairos.sidebar.focus');
     })
   );
 
-  // FileSystemWatcher: ROADMAP.md degisikliklerini dinle
-  const watcher = vscode.workspace.createFileSystemWatcher('**/ROADMAP.md');
+  // FileSystemWatcher: KAIROS.md degisikliklerini dinle
+  const watcher = vscode.workspace.createFileSystemWatcher('**/KAIROS.md');
 
   const notifyWebviews = () => {
     // Kendi yazmamiz tetiklediyse yoksay
     if (consumeSuppression()) return;
     // Panel ve Sidebar'a bildir
-    if (RoadmapPanel.currentPanel) {
-      RoadmapPanel.currentPanel.postFileChanged();
+    if (KairosPanel.currentPanel) {
+      KairosPanel.currentPanel.postFileChanged();
     }
     sidebarProvider.postFileChanged();
   };

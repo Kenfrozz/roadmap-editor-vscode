@@ -1,10 +1,10 @@
-# CLAUDE.md - Roadmap Editor VS Code
+﻿# CLAUDE.md - Kairos VS Code
 
 Bu dosya, Claude Code'un bu projede çalışırken uyması gereken kuralları tanımlar.
 
 ## Proje Özeti
 
-ROADMAP.md dosyalarını görsel olarak düzenleyen bir VS Code eklentisi. 3-Katmanlı Lokal-First Mimari kullanır. Detaylar için `ARCHITECTURE.md` dosyasına bakın.
+Proje geliştirme kokpiti — PRD, roadmap, Git ve AI araçlarını tek arayüzden yöneten bir VS Code eklentisi. 3-Katmanlı Lokal-First Mimari kullanır. Detaylar için `ARCHITECTURE.md` dosyasına bakın.
 
 ## Teknoloji
 
@@ -65,15 +65,15 @@ Yeni bir backend işlemi eklerken bu 5 adımı sırayla takip et:
 src/
 ├── extension.ts                    # Aktivasyon, komutlar, FileSystemWatcher
 ├── types.ts                        # TÜM TypeScript tipleri (tek dosya)
-├── RoadmapPanel.ts                 # Tab webview (handleMessage → api/index.ts)
-├── RoadmapSidebarProvider.ts       # Sidebar webview (handleMessage → api/index.ts)
+├── KairosPanel.ts                  # Tab webview (handleMessage → api/index.ts)
+├── KairosSidebarProvider.ts        # Sidebar webview (handleMessage → api/index.ts)
 ├── api/index.ts                    # Mesaj router (WebviewMessage → backend execute)
 └── backend/
     ├── _core/db.ts                 # Dosya I/O wrapper + suppression
-    ├── roadmap/                    # ROADMAP.md CRUD (parsele, uret, yukle, kaydet, olustur, olusturAyarli, sifirla)
+    ├── plan/                       # KAIROS.md CRUD (parsele, uret, yukle, kaydet, olustur, olusturAyarli, sifirla)
     ├── yedek/                      # Yedekleme (olustur, listele, geriYukle)
     ├── prd/                        # PRD.md (yukle, satirOku, guncelle)
-    ├── ayarlar/                    # .roadmap-settings.json (yukle, kaydet)
+    ├── ayarlar/                    # .kairos-settings.json (yukle, kaydet)
     └── terminal/                   # VS Code terminal (calistir, algila)
 
 webview/
@@ -110,7 +110,7 @@ webview/
 [katman/modul]: açıklama
 
 Örnekler:
-[backend/roadmap]: faz sıralama desteği eklendi
+[backend/plan]: faz sıralama desteği eklendi
 [api]: yeni mesaj tipi eklendi
 [frontend/components]: FazTable collapse animasyonu düzeltildi
 [frontend/pages]: SettingsView yedek sekmesi eklendi

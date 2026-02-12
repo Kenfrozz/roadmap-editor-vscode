@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
+﻿import * as vscode from 'vscode';
 import * as path from 'path';
 import { writeFile, suppressNextFileChange, getRoot } from '../_core/db';
 import { execute as yedekOlustur } from './olustur';
 
-const BACKUP_DIR = '.roadmap-backups';
+const BACKUP_DIR = '.kairos-backups';
 
 // Belirtilen yedek dosyasini geri yukler
 // [backupFilename] - Geri yuklenecek yedek dosyasinin adi
@@ -13,7 +13,7 @@ export async function execute(backupFilename: string): Promise<void> {
   const bytes = await vscode.workspace.fs.readFile(vscode.Uri.file(backupPath));
   const content = Buffer.from(bytes).toString('utf8');
 
-  // Mevcut ROADMAP.md'yi yedekle
+  // Mevcut KAIROS.md'yi yedekle
   try {
     await yedekOlustur();
   } catch {
@@ -21,5 +21,5 @@ export async function execute(backupFilename: string): Promise<void> {
   }
 
   suppressNextFileChange();
-  await writeFile('ROADMAP.md', content);
+  await writeFile('KAIROS.md', content);
 }

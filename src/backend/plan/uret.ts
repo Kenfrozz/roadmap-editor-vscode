@@ -42,7 +42,7 @@ export function execute(
     }
   }
 
-  let md = `# Geliştirme Roadmap
+  let md = `# Kairos Plan
 
 > Bu dosya projenin mevcut durumunu ve yapılacak işleri takip eder.
 > **Son Güncelleme:** ${new Date().toISOString().split('T')[0]}
@@ -149,7 +149,7 @@ export function execute(
       md += `| ${tarih} | ${degisiklik} |\n`;
     }
   } else {
-    md += `| ${new Date().toISOString().split('T')[0]} | Roadmap oluşturuldu |\n`;
+    md += `| ${new Date().toISOString().split('T')[0]} | Plan oluşturuldu |\n`;
   }
 
   return md;

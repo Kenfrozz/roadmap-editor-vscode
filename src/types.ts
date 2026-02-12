@@ -89,6 +89,21 @@ export interface BackupEntry {
   size: number;
 }
 
+export interface GitDurum {
+  branch: string;
+  changedCount: number;
+  ahead: number;
+  behind: number;
+  hasRemote: boolean;
+  isRepo: boolean;
+}
+
+export interface GitDegisiklik {
+  dosya: string;
+  durum: 'modified' | 'added' | 'deleted' | 'renamed' | 'untracked';
+  staged: boolean;
+}
+
 // Webview -> Extension mesajlari
 export type WebviewMessage =
   | { command: 'load' }
@@ -105,7 +120,12 @@ export type WebviewMessage =
   | { command: 'runTerminal'; cmd: string; name?: string }
   | { command: 'loadSettings' }
   | { command: 'saveSettings'; settings: SettingsConfig }
-  | { command: 'detectTerminals' };
+  | { command: 'detectTerminals' }
+  | { command: 'gitDurum' }
+  | { command: 'gitDegisiklikler' }
+  | { command: 'gitKaydet'; mesaj: string }
+  | { command: 'gitPaylas' }
+  | { command: 'gitGuncelle' };
 
 // Extension -> Webview mesajlari
 export type ExtensionMessage =
@@ -122,4 +142,9 @@ export type ExtensionMessage =
   | { command: 'fileChanged' }
   | { command: 'loadSettingsResponse'; settings: SettingsConfig }
   | { command: 'saveSettingsResponse'; success: boolean; error?: string }
-  | { command: 'detectTerminalsResponse'; terminals: TerminalOption[] };
+  | { command: 'detectTerminalsResponse'; terminals: TerminalOption[] }
+  | { command: 'gitDurumResponse'; durum: GitDurum }
+  | { command: 'gitDegisikliklerResponse'; dosyalar: GitDegisiklik[] }
+  | { command: 'gitKaydetResponse'; success: boolean; error?: string }
+  | { command: 'gitPaylasResponse'; success: boolean; error?: string }
+  | { command: 'gitGuncelleResponse'; success: boolean; error?: string };

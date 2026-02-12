@@ -1,14 +1,14 @@
-import * as path from 'path';
+﻿import * as path from 'path';
 import { readFile, ensureDir, writeFile, getRoot } from '../_core/db';
 
-const BACKUP_DIR = '.roadmap-backups';
+const BACKUP_DIR = '.kairos-backups';
 
-// Mevcut ROADMAP.md dosyasini yedekler
+// Mevcut KAIROS.md dosyasini yedekler
 export async function execute(): Promise<string> {
   const root = getRoot();
-  const content = await readFile('ROADMAP.md');
+  const content = await readFile('KAIROS.md');
   const timestamp = Date.now();
-  const backupFilename = `ROADMAP.md.backup-${timestamp}`;
+  const backupFilename = `KAIROS.md.backup-${timestamp}`;
   const backupDir = path.join(root, BACKUP_DIR);
 
   await ensureDir(backupDir);

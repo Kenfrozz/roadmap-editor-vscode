@@ -40,7 +40,7 @@ export async function readFile(filename: string): Promise<string> {
 export async function writeFile(filename: string, content: string): Promise<void> {
   const root = getWorkspaceRoot();
   if (!root) throw new Error('Workspace bulunamadi');
-  if (filename === 'ROADMAP.md') {
+  if (filename === 'KAIROS.md') {
     suppressNextFileChange();
   }
   const filePath = path.join(root, filename);

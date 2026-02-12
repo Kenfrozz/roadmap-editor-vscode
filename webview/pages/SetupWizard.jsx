@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -198,7 +198,7 @@ export function SetupWizard({ onCreated }) {
       await api.createRoadmapWithSettings(settings)
       onCreated()
     } catch (err) {
-      console.error('Create roadmap error:', err)
+      console.error('Create kairos error:', err)
     } finally {
       setCreating(false)
     }
@@ -265,9 +265,9 @@ export function SetupWizard({ onCreated }) {
                 <Rocket className="w-10 h-10 text-primary" />
               </div>
               <div>
-                <h2 className="text-lg font-bold tracking-tight mb-2">Roadmap Editor'e Hosgeldiniz</h2>
+                <h2 className="text-lg font-bold tracking-tight mb-2">Kairos'a Hosgeldiniz</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-                  Bu sihirbaz ile projeniz icin bir ROADMAP.md dosyasi olusturabilirsiniz.
+                  Bu sihirbaz ile projeniz icin bir KAIROS.md dosyasi olusturabilirsiniz.
                   Terminal, sutun ve diger ayarlari yapilandirip hemen baslayin.
                 </p>
               </div>
@@ -343,7 +343,7 @@ export function SetupWizard({ onCreated }) {
             <div className="space-y-4">
               <div className="text-center mb-6">
                 <h2 className="text-base font-bold tracking-tight mb-1">Sutun Yapilandirmasi</h2>
-                <p className="text-xs text-muted-foreground">Roadmap tablonuzun sutunlarini duzenleyin, ekleyin veya siralayin</p>
+                <p className="text-xs text-muted-foreground">Kairos tablonuzun sutunlarini duzenleyin, ekleyin veya siralayin</p>
               </div>
 
               <div className="rounded-lg border bg-card overflow-hidden">
@@ -396,7 +396,7 @@ export function SetupWizard({ onCreated }) {
             <div className="space-y-4">
               <div className="text-center mb-6">
                 <h2 className="text-base font-bold tracking-tight mb-1">Ozet & Olustur</h2>
-                <p className="text-xs text-muted-foreground">Ayarlarinizi kontrol edin ve ROADMAP.md dosyasini olusturun</p>
+                <p className="text-xs text-muted-foreground">Ayarlarinizi kontrol edin ve KAIROS.md dosyasini olusturun</p>
               </div>
 
               {/* Summary Card */}
@@ -446,7 +446,7 @@ export function SetupWizard({ onCreated }) {
                 </Button>
                 <Button onClick={handleCreate} disabled={creating} className="gap-2">
                   {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  ROADMAP.md Olustur
+                  KAIROS.md Olustur
                 </Button>
               </div>
             </div>

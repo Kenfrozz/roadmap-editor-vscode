@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
+﻿import * as vscode from 'vscode';
 import * as path from 'path';
 import { getRoot, readDir, statFile } from '../_core/db';
 import { BackupEntry } from '../../types';
 
-const BACKUP_DIR = '.roadmap-backups';
+const BACKUP_DIR = '.kairos-backups';
 
 // Yedek dosyalarini listeler (en yenisi ilk)
 export async function execute(): Promise<BackupEntry[]> {
@@ -15,7 +15,7 @@ export async function execute(): Promise<BackupEntry[]> {
     const backups: BackupEntry[] = [];
 
     for (const [name, type] of entries) {
-      if (type !== vscode.FileType.File || !name.startsWith('ROADMAP.md.backup-')) continue;
+      if (type !== vscode.FileType.File || !name.startsWith('KAIROS.md.backup-')) continue;
       const match = name.match(/backup-(\d+)$/);
       const timestamp = match ? parseInt(match[1], 10) : 0;
       const filePath = path.join(backupDir, name);

@@ -28,11 +28,13 @@ window.addEventListener('message', (event) => {
   const message = event.data
   if (!message || !message.command) return
 
-  // Bekleyen promise varsa resolve et
-  const resolver = pendingRequests.get(message.command)
-  if (resolver) {
-    pendingRequests.delete(message.command)
-    resolver(message)
+  // Bekleyen promise varsa resolve et (kuyruktan en eskisini al)
+  const queue = pendingRequests.get(message.command)
+  if (queue && queue.length > 0) {
+    const entry = queue.shift()
+    if (queue.length === 0) pendingRequests.delete(message.command)
+    clearTimeout(entry.timer)
+    entry.resolve(message)
   }
 
   // Push mesaj dinleyicilerini bildir
@@ -44,15 +46,21 @@ window.addEventListener('message', (event) => {
 
 function sendAndWait(message, responseCommand, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
-    pendingRequests.set(responseCommand, resolve)
-    vscode.postMessage(message)
-
-    setTimeout(() => {
-      if (pendingRequests.has(responseCommand)) {
-        pendingRequests.delete(responseCommand)
-        reject(new Error(`Timeout: ${responseCommand} yaniti alinamadi`))
+    if (!pendingRequests.has(responseCommand)) {
+      pendingRequests.set(responseCommand, [])
+    }
+    const entry = { resolve }
+    entry.timer = setTimeout(() => {
+      const queue = pendingRequests.get(responseCommand)
+      if (queue) {
+        const idx = queue.indexOf(entry)
+        if (idx !== -1) queue.splice(idx, 1)
+        if (queue.length === 0) pendingRequests.delete(responseCommand)
       }
+      reject(new Error(`Timeout: ${responseCommand} yaniti alinamadi`))
     }, timeoutMs)
+    pendingRequests.get(responseCommand).push(entry)
+    vscode.postMessage(message)
   })
 }
 
@@ -163,6 +171,52 @@ export const api = {
       'restoreBackupResponse'
     )
     return response.success
+  },
+
+  async gitDurum() {
+    const response = await sendAndWait(
+      { command: 'gitDurum' },
+      'gitDurumResponse'
+    )
+    return response.durum
+  },
+
+  async gitDegisiklikler() {
+    const response = await sendAndWait(
+      { command: 'gitDegisiklikler' },
+      'gitDegisikliklerResponse'
+    )
+    return response.dosyalar
+  },
+
+  async gitKaydet(mesaj) {
+    const response = await sendAndWait(
+      { command: 'gitKaydet', mesaj },
+      'gitKaydetResponse',
+      30000
+    )
+    if (!response.success) throw new Error(response.error)
+    return true
+  },
+
+  async gitPaylas() {
+    const response = await sendAndWait(
+      { command: 'gitPaylas' },
+      'gitPaylasResponse',
+      30000
+    )
+    if (!response.success) throw new Error(response.error)
+    return true
+  },
+
+  async gitGuncelle() {
+    const response = await sendAndWait(
+      { command: 'gitGuncelle' },
+      'gitGuncelleResponse',
+      30000
+    )
+    if (!response.success) throw new Error(response.error)
+    return true
   },
 }
 

@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { WebviewMessage } from './types';
 import { handleMessage } from './api';
 
-export class RoadmapSidebarProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = 'roadmapEditor.sidebar';
+export class KairosSidebarProvider implements vscode.WebviewViewProvider {
+  public static readonly viewType = 'kairos.sidebar';
 
   private _view?: vscode.WebviewView;
   private _disposables: vscode.Disposable[] = [];
@@ -66,7 +66,7 @@ export class RoadmapSidebarProvider implements vscode.WebviewViewProvider {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} data:;">
   <link href="${styleUri}" rel="stylesheet">
-  <title>Roadmap Editor</title>
+  <title>Kairos</title>
 </head>
 <body>
   <div id="root"></div>

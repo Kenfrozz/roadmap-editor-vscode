@@ -2,9 +2,9 @@ import * as vscode from 'vscode';
 import { WebviewMessage } from './types';
 import { handleMessage } from './api';
 
-export class RoadmapPanel {
-  public static currentPanel: RoadmapPanel | undefined;
-  private static readonly viewType = 'roadmapEditor';
+export class KairosPanel {
+  public static currentPanel: KairosPanel | undefined;
+  private static readonly viewType = 'kairos';
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -15,14 +15,14 @@ export class RoadmapPanel {
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
 
-    if (RoadmapPanel.currentPanel) {
-      RoadmapPanel.currentPanel._panel.reveal(column);
+    if (KairosPanel.currentPanel) {
+      KairosPanel.currentPanel._panel.reveal(column);
       return;
     }
 
     const panel = vscode.window.createWebviewPanel(
-      RoadmapPanel.viewType,
-      'Roadmap Editor',
+      KairosPanel.viewType,
+      'Kairos',
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -31,7 +31,7 @@ export class RoadmapPanel {
       }
     );
 
-    RoadmapPanel.currentPanel = new RoadmapPanel(panel, extensionUri);
+    KairosPanel.currentPanel = new KairosPanel(panel, extensionUri);
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -54,7 +54,7 @@ export class RoadmapPanel {
   }
 
   public dispose(): void {
-    RoadmapPanel.currentPanel = undefined;
+    KairosPanel.currentPanel = undefined;
     this._panel.dispose();
     while (this._disposables.length) {
       const d = this._disposables.pop();
@@ -84,7 +84,7 @@ export class RoadmapPanel {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} data:;">
   <link href="${styleUri}" rel="stylesheet">
-  <title>Roadmap Editor</title>
+  <title>Kairos</title>
 </head>
 <body>
   <div id="root"></div>

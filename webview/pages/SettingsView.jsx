@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import {
@@ -246,7 +246,7 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
   const tabs = [
     { id: 'terminal', label: 'Terminal', icon: Terminal },
     { id: 'claude', label: 'Claude Code', icon: () => <ClaudeIcon className="w-3.5 h-3.5" /> },
-    { id: 'roadmap', label: 'Roadmap', icon: Columns3 },
+    { id: 'roadmap', label: 'Plan', icon: Columns3 },
     { id: 'backups', label: 'Yedekler', icon: History },
   ]
 
@@ -372,16 +372,16 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
           </div>
         )}
 
-        {/* -- Roadmap Sekmesi -- */}
+        {/* -- Plan Sekmesi -- */}
         {activeTab === 'roadmap' && (
           <div className="space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Roadmap Sutunlari</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Plan Sutunlari</h2>
 
             {/* Uyari */}
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-muted/50 border border-border">
               <AlertTriangle className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Sutun degisiklikleri kaydedildiginde ROADMAP.md yeniden yazilir. Mevcut veriler yeni sutun yapisina gore guncellenir.
+                Sutun degisiklikleri kaydedildiginde KAIROS.md yeniden yazilir. Mevcut veriler yeni sutun yapisina gore guncellenir.
               </p>
             </div>
 
@@ -441,7 +441,7 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-muted/50 border border-border">
               <History className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Roadmap sifirlandiginda veya yedekten geri yuklendiginde mevcut dosya otomatik olarak yedeklenir.
+                Kairos sifirlandiginda veya yedekten geri yuklendiginde mevcut dosya otomatik olarak yedeklenir.
                 Hicbir veri kaybolmaz.
               </p>
             </div>
@@ -453,7 +453,7 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
                 </div>
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">Henuz yedek bulunmuyor</p>
-                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">Roadmap sifirlandiginda yedekler burada goruntulenir</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">Kairos sifirlandiginda yedekler burada goruntulenir</p>
                 </div>
               </div>
             )}
@@ -498,17 +498,17 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
               </div>
             )}
 
-            {/* Roadmap Sifirla */}
+            {/* Kairos Sifirla */}
             <div className="pt-4 border-t border-border/40 mt-4">
               <button
                 onClick={onReset}
                 className="w-full flex items-center justify-center gap-2 h-9 rounded-lg border border-destructive/30 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                Roadmap Sifirla
+                Kairos Sifirla
               </button>
               <p className="text-[10px] text-muted-foreground/60 text-center mt-1.5">
-                Mevcut dosya yedeklenir, yeni bos roadmap olusturulur
+                Mevcut dosya yedeklenir, yeni bos plan olusturulur
               </p>
             </div>
           </div>
