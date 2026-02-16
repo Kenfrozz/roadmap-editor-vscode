@@ -12,6 +12,6 @@ export async function execute(): Promise<Record<string, unknown>> {
   await writeFile('KAIROS.md', md);
 
   const content = await readFile('KAIROS.md');
-  const { data, fazNames, changelog, fazOrder } = parsele(content, columns);
-  return { ...data, _fazNames: fazNames, _changelog: changelog, _fazOrder: fazOrder, _columns: columns };
+  const { data, fazNames, fazOrder } = parsele(content, columns);
+  return { ...data, _fazNames: fazNames, _fazOrder: fazOrder, _columns: columns };
 }

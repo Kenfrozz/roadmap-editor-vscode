@@ -50,12 +50,6 @@ export interface RoadmapItem {
   [columnKey: string]: string;
 }
 
-export interface ChangelogEntry {
-  id: string;
-  tarih: string;
-  degisiklik: string;
-}
-
 export interface FazConfig {
   name: string;
   color: string;
@@ -72,14 +66,12 @@ export interface FazData {
 export interface ParseResult {
   data: FazData;
   fazNames: Record<string, string>;
-  changelog: ChangelogEntry[];
   fazOrder: string[];
 }
 
 export interface SavePayload {
-  [fazKey: string]: RoadmapItem[] | Record<string, FazConfig> | ChangelogEntry[] | string[] | undefined;
+  [fazKey: string]: RoadmapItem[] | Record<string, FazConfig> | string[] | undefined;
   _fazConfig?: Record<string, FazConfig>;
-  _changelog?: ChangelogEntry[];
   _fazOrder?: string[];
 }
 

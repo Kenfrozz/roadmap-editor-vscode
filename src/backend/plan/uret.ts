@@ -1,4 +1,4 @@
-import { RoadmapItem, ChangelogEntry, FazData, FazConfig, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
+import { RoadmapItem, FazData, FazConfig, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
 
 // Roadmap verisinden Markdown dosyasi uretir
 // [inputData] - Faz verileri + _changelog + _fazOrder
@@ -12,7 +12,6 @@ export function execute(
   const cols = columns || DEFAULT_COLUMNS;
 
   const cleanData: FazData = {};
-  const changelogData: ChangelogEntry[] = (inputData._changelog as ChangelogEntry[] | undefined) || [];
 
   for (const [key, value] of Object.entries(inputData)) {
     if (key.startsWith('faz') && Array.isArray(value)) {
@@ -131,25 +130,6 @@ export function execute(
   for (const sc of statusCols) {
     const count = statusCounts[sc.key];
     md += `| ${sc.label} | ${count} | ${total} | %${total ? Math.round(count / total * 100) : 0} |\n`;
-  }
-
-  md += `
----
-
-## DEĞİŞİKLİK GEÇMİŞİ
-
-| Tarih | Değişiklik |
-|-------|------------|
-`;
-
-  if (changelogData.length > 0) {
-    for (const entry of changelogData) {
-      const tarih = (entry.tarih || '').replace(/\|/g, '\\|');
-      const degisiklik = (entry.degisiklik || '').replace(/\|/g, '\\|');
-      md += `| ${tarih} | ${degisiklik} |\n`;
-    }
-  } else {
-    md += `| ${new Date().toISOString().split('T')[0]} | Plan oluşturuldu |\n`;
   }
 
   return md;

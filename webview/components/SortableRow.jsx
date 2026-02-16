@@ -38,6 +38,7 @@ export function SortableRow({ item, fazKey, onUpdate, onDelete, onAddBelow, onPr
 
   const statusCols = columns.filter(c => c.type === 'status')
   const claudeCmd = claudeFeatureCmd ? claudeFeatureCmd.replace('${ozellik}', item.ozellik || '') : `claude "${item.ozellik}"`
+  const claudeTerminalName = item.ozellik ? `Claude: ${item.ozellik}` : 'Claude Code'
 
   // Compact iki satirli layout
   if (isCompact) {
@@ -69,7 +70,7 @@ export function SortableRow({ item, fazKey, onUpdate, onDelete, onAddBelow, onPr
           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               className="p-1 rounded-md text-[#D97757] hover:bg-[#D97757]/10 transition-colors"
-              onClick={() => api.runTerminal(claudeCmd, 'Claude Code')}
+              onClick={() => api.runTerminal(claudeCmd, claudeTerminalName)}
               title="Claude Code ile yap"
             >
               <ClaudeIcon className="w-3 h-3" />
@@ -217,7 +218,7 @@ export function SortableRow({ item, fazKey, onUpdate, onDelete, onAddBelow, onPr
         <div className="hidden md:flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             className="p-1 rounded-md text-[#D97757] hover:bg-[#D97757]/10 transition-colors"
-            onClick={() => api.runTerminal(claudeCmd, 'Claude Code')}
+            onClick={() => api.runTerminal(claudeCmd, claudeTerminalName)}
             title="Claude Code ile yap"
           >
             <ClaudeIcon className="w-3.5 h-3.5" />
@@ -245,7 +246,7 @@ export function SortableRow({ item, fazKey, onUpdate, onDelete, onAddBelow, onPr
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[140px]">
-              <DropdownMenuItem onClick={() => api.runTerminal(claudeCmd, 'Claude Code')} className="gap-2 text-xs text-[#D97757] focus:text-[#D97757]">
+              <DropdownMenuItem onClick={() => api.runTerminal(claudeCmd, claudeTerminalName)} className="gap-2 text-xs text-[#D97757] focus:text-[#D97757]">
                 <ClaudeIcon className="w-3.5 h-3.5" />
                 Claude ile Yap
               </DropdownMenuItem>

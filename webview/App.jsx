@@ -60,7 +60,6 @@ import { FazTable } from './components/FazTable'
 import { StatusStatCard } from './components/StatusStatCard'
 import { DateStatCard } from './components/DateStatCard'
 import { computeStatusBreakdown, computeDateStats } from './lib/statsUtils'
-import { ChangelogSection } from './components/ChangelogSection'
 import { PrdModal } from './components/PrdModal'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
@@ -72,7 +71,6 @@ export default function App() {
   const [data, setData] = useState({})
   const [fazConfig, setFazConfig] = useState(DEFAULT_FAZ_CONFIG)
   const [fazOrder, setFazOrder] = useState(['faz1', 'faz2', 'faz3', 'faz4'])
-  const [changelog, setChangelog] = useState([])
   const [columns, setColumns] = useState(DEFAULT_COLUMNS)
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('saved')
@@ -109,9 +107,8 @@ export default function App() {
       if (loadedData._firstRun) {
         setFirstRunDialog(true)
       }
-      const { _fazNames, _changelog, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, ...fazData } = loadedData
+      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, ...fazData } = loadedData
       setData(fazData)
-      setChangelog(_changelog || [])
       if (loadedColumns) setColumns(loadedColumns)
       if (_fazNames) {
         const newConfig = { ...DEFAULT_FAZ_CONFIG }
@@ -175,14 +172,14 @@ export default function App() {
     return () => clearInterval(interval)
   }, [refreshGitDurum])
 
-  const autoSave = useCallback((newData, newFazConfig, newChangelog, newFazOrder) => {
+  const autoSave = useCallback((newData, newFazConfig, newFazOrder) => {
     setSaveStatus('unsaved')
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       setSaveStatus('saving')
       try {
         const orderToSave = newFazOrder || fazOrderRef.current
-        await api.save({ ...newData, _fazConfig: newFazConfig, _changelog: newChangelog, _fazOrder: orderToSave })
+        await api.save({ ...newData, _fazConfig: newFazConfig, _fazOrder: orderToSave })
         setSaveStatus('saved')
       } catch {
         setSaveStatus('unsaved')
@@ -193,13 +190,13 @@ export default function App() {
   const updateItem = (fazKey, itemId, field, value) => {
     const newData = { ...data, [fazKey]: data[fazKey].map(item => item.id === itemId ? { ...item, [field]: value } : item) }
     setData(newData)
-    autoSave(newData, fazConfig, changelog)
+    autoSave(newData, fazConfig)
   }
 
   const deleteItem = (fazKey, itemId) => {
     const newData = { ...data, [fazKey]: data[fazKey].filter(item => item.id !== itemId) }
     setData(newData)
-    autoSave(newData, fazConfig, changelog)
+    autoSave(newData, fazConfig)
   }
 
   const addItem = (fazKey) => {
@@ -209,7 +206,7 @@ export default function App() {
     })
     const newData = { ...data, [fazKey]: [...(data[fazKey] || []), newItem] }
     setData(newData)
-    autoSave(newData, fazConfig, changelog)
+    autoSave(newData, fazConfig)
   }
 
   const addItemBelow = (fazKey, itemId) => {
@@ -222,7 +219,7 @@ export default function App() {
     const newItems = [...items.slice(0, index + 1), newItem, ...items.slice(index + 1)]
     const newData = { ...data, [fazKey]: newItems }
     setData(newData)
-    autoSave(newData, fazConfig, changelog)
+    autoSave(newData, fazConfig)
   }
 
   const isFilterActive = searchText.trim() !== ''
@@ -246,13 +243,13 @@ export default function App() {
     if (isFilterActive) return
     const newData = { ...data, [fazKey]: newItems }
     setData(newData)
-    autoSave(newData, fazConfig, changelog)
+    autoSave(newData, fazConfig)
   }
 
   const updateFazName = (fazKey, newName) => {
     const newConfig = { ...fazConfig, [fazKey]: { ...fazConfig[fazKey], name: newName } }
     setFazConfig(newConfig)
-    autoSave(data, newConfig, changelog)
+    autoSave(data, newConfig)
   }
 
   const addNewFaz = () => {
@@ -263,7 +260,7 @@ export default function App() {
     setFazConfig(newConfig)
     setFazOrder([...fazOrder, newKey])
     setData({ ...data, [newKey]: [] })
-    autoSave({ ...data, [newKey]: [] }, newConfig, changelog)
+    autoSave({ ...data, [newKey]: [] }, newConfig)
   }
 
   const deleteFaz = (fazKey) => {
@@ -275,27 +272,7 @@ export default function App() {
     setFazConfig(newConfig)
     setFazOrder(newOrder)
     setData(newData)
-    autoSave(newData, newConfig, changelog)
-  }
-
-  const updateChangelog = (entryId, field, value) => {
-    const newChangelog = changelog.map(entry => entry.id === entryId ? { ...entry, [field]: value } : entry)
-    setChangelog(newChangelog)
-    autoSave(data, fazConfig, newChangelog)
-  }
-
-  const deleteChangelog = (entryId) => {
-    const newChangelog = changelog.filter(entry => entry.id !== entryId)
-    setChangelog(newChangelog)
-    autoSave(data, fazConfig, newChangelog)
-  }
-
-  const addChangelog = () => {
-    const today = new Date().toISOString().split('T')[0]
-    const newEntry = { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), tarih: today, degisiklik: '' }
-    const newChangelog = [newEntry, ...changelog]
-    setChangelog(newChangelog)
-    autoSave(data, fazConfig, newChangelog)
+    autoSave(newData, newConfig)
   }
 
   const phaseSensors = useSensors(
@@ -315,7 +292,7 @@ export default function App() {
       const newIndex = fazOrder.indexOf(over.id)
       const newOrder = arrayMove(fazOrder, oldIndex, newIndex)
       setFazOrder(newOrder)
-      autoSave(data, fazConfig, changelog, newOrder)
+      autoSave(data, fazConfig, newOrder)
     }
   }
 
@@ -663,15 +640,6 @@ export default function App() {
           <Plus className="h-3.5 w-3.5" />
           Yeni Faz Ekle
         </button>
-
-        {/* Changelog */}
-        <ChangelogSection
-          changelog={changelog}
-          onUpdate={updateChangelog}
-          onDelete={deleteChangelog}
-          onAdd={addChangelog}
-          isCompact={isCompact}
-        />
 
         {/* Footer */}
         <div className="mt-6 pb-4 text-center">

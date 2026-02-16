@@ -149,16 +149,9 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
               <span className="text-[10px] font-mono-code text-muted-foreground font-bold">{pct}%</span>
             </div>
 
-            <Button variant="ghost" size="icon" className="hidden md:inline-flex h-7 w-7" onClick={() => onAdd(fazKey)}>
-              <Plus className="h-3.5 w-3.5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="hidden md:inline-flex h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => onFazDelete(fazKey)} title="Fazi sil">
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden h-7 w-7">
+                <Button variant="ghost" size="icon" className="h-7 w-7">
                   <MoreVertical className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>

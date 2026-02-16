@@ -1,4 +1,4 @@
-﻿import { RoadmapItem, ChangelogEntry, FazData, ParseResult, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
+﻿import { RoadmapItem, FazData, ParseResult, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
 
 const DEFAULT_FAZ_NAMES: Record<string, string> = {
   faz1: 'PLANLAMA & ALTYAPI',
@@ -18,7 +18,6 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
   const cols = columns || DEFAULT_COLUMNS;
   const data: FazData = {};
   const fazNames: Record<string, string> = {};
-  const changelog: ChangelogEntry[] = [];
   const fazOrder: string[] = [];
 
   let currentFaz: string | null = null;
@@ -32,16 +31,7 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
       continue;
     }
 
-    if (inChangelog && line.startsWith('|') && !line.includes('---') && !line.includes('Tarih')) {
-      const rawCells = line.split('|').map(c => c.trim());
-      const cells = rawCells.slice(1, rawCells[rawCells.length - 1] === '' ? -1 : undefined);
-      if (cells.length >= 2) {
-        changelog.push({
-          id: generateId(),
-          tarih: cells[0] || '',
-          degisiklik: cells[1] || '',
-        });
-      }
+    if (inChangelog && line.startsWith('|')) {
       continue;
     }
 
@@ -104,5 +94,5 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
     }
   }
 
-  return { data, fazNames, changelog, fazOrder };
+  return { data, fazNames, fazOrder };
 }
