@@ -26,7 +26,6 @@ import {
   RotateCcw,
   Cog,
   AlertTriangle,
-  CircleDot,
   FileCode,
   Sparkles,
 } from 'lucide-react'
@@ -57,8 +56,7 @@ import { DEFAULT_COLUMNS, DEFAULT_FAZ_CONFIG, FAZ_COLORS } from './lib/constants
 import { ClaudeIcon } from './components/ClaudeIcon'
 import { SortablePhase } from './components/SortableRow'
 import { FazTable } from './components/FazTable'
-import { StatusStatCard } from './components/StatusStatCard'
-import { DateStatCard } from './components/DateStatCard'
+import { StatsPanel } from './components/StatsPanel'
 import { computeStatusBreakdown, computeDateStats } from './lib/statsUtils'
 import { PrdModal } from './components/PrdModal'
 import { SettingsView } from './pages/SettingsView'
@@ -188,9 +186,21 @@ export default function App() {
   }, [])
 
   const updateItem = (fazKey, itemId, field, value) => {
+    const statusKeys = columns.filter(c => c.type === 'status').map(c => c.key)
+    const oldItem = data[fazKey].find(item => item.id === itemId)
     const newData = { ...data, [fazKey]: data[fazKey].map(item => item.id === itemId ? { ...item, [field]: value } : item) }
     setData(newData)
     autoSave(newData, fazConfig)
+
+    // Tüm status sütunları ✅ olduğunda bildirim göster
+    if (statusKeys.length > 0 && oldItem) {
+      const wasComplete = statusKeys.every(k => oldItem[k] === '✅')
+      const updatedItem = { ...oldItem, [field]: value }
+      const isComplete = statusKeys.every(k => updatedItem[k] === '✅')
+      if (!wasComplete && isComplete) {
+        api.bildirimGoster(`✅ "${oldItem.ozellik || itemId}" tamamlandı!`)
+      }
+    }
   }
 
   const deleteItem = (fazKey, itemId) => {
@@ -314,7 +324,6 @@ export default function App() {
   }
 
   // Stats
-  const GRID_COLS_MAP = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-4', 5: 'grid-cols-5', 6: 'grid-cols-6' }
   const allItems = Object.values(data).flat()
   const total = allItems.length
   const statusColumns = columns.filter(c => c.type === 'status')
@@ -545,41 +554,14 @@ export default function App() {
 
       {/* === MAIN CONTENT === */}
       <main className="w-full px-0.5 py-5">
-        {/* Stats Card */}
-        {total > 0 && (statusBreakdowns.length > 0 || dateStats) && (
-          <div className="rounded-lg border border-border/60 bg-card/80 mb-5 overflow-hidden">
-            {/* Overall Progress Bar */}
-            <div className="px-4 pt-3 pb-2">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Genel Ilerleme</span>
-                <span className="text-xs font-mono-code font-bold text-primary">{overallPct}%</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-                <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${overallPct}%` }} />
-              </div>
-            </div>
-            {/* Stat Columns */}
-            <div className={cn(
-              'grid',
-              isCompact
-                ? 'grid-cols-1 gap-3 px-3 py-3'
-                : `${GRID_COLS_MAP[statusBreakdowns.length + (dateStats ? 1 : 0)] || 'grid-cols-4'} gap-4 px-4 py-3`
-            )}>
-              {statusBreakdowns.map(col => (
-                <StatusStatCard
-                  key={col.key}
-                  label={col.label}
-                  breakdown={col.breakdown}
-                  icon={CircleDot}
-                  isCompact={isCompact}
-                />
-              ))}
-              {dateStats && (
-                <DateStatCard dateStats={dateStats} isCompact={isCompact} />
-              )}
-            </div>
-          </div>
-        )}
+        {/* Stats Panel */}
+        <StatsPanel
+          overallPct={overallPct}
+          statusBreakdowns={statusBreakdowns}
+          dateStats={dateStats}
+          total={total}
+          isCompact={isCompact}
+        />
 
         {/* Faz Tables */}
         <DndContext

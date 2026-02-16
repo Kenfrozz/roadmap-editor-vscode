@@ -117,7 +117,8 @@ export type WebviewMessage =
   | { command: 'gitDegisiklikler' }
   | { command: 'gitKaydet'; mesaj: string }
   | { command: 'gitPaylas' }
-  | { command: 'gitGuncelle' };
+  | { command: 'gitGuncelle' }
+  | { command: 'bildirimGoster'; mesaj: string };
 
 // Extension -> Webview mesajlari
 export type ExtensionMessage =

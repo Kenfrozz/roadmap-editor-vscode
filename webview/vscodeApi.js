@@ -117,6 +117,10 @@ export const api = {
     vscode.postMessage({ command: 'runTerminal', cmd, name })
   },
 
+  bildirimGoster(mesaj) {
+    vscode.postMessage({ command: 'bildirimGoster', mesaj })
+  },
+
   async loadSettings() {
     const response = await sendAndWait(
       { command: 'loadSettings' },

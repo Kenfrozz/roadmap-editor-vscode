@@ -43,6 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   watcher.onDidChange(notifyWebviews);
   watcher.onDidCreate(notifyWebviews);
+  watcher.onDidDelete(notifyWebviews);
   context.subscriptions.push(watcher);
 }
 

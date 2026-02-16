@@ -145,6 +145,11 @@ export async function handleMessage(
       break;
     }
 
+    case 'bildirimGoster': {
+      vscode.window.showInformationMessage(message.mesaj);
+      break;
+    }
+
     case 'savePdf': {
       try {
         const uri = await vscode.window.showSaveDialog({
