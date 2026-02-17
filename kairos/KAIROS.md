@@ -20,9 +20,8 @@
 
 | No | Özellik | PRD | Backend | Frontend | Test | Tarih | Not |
 |----|-------|---|-------|--------|----|-----|---|
-| 1 |  |  | ❌ | ❌ | ❌ |  |  |
 
-**FAZ1 Durumu:** 0/1 tamamlandı
+**FAZ1 Durumu:** 0/0 tamamlandı
 
 ---
 
@@ -53,10 +52,25 @@
 
 ---
 
+## 🔴 Hatalar
+
+| Başlık | Açıklama |
+|--------|----------|
+| kanat | kenan |
+
+---
+
+## 🟡 Değişiklikler
+
+| Başlık | Açıklama |
+|--------|----------|
+
+---
+
 ## GENEL ÖZET
 
 | Kategori | Tamamlanan | Toplam | Yüzde |
 |----------|------------|--------|-------|
-| Backend | 0 | 1 | %0 |
-| Frontend | 0 | 1 | %0 |
-| Test | 0 | 1 | %0 |
+| Backend | 0 | 0 | %0 |
+| Frontend | 0 | 0 | %0 |
+| Test | 0 | 0 | %0 |

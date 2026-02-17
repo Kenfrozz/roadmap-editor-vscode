@@ -1,4 +1,4 @@
-import { RoadmapItem, FazData, FazConfig, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
+import { RoadmapItem, FazData, FazConfig, ColumnConfig, DEFAULT_COLUMNS, EkTabloItem } from '../../types';
 
 // Roadmap verisinden Markdown dosyasi uretir
 // [inputData] - Faz verileri + _changelog + _fazOrder
@@ -106,6 +106,30 @@ export function execute(
       md += `\n---\n\n`;
     }
   }
+
+  // Hatalar bolumu
+  const hatalar = (inputData._hatalar as EkTabloItem[]) || [];
+  md += `## 🔴 Hatalar\n\n`;
+  md += `| Başlık | Açıklama |\n`;
+  md += `|--------|----------|\n`;
+  for (const item of hatalar) {
+    const b = (item.baslik || '').replace(/\|/g, '\\|');
+    const a = (item.aciklama || '').replace(/\|/g, '\\|');
+    md += `| ${b} | ${a} |\n`;
+  }
+  md += `\n---\n\n`;
+
+  // Degisiklikler bolumu
+  const degisiklikler = (inputData._degisiklikler as EkTabloItem[]) || [];
+  md += `## 🟡 Değişiklikler\n\n`;
+  md += `| Başlık | Açıklama |\n`;
+  md += `|--------|----------|\n`;
+  for (const item of degisiklikler) {
+    const b = (item.baslik || '').replace(/\|/g, '\\|');
+    const a = (item.aciklama || '').replace(/\|/g, '\\|');
+    md += `| ${b} | ${a} |\n`;
+  }
+  md += `\n---\n\n`;
 
   const statusCols = cols.filter(c => c.type === 'status');
   let total = 0;

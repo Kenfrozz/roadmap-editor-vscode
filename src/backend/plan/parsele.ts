@@ -1,4 +1,4 @@
-﻿import { RoadmapItem, FazData, ParseResult, ColumnConfig, DEFAULT_COLUMNS } from '../../types';
+﻿import { RoadmapItem, FazData, ParseResult, ColumnConfig, DEFAULT_COLUMNS, EkTabloItem } from '../../types';
 
 const DEFAULT_FAZ_NAMES: Record<string, string> = {
   faz1: 'PLANLAMA & ALTYAPI',
@@ -22,12 +22,52 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
 
   let currentFaz: string | null = null;
   let inChangelog = false;
+  let inHatalar = false;
+  let inDegisiklikler = false;
+  const hatalar: EkTabloItem[] = [];
+  const degisiklikler: EkTabloItem[] = [];
   const lines = content.split('\n');
 
   for (const line of lines) {
     if (line.match(/^## DEĞİŞİKLİK GEÇMİŞİ/i)) {
       inChangelog = true;
+      inHatalar = false;
+      inDegisiklikler = false;
       currentFaz = null;
+      continue;
+    }
+
+    if (line.match(/^##\s.*Hatalar/i)) {
+      inHatalar = true;
+      inDegisiklikler = false;
+      inChangelog = false;
+      currentFaz = null;
+      continue;
+    }
+
+    if (line.match(/^##\s.*Değişiklikler/i) || line.match(/^##\s.*Degisiklikler/i)) {
+      inDegisiklikler = true;
+      inHatalar = false;
+      inChangelog = false;
+      currentFaz = null;
+      continue;
+    }
+
+    if (inHatalar && line.startsWith('|') && !line.includes('---') && !line.includes('Başlık')) {
+      const rawCells = line.split('|').map(c => c.trim());
+      const cells = rawCells.slice(1, rawCells[rawCells.length - 1] === '' ? -1 : undefined);
+      if (cells.length >= 2) {
+        hatalar.push({ id: generateId(), baslik: cells[0], aciklama: cells[1] || '' });
+      }
+      continue;
+    }
+
+    if (inDegisiklikler && line.startsWith('|') && !line.includes('---') && !line.includes('Başlık')) {
+      const rawCells = line.split('|').map(c => c.trim());
+      const cells = rawCells.slice(1, rawCells[rawCells.length - 1] === '' ? -1 : undefined);
+      if (cells.length >= 2) {
+        degisiklikler.push({ id: generateId(), baslik: cells[0], aciklama: cells[1] || '' });
+      }
       continue;
     }
 
@@ -37,6 +77,8 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
 
     if (line.match(/^## GENEL ÖZET/i)) {
       inChangelog = false;
+      inHatalar = false;
+      inDegisiklikler = false;
       currentFaz = null;
       continue;
     }
@@ -45,6 +87,8 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
     const fazMatchNumbered = !fazMatchClassic && line.match(/^## (\d+)\s*[-—–]\s*(.+)/);
     if (fazMatchClassic) {
       inChangelog = false;
+      inHatalar = false;
+      inDegisiklikler = false;
       const fazName = fazMatchClassic[1].trim();
       const fazNum = fazMatchClassic[2];
       currentFaz = `faz${fazNum}`;
@@ -55,6 +99,8 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
     }
     if (fazMatchNumbered) {
       inChangelog = false;
+      inHatalar = false;
+      inDegisiklikler = false;
       const fazNum = fazMatchNumbered[1];
       const fazName = fazMatchNumbered[2].trim();
       currentFaz = `faz${parseInt(fazNum)}`;
@@ -94,5 +140,5 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
     }
   }
 
-  return { data, fazNames, fazOrder };
+  return { data, fazNames, fazOrder, hatalar, degisiklikler };
 }

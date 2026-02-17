@@ -17,6 +17,8 @@ import {
   FileCode,
   FileDown,
   Sparkles,
+  Bug,
+  RefreshCw,
 } from 'lucide-react'
 import { Button } from './components/ui/button'
 import { Input } from './components/ui/input'
@@ -52,6 +54,7 @@ import { PrdModal } from './components/PrdModal'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
 import { GitStatusBadge, GitPanel } from './components/GitPanel'
+import { EkTablo } from './components/EkTablo'
 
 export default function App() {
   const dark = useTheme()
@@ -81,8 +84,12 @@ export default function App() {
   const [firstRunProcessing, setFirstRunProcessing] = useState(false)
   const [gitPanelOpen, setGitPanelOpen] = useState(false)
   const [gitDurum, setGitDurum] = useState(null)
+  const [hatalar, setHatalar] = useState([])
+  const [degisiklikler, setDegisiklikler] = useState([])
   const saveTimer = useRef(null)
   const fazOrderRef = useRef(fazOrder)
+  const hatalarRef = useRef(hatalar)
+  const degisikliklerRef = useRef(degisiklikler)
 
   const loadData = useCallback(async () => {
     try {
@@ -96,10 +103,12 @@ export default function App() {
       if (loadedData._firstRun) {
         setFirstRunDialog(true)
       }
-      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, _version, ...fazData } = loadedData
+      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, _version, _hatalar, _degisiklikler, ...fazData } = loadedData
       if (_projectName) setProjectName(_projectName)
       if (_version) setAppVersion(_version)
       setData(fazData)
+      if (_hatalar) { setHatalar(_hatalar); hatalarRef.current = _hatalar }
+      if (_degisiklikler) { setDegisiklikler(_degisiklikler); degisikliklerRef.current = _degisiklikler }
       if (loadedColumns) setColumns(loadedColumns)
       if (_fazNames) {
         const newConfig = { ...DEFAULT_FAZ_CONFIG }
@@ -142,6 +151,14 @@ export default function App() {
   }, [fazOrder])
 
   useEffect(() => {
+    hatalarRef.current = hatalar
+  }, [hatalar])
+
+  useEffect(() => {
+    degisikliklerRef.current = degisiklikler
+  }, [degisiklikler])
+
+  useEffect(() => {
     const cleanup = onMessage('fileChanged', () => {
       loadData()
     })
@@ -170,7 +187,7 @@ export default function App() {
       setSaveStatus('saving')
       try {
         const orderToSave = newFazOrder || fazOrderRef.current
-        await api.save({ ...newData, _fazConfig: newFazConfig, _fazOrder: orderToSave })
+        await api.save({ ...newData, _fazConfig: newFazConfig, _fazOrder: orderToSave, _hatalar: hatalarRef.current, _degisiklikler: degisikliklerRef.current })
         setSaveStatus('saved')
       } catch {
         setSaveStatus('unsaved')
@@ -291,6 +308,45 @@ export default function App() {
     setData(newData)
     autoSave(newData, fazConfig)
   }, [data, fazConfig, autoSave])
+
+  // Ek tablo (Hatalar / Degisiklikler) CRUD
+  const addHata = () => {
+    const updated = [...hatalar, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '' }]
+    setHatalar(updated)
+    hatalarRef.current = updated
+    autoSave(data, fazConfig)
+  }
+  const updateHata = (itemId, field, value) => {
+    const updated = hatalar.map(i => i.id === itemId ? { ...i, [field]: value } : i)
+    setHatalar(updated)
+    hatalarRef.current = updated
+    autoSave(data, fazConfig)
+  }
+  const deleteHata = (itemId) => {
+    const updated = hatalar.filter(i => i.id !== itemId)
+    setHatalar(updated)
+    hatalarRef.current = updated
+    autoSave(data, fazConfig)
+  }
+
+  const addDegisiklik = () => {
+    const updated = [...degisiklikler, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '' }]
+    setDegisiklikler(updated)
+    degisikliklerRef.current = updated
+    autoSave(data, fazConfig)
+  }
+  const updateDegisiklik = (itemId, field, value) => {
+    const updated = degisiklikler.map(i => i.id === itemId ? { ...i, [field]: value } : i)
+    setDegisiklikler(updated)
+    degisikliklerRef.current = updated
+    autoSave(data, fazConfig)
+  }
+  const deleteDegisiklik = (itemId) => {
+    const updated = degisiklikler.filter(i => i.id !== itemId)
+    setDegisiklikler(updated)
+    degisikliklerRef.current = updated
+    autoSave(data, fazConfig)
+  }
 
   // Custom commands
   const addCustomCommand = () => {
@@ -614,6 +670,30 @@ export default function App() {
             )
           }
         </DndManager>
+
+        {/* Ek Tablolar */}
+        <EkTablo
+          title="Hatalar"
+          icon={Bug}
+          iconColor="text-red-500"
+          borderColor="border-l-red-400/50 dark:border-l-red-700/50"
+          items={hatalar}
+          onAdd={addHata}
+          onUpdate={updateHata}
+          onDelete={deleteHata}
+          isCompact={isCompact}
+        />
+        <EkTablo
+          title="Degisiklikler"
+          icon={RefreshCw}
+          iconColor="text-amber-500"
+          borderColor="border-l-amber-400/50 dark:border-l-amber-700/50"
+          items={degisiklikler}
+          onAdd={addDegisiklik}
+          onUpdate={updateDegisiklik}
+          onDelete={deleteDegisiklik}
+          isCompact={isCompact}
+        />
 
         {/* Add New Faz */}
         <button

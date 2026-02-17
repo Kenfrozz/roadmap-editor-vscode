@@ -2,6 +2,19 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.5.0] - 2026-02-17
+
+### Eklendi
+- **Hatalar Tablosu** — Proje hatalari icin baslik + aciklama formatinda ayri tablo
+- **Degisiklikler Tablosu** — Planlanan degisiklikler icin ayri tablo
+- **Claude'a Gonder Butonu** — Hata/degisiklik satirindan tek tikla Claude Code'a gonderme
+- **EkTablo Bileseni** — Yeniden kullanilabilir collapse/expand destekli iki sutunlu tablo
+
+### Degisti
+- KAIROS.md parser'i Hatalar ve Degisiklikler bolumlerini parse ediyor
+- KAIROS.md generator'i her iki bolumu faz tablolari ile ozet arasina yaziyor
+- SavePayload ve ParseResult tipleri genisletildi
+
 ## [1.4.0] - 2026-02-17
 
 ### Eklendi

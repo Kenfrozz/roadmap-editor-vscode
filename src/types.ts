@@ -63,16 +63,26 @@ export interface FazData {
   [fazKey: string]: RoadmapItem[];
 }
 
+export interface EkTabloItem {
+  id: string;
+  baslik: string;
+  aciklama: string;
+}
+
 export interface ParseResult {
   data: FazData;
   fazNames: Record<string, string>;
   fazOrder: string[];
+  hatalar: EkTabloItem[];
+  degisiklikler: EkTabloItem[];
 }
 
 export interface SavePayload {
-  [fazKey: string]: RoadmapItem[] | Record<string, FazConfig> | string[] | undefined;
+  [fazKey: string]: RoadmapItem[] | Record<string, FazConfig> | string[] | EkTabloItem[] | undefined;
   _fazConfig?: Record<string, FazConfig>;
   _fazOrder?: string[];
+  _hatalar?: EkTabloItem[];
+  _degisiklikler?: EkTabloItem[];
 }
 
 export interface BackupEntry {

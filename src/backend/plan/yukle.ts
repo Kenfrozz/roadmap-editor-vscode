@@ -14,7 +14,7 @@ export async function execute(): Promise<YukleResult> {
   const settings = ayarYukle();
   const columns = settings.roadmap.columns;
   const content = await readFile('kairos/KAIROS.md');
-  const { data, fazNames, fazOrder } = parsele(content, columns);
+  const { data, fazNames, fazOrder, hatalar, degisiklikler } = parsele(content, columns);
   const firstRun = !settingsFileExists();
 
   return {
@@ -23,6 +23,8 @@ export async function execute(): Promise<YukleResult> {
       _fazNames: fazNames,
       _fazOrder: fazOrder,
       _columns: columns,
+      _hatalar: hatalar,
+      _degisiklikler: degisiklikler,
       ...(firstRun ? { _firstRun: true } : {}),
     },
     notFound: false,

@@ -10,11 +10,11 @@ export async function execute(settings: SettingsConfig): Promise<Record<string, 
   ayarKaydet(settings);
 
   const columns = settings.roadmap.columns;
-  const defaultData = { faz1: [], faz2: [], faz3: [], faz4: [] };
+  const defaultData = { faz1: [], faz2: [], faz3: [], faz4: [], _hatalar: [], _degisiklikler: [] };
   const md = uret(defaultData, undefined, columns);
   await writeFile('kairos/KAIROS.md', md);
 
   const content = await readFile('kairos/KAIROS.md');
-  const { data, fazNames, fazOrder } = parsele(content, columns);
-  return { ...data, _fazNames: fazNames, _fazOrder: fazOrder, _columns: columns };
+  const { data, fazNames, fazOrder, hatalar, degisiklikler } = parsele(content, columns);
+  return { ...data, _fazNames: fazNames, _fazOrder: fazOrder, _columns: columns, _hatalar: hatalar, _degisiklikler: degisiklikler };
 }
