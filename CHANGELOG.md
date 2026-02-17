@@ -2,6 +2,18 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.4.0] - 2026-02-17
+
+### Eklendi
+- **Fazlar Arasi Surukle-Birak** — Ogeleri farkli fazlara surukleyerek tasima
+- **Birlesik DnD Yonetimi** — Tek DndContext altinda faz ve oge suruklemesi
+- **Bos Faz Hedefi** — Bos fazlara da oge birakilabilme destegi
+- **Gorsel Geri Bildirim** — Surekleme sirasinda hedef faza halka efekti
+
+### Degisti
+- Kullaniciya gorunen "roadmap" referanslari "plan" ile degistirildi
+- GitHub repo adi `kairos` olarak guncellendi
+
 ## [1.3.0] - 2026-02-17
 
 ### Eklendi
