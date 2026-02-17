@@ -4,7 +4,7 @@ Bu doküman, Kairos VS Code eklentisinin mimari yapısını açıklar. Tüm geli
 
 ---
 
-## İçindekiler
+## İçindekiler:
 
 1. [Genel Bakış](#genel-bakış)
 2. [Klasör Yapısı](#klasör-yapısı)
