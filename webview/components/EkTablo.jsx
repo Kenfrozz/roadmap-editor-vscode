@@ -42,9 +42,9 @@ export function EkTablo({ title, icon: Icon, iconColor, borderColor, items, onAd
           {/* Column Headers */}
           {!isCompact && items.length > 0 && (
             <div className="flex items-center border-b border-t border-border/50 bg-card/95 text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-4 py-2">
-              <div className="w-7 shrink-0 text-center">Durum</div>
-              <div className="w-[38%] min-w-0 pl-2">Baslik</div>
+              <div className="w-[38%] min-w-0">Baslik</div>
               <div className="flex-1 min-w-0">Aciklama</div>
+              <div className="w-7 shrink-0 text-center">Durum</div>
               <div className="w-16 shrink-0"></div>
             </div>
           )}
@@ -172,14 +172,14 @@ function EkTabloRow({ item, onUpdate, onDelete, isCompact, title }) {
 
   return (
     <div className="flex items-center border-t border-border/30 px-4 group/row hover:bg-muted/30 transition-colors">
-      <div className="w-7 shrink-0 flex justify-center">
-        <StatusDot value={item.durum || '❌'} onChange={(v) => onUpdate(item.id, 'durum', v)} />
-      </div>
-      <div className="w-[38%] min-w-0 py-0.5 pl-2">
+      <div className="w-[38%] min-w-0 py-0.5">
         {renderCell('baslik', 'Baslik...', 'font-medium')}
       </div>
       <div className="flex-1 min-w-0 py-0.5">
         {renderCell('aciklama', 'Aciklama...')}
+      </div>
+      <div className="w-7 shrink-0 flex justify-center">
+        <StatusDot value={item.durum || '❌'} onChange={(v) => onUpdate(item.id, 'durum', v)} />
       </div>
       <div className="w-16 shrink-0 flex justify-end gap-0.5">
         <button
