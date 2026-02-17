@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "terminal": {
+    "defaultTerminalId": null,
+    "availableTerminals": [
+      {
+        "id": "cmd",
+        "name": "Command Prompt",
+        "path": "C:\\Windows\\System32\\cmd.exe"
+      },
+      {
+        "id": "powershell",
+        "name": "Windows PowerShell",
+        "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+      },
+      {
+        "id": "pwsh",
+        "name": "PowerShell 7",
+        "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+      },
+      {
+        "id": "gitbash",
+        "name": "Git Bash",
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": [
+          "--login",
+          "-i"
+        ]
+      },
+      {
+        "id": "wsl",
+        "name": "WSL",
+        "path": "C:\\Windows\\System32\\wsl.exe"
+      }
+    ]
+  },
+  "claude": {
+    "mainCommand": "claude --dangerously-skip-permissions",
+    "featureCommand": "claude \"${ozellik}\""
+  },
+  "roadmap": {
+    "columns": [
+      {
+        "key": "ozellik",
+        "label": "Özellik",
+        "type": "text"
+      },
+      {
+        "key": "prd",
+        "label": "PRD",
+        "type": "text"
+      },
+      {
+        "key": "backend",
+        "label": "Backend",
+        "type": "status"
+      },
+      {
+        "key": "frontend",
+        "label": "Frontend",
+        "type": "status"
+      },
+      {
+        "key": "test",
+        "label": "Test",
+        "type": "status"
+      },
+      {
+        "key": "tarih",
+        "label": "Tarih",
+        "type": "date"
+      },
+      {
+        "key": "not",
+        "label": "Not",
+        "type": "text"
+      }
+    ]
+  }
+}
