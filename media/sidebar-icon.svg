@@ -1,12 +1,11 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Road/path line -->
-  <path d="M4 5 L4 19" stroke="#C5C5C5" stroke-width="2" stroke-linecap="round"/>
-  <!-- Milestone dots -->
-  <circle cx="4" cy="5" r="2.5" fill="#C5C5C5"/>
-  <circle cx="4" cy="12" r="2.5" fill="#C5C5C5"/>
-  <circle cx="4" cy="19" r="2.5" fill="#C5C5C5"/>
-  <!-- Task lines -->
-  <rect x="9" y="3.5" width="11" height="3" rx="1.5" fill="#C5C5C5"/>
-  <rect x="9" y="10.5" width="8" height="3" rx="1.5" fill="#C5C5C5"/>
-  <rect x="9" y="17.5" width="5" height="3" rx="1.5" fill="#C5C5C5"/>
+  <!-- Meteor tail -->
+  <path d="M12 10 L14 11.5 L22 23 L19.5 23 L13 13 L11 11 Z" fill="#C5C5C5" opacity="0.45"/>
+  <path d="M11.5 9.5 L13.5 11 L20.5 22 L18.5 22.5 L12.5 12.5 L10.5 10.5 Z" fill="#C5C5C5" opacity="0.7"/>
+  <!-- Meteor head - geometric crystal -->
+  <path d="M10.5 1.5 L16.5 7.5 L15 11 L11.5 14 L7 11 L6 7.5 Z" fill="#C5C5C5"/>
+  <!-- Inner facet top-right -->
+  <path d="M10.5 1.5 L16.5 7.5 L13 8.5 L9.5 6 Z" fill="#C5C5C5" opacity="0.45"/>
+  <!-- Inner facet center -->
+  <path d="M9.5 6 L13 8.5 L11.5 11.5 L7.5 9.5 Z" fill="#C5C5C5" opacity="0.3"/>
 </svg>
