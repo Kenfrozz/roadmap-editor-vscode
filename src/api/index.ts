@@ -36,7 +36,8 @@ export async function handleMessage(
         const result = await planYukle();
         const folders = vscode.workspace.workspaceFolders;
         const projectName = folders ? path.basename(folders[0].uri.fsPath) : 'Proje';
-        webview.postMessage({ command: 'loadResponse', data: { ...result.data, _projectName: projectName } });
+        const version = vscode.extensions.getExtension('Kenfrozz.kairos')?.packageJSON?.version || '1.0.0';
+        webview.postMessage({ command: 'loadResponse', data: { ...result.data, _projectName: projectName, _version: version } });
       } catch {
         webview.postMessage({ command: 'loadResponse', data: { _notFound: true } });
       }

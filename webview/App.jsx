@@ -87,6 +87,7 @@ export default function App() {
   const [settingsData, setSettingsData] = useState(null)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
   const [projectName, setProjectName] = useState('Proje')
+  const [appVersion, setAppVersion] = useState('1.0.0')
   const [resetting, setResetting] = useState(false)
   const [firstRunDialog, setFirstRunDialog] = useState(false)
   const [firstRunProcessing, setFirstRunProcessing] = useState(false)
@@ -107,8 +108,9 @@ export default function App() {
       if (loadedData._firstRun) {
         setFirstRunDialog(true)
       }
-      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, ...fazData } = loadedData
+      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, _version, ...fazData } = loadedData
       if (_projectName) setProjectName(_projectName)
+      if (_version) setAppVersion(_version)
       setData(fazData)
       if (loadedColumns) setColumns(loadedColumns)
       if (_fazNames) {
@@ -653,7 +655,7 @@ export default function App() {
         {/* Footer */}
         <div className="mt-6 pb-4 text-center">
           <p className="text-[10px] font-mono-code text-muted-foreground/60 uppercase tracking-widest">
-            Kairos v2.0 — VS Code
+            Kairos v{appVersion} — VS Code
           </p>
         </div>
       </main>
