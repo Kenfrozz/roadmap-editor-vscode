@@ -12,9 +12,9 @@ export async function execute(settings: SettingsConfig): Promise<Record<string, 
   const columns = settings.roadmap.columns;
   const defaultData = { faz1: [], faz2: [], faz3: [], faz4: [] };
   const md = uret(defaultData, undefined, columns);
-  await writeFile('KAIROS.md', md);
+  await writeFile('kairos/KAIROS.md', md);
 
-  const content = await readFile('KAIROS.md');
+  const content = await readFile('kairos/KAIROS.md');
   const { data, fazNames, fazOrder } = parsele(content, columns);
   return { ...data, _fazNames: fazNames, _fazOrder: fazOrder, _columns: columns };
 }

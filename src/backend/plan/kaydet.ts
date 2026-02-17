@@ -10,5 +10,5 @@ export async function execute(saveData: SavePayload): Promise<void> {
   const columns = settings.roadmap.columns;
   const fazConfig = saveData._fazConfig as Record<string, FazConfig> | undefined;
   const md = uret(saveData, fazConfig, columns);
-  await writeFile('KAIROS.md', md);
+  await writeFile('kairos/KAIROS.md', md);
 }

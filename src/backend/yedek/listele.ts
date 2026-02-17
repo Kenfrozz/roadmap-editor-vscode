@@ -3,7 +3,7 @@ import * as path from 'path';
 import { getRoot, readDir, statFile } from '../_core/db';
 import { BackupEntry } from '../../types';
 
-const BACKUP_DIR = '.kairos-backups';
+const BACKUP_DIR = 'kairos/backups';
 
 // Yedek dosyalarini listeler (en yenisi ilk)
 export async function execute(): Promise<BackupEntry[]> {

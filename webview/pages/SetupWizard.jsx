@@ -123,7 +123,7 @@ export function SetupWizard({ onCreated }) {
       setSettings({
         version: 1,
         terminal: { defaultTerminalId: null, availableTerminals: [] },
-        claude: { mainCommand: 'claude --dangerously-skip-permissions', featureCommand: 'claude "${ozellik}"' },
+        claude: { mainCommand: 'claude --dangerously-skip-permissions', featureCommand: 'claude "/kairos:build ${ozellik}"' },
         roadmap: { columns: [...DEFAULT_COLUMNS] },
       })
       setLoading(false)

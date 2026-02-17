@@ -121,6 +121,16 @@ export const api = {
     vscode.postMessage({ command: 'bildirimGoster', mesaj })
   },
 
+  async pdfOlustur(payload) {
+    const res = await sendAndWait(
+      { command: 'pdfOlustur', payload },
+      'pdfOlusturResponse',
+      30000
+    )
+    if (!res.success) throw new Error(res.error)
+    return res.filename
+  },
+
   async loadSettings() {
     const response = await sendAndWait(
       { command: 'loadSettings' },

@@ -3,7 +3,7 @@ import * as path from 'path';
 import { writeFile, suppressNextFileChange, getRoot } from '../_core/db';
 import { execute as yedekOlustur } from './olustur';
 
-const BACKUP_DIR = '.kairos-backups';
+const BACKUP_DIR = 'kairos/backups';
 
 // Belirtilen yedek dosyasini geri yukler
 // [backupFilename] - Geri yuklenecek yedek dosyasinin adi
@@ -21,5 +21,5 @@ export async function execute(backupFilename: string): Promise<void> {
   }
 
   suppressNextFileChange();
-  await writeFile('KAIROS.md', content);
+  await writeFile('kairos/KAIROS.md', content);
 }

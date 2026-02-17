@@ -40,7 +40,7 @@ export async function readFile(filename: string): Promise<string> {
 export async function writeFile(filename: string, content: string): Promise<void> {
   const root = getWorkspaceRoot();
   if (!root) throw new Error('Workspace bulunamadi');
-  if (filename === 'KAIROS.md') {
+  if (filename === 'kairos/KAIROS.md') {
     suppressNextFileChange();
   }
   const filePath = path.join(root, filename);
@@ -87,6 +87,14 @@ export async function readDir(dirPath: string): Promise<[string, vscode.FileType
 
 export async function statFile(filePath: string): Promise<vscode.FileStat> {
   return vscode.workspace.fs.stat(vscode.Uri.file(filePath));
+}
+
+export async function writeFileBinary(filename: string, buffer: Buffer): Promise<void> {
+  const root = getWorkspaceRoot();
+  if (!root) throw new Error('Workspace bulunamadi');
+  const filePath = path.join(root, filename);
+  const uri = vscode.Uri.file(filePath);
+  await vscode.workspace.fs.writeFile(uri, buffer);
 }
 
 export function getRoot(): string {

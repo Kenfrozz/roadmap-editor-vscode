@@ -6,7 +6,7 @@ import { SettingsConfig, DEFAULT_SETTINGS } from '../../types';
 function getSettingsPath(): string | undefined {
   const folders = vscode.workspace.workspaceFolders;
   if (folders && folders.length > 0) {
-    return path.join(folders[0].uri.fsPath, '.kairos-settings.json');
+    return path.join(folders[0].uri.fsPath, 'kairos', 'settings.json');
   }
   return undefined;
 }

@@ -12,9 +12,9 @@ export async function execute(): Promise<Record<string, unknown>> {
   const columns = settings.roadmap.columns;
   const defaultData = { faz1: [], faz2: [], faz3: [], faz4: [] };
   const md = uret(defaultData, undefined, columns);
-  await writeFile('KAIROS.md', md);
+  await writeFile('kairos/KAIROS.md', md);
 
-  const content = await readFile('KAIROS.md');
+  const content = await readFile('kairos/KAIROS.md');
   const { data, fazNames, changelog, fazOrder } = parsele(content, columns);
   return { ...data, _fazNames: fazNames, _changelog: changelog, _fazOrder: fazOrder, _columns: columns };
 }

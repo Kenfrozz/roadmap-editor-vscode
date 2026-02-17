@@ -53,6 +53,7 @@
     "package": "npx vsce package"
   },
   "devDependencies": {
+    "@types/pdfkit": "^0.17.5",
     "@types/vscode": "^1.85.0",
     "autoprefixer": "^10.4.17",
     "esbuild": "^0.20.0",
@@ -74,6 +75,7 @@
     "date-fns": "^3.3.1",
     "lucide-react": "^0.344.0",
     "marked": "^17.0.1",
+    "pdfkit": "^0.15.2",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",

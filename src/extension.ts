@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // FileSystemWatcher: KAIROS.md degisikliklerini dinle
-  const watcher = vscode.workspace.createFileSystemWatcher('**/KAIROS.md');
+  const watcher = vscode.workspace.createFileSystemWatcher('**/kairos/KAIROS.md');
 
   const notifyWebviews = () => {
     // Kendi yazmamiz tetiklediyse yoksay

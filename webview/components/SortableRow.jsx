@@ -37,7 +37,7 @@ export function SortableRow({ item, fazKey, onUpdate, onDelete, onAddBelow, onPr
   }
 
   const statusCols = columns.filter(c => c.type === 'status')
-  const claudeCmd = claudeFeatureCmd ? claudeFeatureCmd.replace('${ozellik}', item.ozellik || '') : `claude "${item.ozellik}"`
+  const claudeCmd = claudeFeatureCmd ? claudeFeatureCmd.replace('${ozellik}', item.ozellik || '') : `claude "/kairos:build ${item.ozellik || ''}"`
   const claudeTerminalName = item.ozellik ? `Claude: ${item.ozellik}` : 'Claude Code'
 
   // Compact iki satirli layout

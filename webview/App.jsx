@@ -27,6 +27,7 @@ import {
   Cog,
   AlertTriangle,
   FileCode,
+  FileDown,
   Sparkles,
 } from 'lucide-react'
 import { Button } from './components/ui/button'
@@ -85,6 +86,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState('main')
   const [settingsData, setSettingsData] = useState(null)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
+  const [projectName, setProjectName] = useState('Proje')
   const [resetting, setResetting] = useState(false)
   const [firstRunDialog, setFirstRunDialog] = useState(false)
   const [firstRunProcessing, setFirstRunProcessing] = useState(false)
@@ -105,7 +107,8 @@ export default function App() {
       if (loadedData._firstRun) {
         setFirstRunDialog(true)
       }
-      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, ...fazData } = loadedData
+      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, ...fazData } = loadedData
+      if (_projectName) setProjectName(_projectName)
       setData(fazData)
       if (loadedColumns) setColumns(loadedColumns)
       if (_fazNames) {
@@ -535,6 +538,30 @@ export default function App() {
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  disabled={total === 0}
+                  onClick={async () => {
+                    try {
+                      await api.pdfOlustur({
+                        data,
+                        fazConfig,
+                        fazOrder,
+                        columns,
+                        projectName,
+                        projectDate: format(new Date(), 'dd.MM.yyyy', { locale: tr }),
+                      })
+                    } catch (err) {
+                      api.bildirimGoster(`PDF hatasi: ${err.message}`)
+                    }
+                  }}
+                  className="gap-2.5 text-xs"
+                >
+                  <FileDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  PDF'ye Aktar
+                </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
 

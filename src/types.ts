@@ -96,6 +96,15 @@ export interface GitDegisiklik {
   staged: boolean;
 }
 
+export interface PdfExportPayload {
+  data: FazData;
+  fazConfig: Record<string, FazConfig>;
+  fazOrder: string[];
+  columns: ColumnConfig[];
+  projectName: string;
+  projectDate: string;
+}
+
 // Webview -> Extension mesajlari
 export type WebviewMessage =
   | { command: 'load' }
@@ -108,7 +117,7 @@ export type WebviewMessage =
   | { command: 'prdLoad' }
   | { command: 'prdLines'; start: number; end: number }
   | { command: 'prdUpdate'; start: number; end: number; content: string }
-  | { command: 'savePdf'; base64: string; filename: string }
+  | { command: 'pdfOlustur'; payload: PdfExportPayload }
   | { command: 'runTerminal'; cmd: string; name?: string }
   | { command: 'loadSettings' }
   | { command: 'saveSettings'; settings: SettingsConfig }
@@ -140,4 +149,5 @@ export type ExtensionMessage =
   | { command: 'gitDegisikliklerResponse'; dosyalar: GitDegisiklik[] }
   | { command: 'gitKaydetResponse'; success: boolean; error?: string }
   | { command: 'gitPaylasResponse'; success: boolean; error?: string }
-  | { command: 'gitGuncelleResponse'; success: boolean; error?: string };
+  | { command: 'gitGuncelleResponse'; success: boolean; error?: string }
+  | { command: 'pdfOlusturResponse'; success: boolean; filename?: string; error?: string };

@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { WebviewMessage, SettingsConfig } from '../types';
+import { execute as pdfOlustur } from '../backend/pdf/olustur';
 
 // Backend modulleri
 import { execute as planYukle } from '../backend/plan/yukle';
@@ -32,7 +34,9 @@ export async function handleMessage(
     case 'load': {
       try {
         const result = await planYukle();
-        webview.postMessage({ command: 'loadResponse', data: result.data });
+        const folders = vscode.workspace.workspaceFolders;
+        const projectName = folders ? path.basename(folders[0].uri.fsPath) : 'Proje';
+        webview.postMessage({ command: 'loadResponse', data: { ...result.data, _projectName: projectName } });
       } catch {
         webview.postMessage({ command: 'loadResponse', data: { _notFound: true } });
       }
@@ -150,21 +154,14 @@ export async function handleMessage(
       break;
     }
 
-    case 'savePdf': {
+    case 'pdfOlustur': {
       try {
-        const uri = await vscode.window.showSaveDialog({
-          defaultUri: vscode.Uri.file(message.filename),
-          filters: { 'PDF': ['pdf'] },
-        });
-        if (uri) {
-          const buffer = Buffer.from(message.base64, 'base64');
-          await vscode.workspace.fs.writeFile(uri, buffer);
-          vscode.window.showInformationMessage('PDF kaydedildi.');
-        }
-        webview.postMessage({ command: 'savePdfResponse', success: true });
+        const filename = await pdfOlustur(message.payload);
+        webview.postMessage({ command: 'pdfOlusturResponse', success: true, filename });
+        vscode.window.showInformationMessage(`PDF kaydedildi: ${filename}`);
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
-        webview.postMessage({ command: 'savePdfResponse', success: false, error: errorMessage });
+        const msg = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'pdfOlusturResponse', success: false, error: msg });
       }
       break;
     }

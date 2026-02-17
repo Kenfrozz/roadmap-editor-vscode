@@ -8,6 +8,8 @@ import { SettingsConfig } from '../../types';
 export function execute(settings: SettingsConfig): void {
   const folders = vscode.workspace.workspaceFolders;
   if (!folders || folders.length === 0) throw new Error('Workspace bulunamadi');
-  const filePath = path.join(folders[0].uri.fsPath, '.kairos-settings.json');
+  const dirPath = path.join(folders[0].uri.fsPath, 'kairos');
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
+  const filePath = path.join(dirPath, 'settings.json');
   fs.writeFileSync(filePath, JSON.stringify(settings, null, 2), 'utf8');
 }

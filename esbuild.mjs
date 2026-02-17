@@ -24,6 +24,24 @@ if (!fs.existsSync('dist')) {
   fs.mkdirSync('dist');
 }
 
+// Font dosyalarini dist/fonts/ altina kopyala
+const fontsDir = path.join('dist', 'fonts');
+if (!fs.existsSync(fontsDir)) {
+  fs.mkdirSync(fontsDir, { recursive: true });
+}
+fs.copyFileSync('media/fonts/Roboto-Regular.ttf', path.join(fontsDir, 'Roboto-Regular.ttf'));
+fs.copyFileSync('media/fonts/Roboto-Bold.ttf', path.join(fontsDir, 'Roboto-Bold.ttf'));
+
+// pdfkit varsayilan font verilerini dist/data/ altina kopyala
+const pdfkitDataSrc = path.join('node_modules', 'pdfkit', 'js', 'data');
+const pdfkitDataDest = path.join('dist', 'data');
+if (!fs.existsSync(pdfkitDataDest)) {
+  fs.mkdirSync(pdfkitDataDest, { recursive: true });
+}
+for (const f of fs.readdirSync(pdfkitDataSrc)) {
+  fs.copyFileSync(path.join(pdfkitDataSrc, f), path.join(pdfkitDataDest, f));
+}
+
 // Extension build (Node.js, CJS)
 const extensionConfig = {
   entryPoints: ['src/extension.ts'],
