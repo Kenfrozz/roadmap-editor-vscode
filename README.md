@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://code.visualstudio.com/"><img src="https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visual-studio-code&logoColor=white" alt="VS Code"></a>
-  <a href="https://github.com/Kenfrozz/roadmap-editor-vscode/releases"><img src="https://img.shields.io/github/v/release/Kenfrozz/roadmap-editor-vscode?color=28a745" alt="Version"></a>
+  <a href="https://github.com/Kenfrozz/kairos/releases"><img src="https://img.shields.io/github/v/release/Kenfrozz/kairos?color=28a745" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
@@ -48,8 +48,8 @@ VS Code Extensions bolumunden **Kairos** aratarak yukleyin.
 ### Manuel Kurulum
 
 ```bash
-git clone https://github.com/Kenfrozz/roadmap-editor-vscode.git
-cd roadmap-editor-vscode
+git clone https://github.com/Kenfrozz/kairos.git
+cd kairos
 npm install
 npm run build
 ```
@@ -164,7 +164,7 @@ npm run package
 ### Proje Yapisi
 
 ```
-roadmap-editor-vscode/
+kairos/
 ├── src/                           # Extension backend (TypeScript)
 │   ├── extension.ts               # Activation & komut kayitlari
 │   ├── KairosPanel.ts             # Tab webview paneli
@@ -224,7 +224,7 @@ Detaylar icin [ARCHITECTURE.md](ARCHITECTURE.md) dosyasina bakin.
 
 Katkida bulunmak istiyorsaniz [CONTRIBUTING.md](CONTRIBUTING.md) dosyasina bakin.
 
-Hata raporlari ve ozellik istekleri icin [GitHub Issues](https://github.com/Kenfrozz/roadmap-editor-vscode/issues) kullanin.
+Hata raporlari ve ozellik istekleri icin [GitHub Issues](https://github.com/Kenfrozz/kairos/issues) kullanin.
 
 ## Lisans
 
