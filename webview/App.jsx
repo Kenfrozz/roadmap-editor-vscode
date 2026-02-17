@@ -311,7 +311,7 @@ export default function App() {
 
   // Ek tablo (Hatalar / Degisiklikler) CRUD
   const addHata = () => {
-    const updated = [...hatalar, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '' }]
+    const updated = [...hatalar, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '', durum: '❌' }]
     setHatalar(updated)
     hatalarRef.current = updated
     autoSave(data, fazConfig)
@@ -330,7 +330,7 @@ export default function App() {
   }
 
   const addDegisiklik = () => {
-    const updated = [...degisiklikler, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '' }]
+    const updated = [...degisiklikler, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '', durum: '❌' }]
     setDegisiklikler(updated)
     degisikliklerRef.current = updated
     autoSave(data, fazConfig)
@@ -629,71 +629,107 @@ export default function App() {
           isCompact={isCompact}
         />
 
-        {/* Faz Tables */}
-        <DndManager
-          fazOrder={fazOrder}
-          data={filteredData}
-          fazConfig={fazConfig}
-          isFilterActive={isFilterActive}
-          onReorderPhases={reorderPhases}
-          onMoveItem={moveItem}
-          onReorderItems={reorderItems}
-        >
-          {({ overContainerId, activeType }) =>
-            fazOrder.map((fazKey, idx) =>
-              fazConfig[fazKey] && (
-                <SortablePhase key={fazKey} id={fazKey} disabled={isFilterActive}>
-                  {(dragHandleProps) => (
-                    <FazTable
-                      fazKey={fazKey}
-                      fazConfig={fazConfig[fazKey]}
-                      items={filteredData[fazKey] || []}
-                      onUpdate={updateItem}
-                      onDelete={deleteItem}
-                      onAdd={addItem}
-                      onAddBelow={addItemBelow}
-                      onReorder={reorderItems}
-                      onPrdClick={setPrdModal}
-                      onFazNameChange={updateFazName}
-                      onFazDelete={deleteFaz}
-                      index={idx}
-                      isFilterActive={isFilterActive}
-                      phaseDragHandleProps={dragHandleProps}
-                      isCompact={isCompact}
-                      columns={columns}
-                      claudeFeatureCmd={claudeFeatureCmd}
-                      isDropTarget={activeType === 'item' && overContainerId === fazKey}
-                    />
-                  )}
-                </SortablePhase>
-              )
-            )
-          }
-        </DndManager>
+        <div className={cn('flex gap-3', isCompact ? 'flex-col' : 'flex-row items-start')}>
+          {/* Sol: Faz Tables */}
+          <div className={cn(isCompact ? 'w-full' : 'flex-1 min-w-0')}>
+            <DndManager
+              fazOrder={fazOrder}
+              data={filteredData}
+              fazConfig={fazConfig}
+              isFilterActive={isFilterActive}
+              onReorderPhases={reorderPhases}
+              onMoveItem={moveItem}
+              onReorderItems={reorderItems}
+            >
+              {({ overContainerId, activeType }) =>
+                fazOrder.map((fazKey, idx) =>
+                  fazConfig[fazKey] && (
+                    <SortablePhase key={fazKey} id={fazKey} disabled={isFilterActive}>
+                      {(dragHandleProps) => (
+                        <FazTable
+                          fazKey={fazKey}
+                          fazConfig={fazConfig[fazKey]}
+                          items={filteredData[fazKey] || []}
+                          onUpdate={updateItem}
+                          onDelete={deleteItem}
+                          onAdd={addItem}
+                          onAddBelow={addItemBelow}
+                          onReorder={reorderItems}
+                          onPrdClick={setPrdModal}
+                          onFazNameChange={updateFazName}
+                          onFazDelete={deleteFaz}
+                          index={idx}
+                          isFilterActive={isFilterActive}
+                          phaseDragHandleProps={dragHandleProps}
+                          isCompact={isCompact}
+                          columns={columns}
+                          claudeFeatureCmd={claudeFeatureCmd}
+                          isDropTarget={activeType === 'item' && overContainerId === fazKey}
+                        />
+                      )}
+                    </SortablePhase>
+                  )
+                )
+              }
+            </DndManager>
+          </div>
 
-        {/* Ek Tablolar */}
-        <EkTablo
-          title="Hatalar"
-          icon={Bug}
-          iconColor="text-red-500"
-          borderColor="border-l-red-400/50 dark:border-l-red-700/50"
-          items={hatalar}
-          onAdd={addHata}
-          onUpdate={updateHata}
-          onDelete={deleteHata}
-          isCompact={isCompact}
-        />
-        <EkTablo
-          title="Degisiklikler"
-          icon={RefreshCw}
-          iconColor="text-amber-500"
-          borderColor="border-l-amber-400/50 dark:border-l-amber-700/50"
-          items={degisiklikler}
-          onAdd={addDegisiklik}
-          onUpdate={updateDegisiklik}
-          onDelete={deleteDegisiklik}
-          isCompact={isCompact}
-        />
+          {/* Sag: Ek Tablolar */}
+          {!isCompact && (
+            <div className="w-80 shrink-0 sticky top-[72px] space-y-3">
+              <EkTablo
+                title="Hatalar"
+                icon={Bug}
+                iconColor="text-red-500"
+                borderColor="border-l-red-400/50 dark:border-l-red-700/50"
+                items={hatalar}
+                onAdd={addHata}
+                onUpdate={updateHata}
+                onDelete={deleteHata}
+                isCompact={isCompact}
+              />
+              <EkTablo
+                title="Degisiklikler"
+                icon={RefreshCw}
+                iconColor="text-amber-500"
+                borderColor="border-l-amber-400/50 dark:border-l-amber-700/50"
+                items={degisiklikler}
+                onAdd={addDegisiklik}
+                onUpdate={updateDegisiklik}
+                onDelete={deleteDegisiklik}
+                isCompact={isCompact}
+              />
+            </div>
+          )}
+
+          {/* Compact: Ek Tablolar alt alta */}
+          {isCompact && (
+            <>
+              <EkTablo
+                title="Hatalar"
+                icon={Bug}
+                iconColor="text-red-500"
+                borderColor="border-l-red-400/50 dark:border-l-red-700/50"
+                items={hatalar}
+                onAdd={addHata}
+                onUpdate={updateHata}
+                onDelete={deleteHata}
+                isCompact={isCompact}
+              />
+              <EkTablo
+                title="Degisiklikler"
+                icon={RefreshCw}
+                iconColor="text-amber-500"
+                borderColor="border-l-amber-400/50 dark:border-l-amber-700/50"
+                items={degisiklikler}
+                onAdd={addDegisiklik}
+                onUpdate={updateDegisiklik}
+                onDelete={deleteDegisiklik}
+                isCompact={isCompact}
+              />
+            </>
+          )}
+        </div>
 
         {/* Add New Faz */}
         <button

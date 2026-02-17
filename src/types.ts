@@ -67,6 +67,7 @@ export interface EkTabloItem {
   id: string;
   baslik: string;
   aciklama: string;
+  durum: string;
 }
 
 export interface ParseResult {

@@ -57,7 +57,7 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
       const rawCells = line.split('|').map(c => c.trim());
       const cells = rawCells.slice(1, rawCells[rawCells.length - 1] === '' ? -1 : undefined);
       if (cells.length >= 2) {
-        hatalar.push({ id: generateId(), baslik: cells[0], aciklama: cells[1] || '' });
+        hatalar.push({ id: generateId(), baslik: cells[0], aciklama: cells[1] || '', durum: cells[2] || '❌' });
       }
       continue;
     }
@@ -66,7 +66,7 @@ export function execute(content: string, columns?: ColumnConfig[]): ParseResult 
       const rawCells = line.split('|').map(c => c.trim());
       const cells = rawCells.slice(1, rawCells[rawCells.length - 1] === '' ? -1 : undefined);
       if (cells.length >= 2) {
-        degisiklikler.push({ id: generateId(), baslik: cells[0], aciklama: cells[1] || '' });
+        degisiklikler.push({ id: generateId(), baslik: cells[0], aciklama: cells[1] || '', durum: cells[2] || '❌' });
       }
       continue;
     }

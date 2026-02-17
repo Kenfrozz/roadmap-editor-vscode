@@ -2,6 +2,14 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.5.1] - 2026-02-17
+
+### Eklendi
+- **Durum Sutunu** — Hatalar ve Degisiklikler tablolarina StatusDot ile durum takibi (Tamamlandi/Devam Ediyor/Yapilmadi/N-A)
+
+### Degisti
+- **Sag Panel Yerlesimi** — Hatalar ve Degisiklikler tablolari ana icerik yaninda sabit sag panele tasindi
+
 ## [1.5.0] - 2026-02-17
 
 ### Eklendi

@@ -110,24 +110,26 @@ export function execute(
   // Hatalar bolumu
   const hatalar = (inputData._hatalar as EkTabloItem[]) || [];
   md += `## 🔴 Hatalar\n\n`;
-  md += `| Başlık | Açıklama |\n`;
-  md += `|--------|----------|\n`;
+  md += `| Başlık | Açıklama | Durum |\n`;
+  md += `|--------|----------|-------|\n`;
   for (const item of hatalar) {
     const b = (item.baslik || '').replace(/\|/g, '\\|');
     const a = (item.aciklama || '').replace(/\|/g, '\\|');
-    md += `| ${b} | ${a} |\n`;
+    const d = item.durum || '❌';
+    md += `| ${b} | ${a} | ${d} |\n`;
   }
   md += `\n---\n\n`;
 
   // Degisiklikler bolumu
   const degisiklikler = (inputData._degisiklikler as EkTabloItem[]) || [];
   md += `## 🟡 Değişiklikler\n\n`;
-  md += `| Başlık | Açıklama |\n`;
-  md += `|--------|----------|\n`;
+  md += `| Başlık | Açıklama | Durum |\n`;
+  md += `|--------|----------|-------|\n`;
   for (const item of degisiklikler) {
     const b = (item.baslik || '').replace(/\|/g, '\\|');
     const a = (item.aciklama || '').replace(/\|/g, '\\|');
-    md += `| ${b} | ${a} |\n`;
+    const d = item.durum || '❌';
+    md += `| ${b} | ${a} | ${d} |\n`;
   }
   md += `\n---\n\n`;
 
