@@ -1,16 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDroppable } from '@dnd-kit/core'
 import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {
@@ -34,25 +25,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from '../lib/utils'
 import { SortableRow } from './SortableRow'
 
-export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, onAddBelow, onReorder, onPrdClick, onFazNameChange, onFazDelete, index, isFilterActive, phaseDragHandleProps, isCompact, columns, claudeFeatureCmd }) {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  )
+export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, onAddBelow, onReorder, onPrdClick, onFazNameChange, onFazDelete, index, isFilterActive, phaseDragHandleProps, isCompact, columns, claudeFeatureCmd, isDropTarget }) {
+  const { setNodeRef: setDroppableRef } = useDroppable({ id: `droppable-${fazKey}`, data: { type: 'phase-container', fazKey } })
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState(fazConfig.name)
   const [collapsed, setCollapsed] = useState(false)
   const inputRef = useRef(null)
-
-  const handleDragEnd = (event) => {
-    if (isFilterActive) return
-    const { active, over } = event
-    if (active.id !== over?.id) {
-      const oldIndex = items.findIndex(i => i.id === active.id)
-      const newIndex = items.findIndex(i => i.id === over.id)
-      onReorder(fazKey, arrayMove(items, oldIndex, newIndex))
-    }
-  }
 
   const statusCols = columns.filter(c => c.type === 'status')
   const done = statusCols.length > 0 ? items.filter(i => statusCols.every(sc => i[sc.key] === '✅')).length : 0
@@ -75,10 +53,12 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
 
   return (
     <div
+      ref={setDroppableRef}
       className={cn(
         'rounded-lg border bg-card mb-5 animate-fade-up',
         'border-l-[3px]',
-        fazConfig.color
+        fazConfig.color,
+        isDropTarget && 'ring-2 ring-primary/40 ring-inset'
       )}
       style={{ animationDelay: `${index * 80}ms` }}
     >
@@ -205,26 +185,24 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
       {/* Rows */}
       {!collapsed && (
         <div>
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-              {items.map((item, idx) => (
-                <SortableRow
-                  key={item.id}
-                  item={item}
-                  fazKey={fazKey}
-                  onUpdate={onUpdate}
-                  onDelete={onDelete}
-                  onAddBelow={onAddBelow}
-                  onPrdClick={onPrdClick}
-                  index={idx}
-                  isFilterActive={isFilterActive}
-                  isCompact={isCompact}
-                  columns={columns}
-                  claudeFeatureCmd={claudeFeatureCmd}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+          <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+            {items.map((item, idx) => (
+              <SortableRow
+                key={item.id}
+                item={item}
+                fazKey={fazKey}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                onAddBelow={onAddBelow}
+                onPrdClick={onPrdClick}
+                index={idx}
+                isFilterActive={isFilterActive}
+                isCompact={isCompact}
+                columns={columns}
+                claudeFeatureCmd={claudeFeatureCmd}
+              />
+            ))}
+          </SortableContext>
           {items.length === 0 && (
             <div className="py-10 text-center">
               <Terminal className="w-5 h-5 mx-auto mb-2 text-muted-foreground/30" />

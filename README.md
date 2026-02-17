@@ -5,7 +5,7 @@
 <h1 align="center">Kairos</h1>
 
 <p align="center">
-  <strong>Proje gelistirme kokpiti</strong> — PRD, roadmap, Git ve AI araclari tek arayuzden.<br>
+  <strong>Proje gelistirme kokpiti</strong> — PRD, plan, Git ve AI araclari tek arayuzden.<br>
   Dosyalarla ve terminalle ugrasma, projenizi gorsel arayuzden yonetin.
 </p>
 
@@ -32,7 +32,7 @@
 | **Dinamik Sutunlar** | `text`, `status`, `date` tiplerinde ozel sutun tanimlama |
 | **Tarih Secici** | Takvim bileseninden tarih atama |
 | **PRD Entegrasyonu** | PRD.md dosyasini satir bazli goruntuleme ve duzenleme |
-| **PDF Export** | Roadmap'i PDF olarak disa aktarma |
+| **PDF Export** | Proje planini PDF olarak disa aktarma |
 | **Terminal Entegrasyonu** | Komutlari dogrudan VS Code terminalinde calistirin |
 | **Backup & Restore** | Otomatik yedekleme ve geri yukleme |
 | **Git Entegrasyonu** | Branch durumu, commit, push, pull islemlerini arayuzden yonetin |
@@ -68,7 +68,7 @@ code --install-extension kairos-*.vsix
 1. **Komut Paleti** (`Ctrl+Shift+P`) > `Kairos: Open (Tab)`
 2. Veya sol kenar cubugundaki **Kairos** ikonuna tiklayin
 
-### Yeni Roadmap Olusturma
+### Yeni Plan Olusturma
 
 Workspace'inizde bir `kairos/KAIROS.md` dosyasi yoksa, editor otomatik olarak yeni bir tane olusturmanizi onerir. Ilk acilista sutun yapilandirmanizi da yapabilirsiniz.
 
@@ -140,7 +140,7 @@ Workspace kokunde `kairos/settings.json` dosyasi ile kisisellestirebilirsiniz:
 
 ```
 kairos/                  # Workspace'te olusturulan dosyalar
-├── KAIROS.md            # Roadmap verisi (Markdown)
+├── KAIROS.md            # Plan verisi (Markdown)
 ├── settings.json        # Eklenti ayarlari
 └── backups/             # Otomatik yedekler
 ```

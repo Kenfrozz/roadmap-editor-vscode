@@ -5,7 +5,7 @@ Tum onemli degisiklikler bu dosyada belgelenir.
 ## [1.3.0] - 2026-02-17
 
 ### Eklendi
-- **PDF Export** — Roadmap'i PDF olarak disa aktarma (pdfkit tabanli, Turkce karakter destegi)
+- **PDF Export** — Proje planini PDF olarak disa aktarma (pdfkit tabanli, Turkce karakter destegi)
 - **Dinamik Versiyon Gostergesi** — Footer'da package.json'dan okunan gercek surum numarasi
 - **Proje Adi Destegi** — Workspace klasor adi otomatik algilanarak arayuzde ve PDF'te kullaniliyor
 
@@ -40,7 +40,7 @@ Tum onemli degisiklikler bu dosyada belgelenir.
 ## [1.0.0] - 2026-02-12
 
 ### Eklendi
-- Gorsel roadmap editoru (Tab + Sidebar)
+- Gorsel plan editoru (Tab + Sidebar)
 - Surukle & birak ile satir ve faz siralama
 - Dinamik sutun yapisi (`text`, `status`, `date`)
 - PRD.md satir bazli goruntuleme ve duzenleme

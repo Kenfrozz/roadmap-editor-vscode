@@ -1,19 +1,7 @@
 ﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { arrayMove } from '@dnd-kit/sortable'
 import {
   Plus,
   X,
@@ -57,6 +45,7 @@ import { DEFAULT_COLUMNS, DEFAULT_FAZ_CONFIG, FAZ_COLORS } from './lib/constants
 import { ClaudeIcon } from './components/ClaudeIcon'
 import { SortablePhase } from './components/SortableRow'
 import { FazTable } from './components/FazTable'
+import { DndManager } from './components/DndManager'
 import { StatsPanel } from './components/StatsPanel'
 import { computeStatusBreakdown, computeDateStats } from './lib/statsUtils'
 import { PrdModal } from './components/PrdModal'
@@ -82,7 +71,6 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const searchInputRef = useRef(null)
   const [fileNotFound, setFileNotFound] = useState(false)
-  const [activePhaseDrag, setActivePhaseDrag] = useState(null)
   const [viewMode, setViewMode] = useState('main')
   const [settingsData, setSettingsData] = useState(null)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
@@ -290,26 +278,19 @@ export default function App() {
     autoSave(newData, newConfig)
   }
 
-  const phaseSensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  )
+  const reorderPhases = useCallback((activeId, overId) => {
+    const oldIndex = fazOrder.indexOf(activeId)
+    const newIndex = fazOrder.indexOf(overId)
+    const newOrder = arrayMove(fazOrder, oldIndex, newIndex)
+    setFazOrder(newOrder)
+    autoSave(data, fazConfig, newOrder)
+  }, [fazOrder, data, fazConfig, autoSave])
 
-  const handlePhaseDragStart = (event) => {
-    setActivePhaseDrag(event.active.id)
-  }
-
-  const handlePhaseDragEnd = (event) => {
-    setActivePhaseDrag(null)
-    if (isFilterActive) return
-    const { active, over } = event
-    if (active.id !== over?.id) {
-      const oldIndex = fazOrder.indexOf(active.id)
-      const newIndex = fazOrder.indexOf(over.id)
-      const newOrder = arrayMove(fazOrder, oldIndex, newIndex)
-      setFazOrder(newOrder)
-      autoSave(data, fazConfig, newOrder)
-    }
-  }
+  const moveItem = useCallback((itemId, sourceFaz, targetFaz, newSourceItems, newTargetItems) => {
+    const newData = { ...data, [sourceFaz]: newSourceItems, [targetFaz]: newTargetItems }
+    setData(newData)
+    autoSave(newData, fazConfig)
+  }, [data, fazConfig, autoSave])
 
   // Custom commands
   const addCustomCommand = () => {
@@ -593,14 +574,17 @@ export default function App() {
         />
 
         {/* Faz Tables */}
-        <DndContext
-          sensors={phaseSensors}
-          collisionDetection={closestCenter}
-          onDragStart={handlePhaseDragStart}
-          onDragEnd={handlePhaseDragEnd}
+        <DndManager
+          fazOrder={fazOrder}
+          data={filteredData}
+          fazConfig={fazConfig}
+          isFilterActive={isFilterActive}
+          onReorderPhases={reorderPhases}
+          onMoveItem={moveItem}
+          onReorderItems={reorderItems}
         >
-          <SortableContext items={fazOrder} strategy={verticalListSortingStrategy}>
-            {fazOrder.map((fazKey, idx) =>
+          {({ overContainerId, activeType }) =>
+            fazOrder.map((fazKey, idx) =>
               fazConfig[fazKey] && (
                 <SortablePhase key={fazKey} id={fazKey} disabled={isFilterActive}>
                   {(dragHandleProps) => (
@@ -622,26 +606,14 @@ export default function App() {
                       isCompact={isCompact}
                       columns={columns}
                       claudeFeatureCmd={claudeFeatureCmd}
+                      isDropTarget={activeType === 'item' && overContainerId === fazKey}
                     />
                   )}
                 </SortablePhase>
               )
-            )}
-          </SortableContext>
-
-          <DragOverlay>
-            {activePhaseDrag && fazConfig[activePhaseDrag] ? (
-              <div className={cn(
-                'px-4 py-2.5 rounded-lg border bg-card shadow-lg border-l-[3px]',
-                fazConfig[activePhaseDrag].color
-              )}>
-                <span className={cn('text-sm font-bold tracking-tight', fazConfig[activePhaseDrag].text)}>
-                  {fazConfig[activePhaseDrag].name}
-                </span>
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+            )
+          }
+        </DndManager>
 
         {/* Add New Faz */}
         <button

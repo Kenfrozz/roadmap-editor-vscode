@@ -20,7 +20,7 @@ Bu doküman, Kairos VS Code eklentisinin mimari yapısını açıklar. Tüm geli
 
 ## Genel Bakış
 
-Proje, **3-Katmanlı Lokal-First Mimari** prensibine dayanan bir VS Code eklentisidir. PRD, roadmap, Git ve AI araçlarını tek arayüzden yönetir. Frontend, backend teknolojilerinden tamamen habersizdir ve tüm işlemlerini `postMessage` tabanlı API katmanı üzerinden gerçekleştirir.
+Proje, **3-Katmanlı Lokal-First Mimari** prensibine dayanan bir VS Code eklentisidir. PRD, plan, Git ve AI araçlarını tek arayüzden yönetir. Frontend, backend teknolojilerinden tamamen habersizdir ve tüm işlemlerini `postMessage` tabanlı API katmanı üzerinden gerçekleştirir.
 
 ```
 ┌─────────────────────────────────────────────────────────┐

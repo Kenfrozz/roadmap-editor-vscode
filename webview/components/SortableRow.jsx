@@ -11,7 +11,7 @@ import { ClaudeIcon } from './ClaudeIcon'
 import { api } from '../vscodeApi'
 
 export function SortablePhase({ id, children, disabled }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled, data: { type: 'phase' } })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -28,7 +28,7 @@ export function SortablePhase({ id, children, disabled }) {
 }
 
 export function SortableRow({ item, fazKey, onUpdate, onDelete, onAddBelow, onPrdClick, index, isFilterActive, isCompact, columns, claudeFeatureCmd }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id, data: { type: 'item', fazKey, item } })
   const [editing, setEditing] = useState(false)
 
   const style = {
