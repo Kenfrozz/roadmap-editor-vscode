@@ -1,10 +1,17 @@
 .vscode/**
+.claude/**
 node_modules/**
 src/**
 webview/**
+releases/**
 .gitignore
+.git/**
 tsconfig.json
 esbuild.mjs
 tailwind.config.js
 postcss.config.js
+ARCHITECTURE.md
+CLAUDE.md
+CONTRIBUTING.md
+CHANGELOG.md
 **/*.map

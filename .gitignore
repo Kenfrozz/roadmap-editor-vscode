@@ -1,7 +1,6 @@
 node_modules/
 dist/
+releases/
 *.vsix
-nul
 .DS_Store
-.roadmap-backups/
-.roadmap-settings.json
+.claude/

@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="media/icon.png" alt="Kairos" width="128" height="128">
 </p>
 
@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://code.visualstudio.com/"><img src="https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visual-studio-code&logoColor=white" alt="VS Code"></a>
-  <a href="https://github.com/Kenfrozz/kairos-vscode/releases"><img src="https://img.shields.io/badge/version-1.0.0-28a745" alt="Version"></a>
+  <a href="https://github.com/Kenfrozz/roadmap-editor-vscode/releases"><img src="https://img.shields.io/github/v/release/Kenfrozz/roadmap-editor-vscode?color=28a745" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
@@ -31,8 +31,8 @@
 | **Durum Takibi** | Her oge icin durum belirleyin (Tamamlandi, Devam Ediyor, Yapilmadi, N/A) |
 | **Dinamik Sutunlar** | `text`, `status`, `date` tiplerinde ozel sutun tanimlama |
 | **Tarih Secici** | Takvim bileseninden tarih atama |
-| **Changelog** | Degisiklik gecmisini yonetin |
 | **PRD Entegrasyonu** | PRD.md dosyasini satir bazli goruntuleme ve duzenleme |
+| **PDF Export** | Roadmap'i PDF olarak disa aktarma |
 | **Terminal Entegrasyonu** | Komutlari dogrudan VS Code terminalinde calistirin |
 | **Backup & Restore** | Otomatik yedekleme ve geri yukleme |
 | **Git Entegrasyonu** | Branch durumu, commit, push, pull islemlerini arayuzden yonetin |
@@ -48,8 +48,8 @@ VS Code Extensions bolumunden **Kairos** aratarak yukleyin.
 ### Manuel Kurulum
 
 ```bash
-git clone https://github.com/Kenfrozz/kairos-vscode.git
-cd kairos-vscode
+git clone https://github.com/Kenfrozz/roadmap-editor-vscode.git
+cd roadmap-editor-vscode
 npm install
 npm run build
 ```
@@ -70,7 +70,7 @@ code --install-extension kairos-*.vsix
 
 ### Yeni Roadmap Olusturma
 
-Workspace'inizde bir `KAIROS.md` dosyasi yoksa, editor otomatik olarak yeni bir tane olusturmanizi onerir. Ilk acilista sutun yapilandirmanizi da yapabilirsiniz.
+Workspace'inizde bir `kairos/KAIROS.md` dosyasi yoksa, editor otomatik olarak yeni bir tane olusturmanizi onerir. Ilk acilista sutun yapilandirmanizi da yapabilirsiniz.
 
 ### Durum Ikonlari
 
@@ -106,7 +106,7 @@ Faz sayisi ve isimleri tamamen ozellestirilebilir.
 
 ## Ayarlar
 
-Workspace kokunde `.kairos-settings.json` dosyasi ile kisisellestirebilirsiniz:
+Workspace kokunde `kairos/settings.json` dosyasi ile kisisellestirebilirsiniz:
 
 ```jsonc
 {
@@ -117,7 +117,7 @@ Workspace kokunde `.kairos-settings.json` dosyasi ile kisisellestirebilirsiniz:
   },
   "claude": {
     "mainCommand": "claude --dangerously-skip-permissions",
-    "featureCommand": "claude \"${ozellik}\""
+    "featureCommand": "claude \"/kairos:build ${ozellik}\""
   },
   "roadmap": {
     "columns": [
@@ -135,6 +135,15 @@ Workspace kokunde `.kairos-settings.json` dosyasi ile kisisellestirebilirsiniz:
 - **`text`** — Serbest metin girisi
 - **`status`** — Durum secici (Tamamlandi / Devam Ediyor / Yapilmadi / N/A)
 - **`date`** — Takvim ile tarih secimi
+
+## Dosya Yapisi
+
+```
+kairos/                  # Workspace'te olusturulan dosyalar
+├── KAIROS.md            # Roadmap verisi (Markdown)
+├── settings.json        # Eklenti ayarlari
+└── backups/             # Otomatik yedekler
+```
 
 ## Gelistirme
 
@@ -155,7 +164,7 @@ npm run package
 ### Proje Yapisi
 
 ```
-kairos-vscode/
+roadmap-editor-vscode/
 ├── src/                           # Extension backend (TypeScript)
 │   ├── extension.ts               # Activation & komut kayitlari
 │   ├── KairosPanel.ts             # Tab webview paneli
@@ -169,7 +178,8 @@ kairos-vscode/
 │       ├── prd/                   # PRD.md islemleri
 │       ├── ayarlar/               # Ayarlar yonetimi
 │       ├── terminal/              # Terminal entegrasyonu
-│       └── git/                   # Git islemleri (durum, commit, push, pull)
+│       ├── git/                   # Git islemleri (durum, commit, push, pull)
+│       └── pdf/                   # PDF export (pdfkit)
 ├── webview/                       # React frontend (JSX)
 │   ├── App.jsx                    # Ana uygulama bileseni
 │   ├── main.jsx                   # React entry point
@@ -185,7 +195,7 @@ kairos-vscode/
 │   │   ├── SettingsView.jsx       # Ayarlar sayfasi
 │   │   └── SetupWizard.jsx        # Ilk kurulum sihirbazi
 │   └── lib/                       # Yardimci fonksiyonlar
-├── media/                         # Ikon dosyalari
+├── media/                         # Ikon ve font dosyalari
 ├── esbuild.mjs                    # Build yapilandirmasi
 ├── tailwind.config.js             # Tailwind yapilandirmasi
 └── package.json                   # Extension manifest
@@ -196,11 +206,11 @@ kairos-vscode/
 Kairos, **3-Katmanli Lokal-First Mimari** kullanir. Frontend, backend'den tamamen izole calisir:
 
 ```
-webview/ (React)  →  postMessage  →  src/api/ (Router)  →  src/backend/ (Is Mantigi)
+webview/ (React)  -->  postMessage  -->  src/api/ (Router)  -->  src/backend/ (Is Mantigi)
 ```
 
 - Frontend asla backend modullerini import etmez
-- Tum iletisim `postMessage` tabanlı API katmani uzerinden yapilir
+- Tum iletisim `postMessage` tabanli API katmani uzerinden yapilir
 - Her backend dosyasi tek bir `execute()` fonksiyonu icerir
 - Dosya sistemine erisim `_core/db.ts` uzerinden yapilir
 
@@ -210,16 +220,11 @@ Detaylar icin [ARCHITECTURE.md](ARCHITECTURE.md) dosyasina bakin.
 
 - VS Code **1.85.0** veya uzeri
 
-## Sorun Bildirme & Katkida Bulunma
+## Katkida Bulunma
 
-Bir hata buldunuz veya yeni bir ozellik istiyorsunuz? [GitHub Issues](https://github.com/Kenfrozz/kairos-vscode/issues) uzerinden bildirebilirsiniz.
+Katkida bulunmak istiyorsaniz [CONTRIBUTING.md](CONTRIBUTING.md) dosyasina bakin.
 
-Katkida bulunmak icin:
-
-1. Repo'yu fork edin
-2. Yeni bir branch olusturun (`git checkout -b feature/yeni-ozellik`)
-3. Degisikliklerinizi commit edin
-4. Pull request gonderin
+Hata raporlari ve ozellik istekleri icin [GitHub Issues](https://github.com/Kenfrozz/roadmap-editor-vscode/issues) kullanin.
 
 ## Lisans
 
