@@ -2,6 +2,12 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.5.2] - 2026-02-17
+
+### Duzeltildi
+- **Durum Sutunu** — Satirlarin sag tarafina tasindi (Baslik → Aciklama → Durum → Butonlar)
+- **Ek Tablolar** — Faz tablolarinin altina geri alindi (yan panel yerine)
+
 ## [1.5.1] - 2026-02-17
 
 ### Eklendi
