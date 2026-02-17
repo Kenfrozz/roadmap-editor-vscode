@@ -4,3 +4,4 @@ releases/
 *.vsix
 .DS_Store
 .claude/
+CLAUDE.md
