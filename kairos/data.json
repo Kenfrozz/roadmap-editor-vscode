@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "fazOrder": [
+    "faz1",
+    "faz2",
+    "faz3",
+    "faz4"
+  ],
+  "fazNames": {
+    "faz1": "PLANLAMA & ALTYAPI",
+    "faz2": "TEMEL GELİŞTİRME",
+    "faz3": "İLERİ ÖZELLİKLER",
+    "faz4": "TEST & YAYIN"
+  },
+  "fazlar": {
+    "faz1": [],
+    "faz2": [],
+    "faz3": [],
+    "faz4": []
+  }
+}

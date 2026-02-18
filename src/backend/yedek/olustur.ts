@@ -3,12 +3,12 @@ import { readFile, ensureDir, writeFile, getRoot } from '../_core/db';
 
 const BACKUP_DIR = 'kairos/backups';
 
-// Mevcut KAIROS.md dosyasini yedekler
+// Mevcut data.json dosyasini yedekler
 export async function execute(): Promise<string> {
   const root = getRoot();
-  const content = await readFile('kairos/KAIROS.md');
+  const content = await readFile('kairos/data.json');
   const timestamp = Date.now();
-  const backupFilename = `KAIROS.md.backup-${timestamp}`;
+  const backupFilename = `data.json.backup-${timestamp}`;
   const backupDir = path.join(root, BACKUP_DIR);
 
   await ensureDir(backupDir);

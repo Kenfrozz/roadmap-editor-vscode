@@ -32,10 +32,13 @@ import {
   History,
   Download,
   RotateCcw,
+  Tag,
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { cn } from '../lib/utils'
+import { GOREV_TURU_COLORS, GOREV_TURU_ICON_OPTIONS } from '../lib/constants'
+import { getGorevTuruIcon } from '../components/TaskTypeBadge'
 import { ClaudeIcon } from '../components/ClaudeIcon'
 import { api } from '../vscodeApi'
 
@@ -247,6 +250,7 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
     { id: 'terminal', label: 'Terminal', icon: Terminal },
     { id: 'claude', label: 'Claude Code', icon: () => <ClaudeIcon className="w-3.5 h-3.5" /> },
     { id: 'roadmap', label: 'Plan', icon: Columns3 },
+    { id: 'gorevTurleri', label: 'Gorev Turleri', icon: Tag },
     { id: 'backups', label: 'Yedekler', icon: History },
   ]
 
@@ -381,7 +385,7 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-muted/50 border border-border">
               <AlertTriangle className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Sutun degisiklikleri kaydedildiginde KAIROS.md yeniden yazilir. Mevcut veriler yeni sutun yapisina gore guncellenir.
+                Sutun degisiklikleri kaydedildiginde veriler yeniden yazilir. Mevcut veriler yeni sutun yapisina gore guncellenir.
               </p>
             </div>
 
@@ -417,6 +421,178 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
                 <Plus className="w-3.5 h-3.5" />
                 Sutun Ekle
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* -- Gorev Turleri Sekmesi -- */}
+        {activeTab === 'gorevTurleri' && (
+          <div className="space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Gorev Turleri</h2>
+
+            <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-muted/50 border border-border">
+              <Tag className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Gorev turleri, her goreve atanabilecek kategorilerdir. Varsayilan listede degisiklik yapabilir, yeni turler ekleyebilir veya mevcut turleri kaldirabilirsiniz.
+              </p>
+            </div>
+
+            {/* Tur Listesi */}
+            <div className="rounded-lg border bg-card overflow-hidden">
+              <div className="flex items-center border-b border-border/40 bg-muted/30 text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-3 py-2">
+                <div className="w-8 shrink-0 text-center">Icon</div>
+                <div className="w-8 shrink-0 text-center">Renk</div>
+                <div className="flex-1 px-2">Isim</div>
+                <div className="w-8"></div>
+              </div>
+
+              {(settings.roadmap.gorevTurleri || []).map((tur) => {
+                const colorSet = GOREV_TURU_COLORS[tur.color] || GOREV_TURU_COLORS.slate
+                const TurIcon = getGorevTuruIcon(tur.icon)
+                return (
+                  <div key={tur.key} className="flex items-center gap-2 px-3 py-2 border-b border-border/40 last:border-b-0">
+                    <div className="w-8 shrink-0 flex items-center justify-center">
+                      <TurIcon className={cn('w-4 h-4', colorSet.text)} />
+                    </div>
+                    <div className="w-8 shrink-0 flex items-center justify-center">
+                      <div className={cn('w-3.5 h-3.5 rounded-full', colorSet.dot)} />
+                    </div>
+                    <Input
+                      value={tur.label}
+                      onChange={(e) => {
+                        setSettings(prev => ({
+                          ...prev,
+                          roadmap: {
+                            ...prev.roadmap,
+                            gorevTurleri: prev.roadmap.gorevTurleri.map(t =>
+                              t.key === tur.key ? { ...t, label: e.target.value } : t
+                            ),
+                          },
+                        }))
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
+                      className="h-7 text-xs flex-1"
+                    />
+                    <button
+                      className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                      onClick={() => {
+                        setSettings(prev => ({
+                          ...prev,
+                          roadmap: {
+                            ...prev.roadmap,
+                            gorevTurleri: prev.roadmap.gorevTurleri.filter(t => t.key !== tur.key),
+                          },
+                        }))
+                      }}
+                      title="Turu sil"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )
+              })}
+
+              {(settings.roadmap.gorevTurleri || []).length === 0 && (
+                <div className="px-3 py-6 text-center">
+                  <p className="text-xs text-muted-foreground/60">Henuz gorev turu eklenmemis</p>
+                </div>
+              )}
+            </div>
+
+            {/* Yeni Tur Ekle */}
+            <div className="rounded-lg border bg-card p-4 space-y-3">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Yeni Tur Ekle</h3>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-medium text-muted-foreground">Isim</label>
+                  <Input
+                    id="new-tur-label"
+                    placeholder="Ornegin: Dokumantasyon"
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-medium text-muted-foreground">Icon</label>
+                  <div className="flex flex-wrap gap-1">
+                    {GOREV_TURU_ICON_OPTIONS.map(iconKey => {
+                      const IconComp = getGorevTuruIcon(iconKey)
+                      return (
+                        <button
+                          key={iconKey}
+                          className={cn(
+                            'w-7 h-7 rounded-md flex items-center justify-center border transition-all',
+                            'border-border hover:border-primary/40 text-muted-foreground hover:text-foreground',
+                          )}
+                          onClick={(e) => {
+                            const parent = e.target.closest('.flex')
+                            parent.querySelectorAll('button').forEach(b => { b.classList.remove('ring-2', 'ring-primary', 'bg-primary/10'); b.classList.add('border-border') })
+                            const btn = e.target.closest('button')
+                            btn.classList.add('ring-2', 'ring-primary', 'bg-primary/10')
+                            btn.classList.remove('border-border')
+                            const hidden = document.getElementById('new-tur-icon')
+                            if (hidden) hidden.value = iconKey
+                          }}
+                          title={iconKey}
+                        >
+                          <IconComp className="w-3.5 h-3.5" />
+                        </button>
+                      )
+                    })}
+                    <input type="hidden" id="new-tur-icon" defaultValue="Circle" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-medium text-muted-foreground">Renk</label>
+                  <div className="flex items-center gap-1.5">
+                    {Object.keys(GOREV_TURU_COLORS).map(colorKey => (
+                      <button
+                        key={colorKey}
+                        className={cn(
+                          'w-6 h-6 rounded-full transition-all ring-offset-1 ring-offset-background',
+                          GOREV_TURU_COLORS[colorKey].dot,
+                          'hover:ring-2 hover:ring-primary/40',
+                        )}
+                        onClick={(e) => {
+                          const parent = e.target.closest('.flex')
+                          parent.querySelectorAll('button').forEach(b => b.classList.remove('ring-2', 'ring-primary'))
+                          e.target.classList.add('ring-2', 'ring-primary')
+                          const hidden = document.getElementById('new-tur-color')
+                          if (hidden) hidden.value = colorKey
+                        }}
+                        title={colorKey}
+                      />
+                    ))}
+                    <input type="hidden" id="new-tur-color" defaultValue="slate" />
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs gap-1.5 w-full"
+                  onClick={() => {
+                    const input = document.getElementById('new-tur-label')
+                    const label = input?.value?.trim()
+                    if (!label) return
+                    const key = label.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20)
+                    if (!key) return
+                    const exists = (settings.roadmap.gorevTurleri || []).some(t => t.key === key)
+                    if (exists) return
+                    const selectedColor = document.getElementById('new-tur-color')?.value || 'slate'
+                    const selectedIcon = document.getElementById('new-tur-icon')?.value || 'Circle'
+                    setSettings(prev => ({
+                      ...prev,
+                      roadmap: {
+                        ...prev.roadmap,
+                        gorevTurleri: [...(prev.roadmap.gorevTurleri || []), { key, label, color: selectedColor, icon: selectedIcon }],
+                      },
+                    }))
+                    if (input) input.value = ''
+                  }}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Ekle
+                </Button>
+              </div>
             </div>
           </div>
         )}

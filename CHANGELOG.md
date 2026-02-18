@@ -2,6 +2,30 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.6.0] - 2026-02-18
+
+### Eklendi
+- **Alt Gorev Sistemi** — Gorevlere 3 seviye derinlikte alt gorev ekleme (Gorev > Alt Gorev > Alt Alt Gorev)
+- **Gorev Turleri** — Alt gorevlere tur atama (Gelistirme, Hata, Iyilestirme, Arastirma, Tasarim, Test, Diger) ve ikon destegi
+- **Tur Yonetimi** — Ayarlar'da gorev turlerini ozellestirebilme (icon, renk, isim secimi ile yeni tur ekleme/silme)
+- **JSON Veri Formati** — KAIROS.md yerine data.json formatina gecis, otomatik v1→v2 migration
+- **Durum Hafizasi** — Faz ve alt gorev acik/kapali durumu kalici olarak saklanir
+
+### Degisti
+- **Alt Gorev Layoutu** — Alt gorevler yalnizca baslik, detay, tur ve tek durum gostergesi icerir (ana gorev sutunlari yok)
+- **Islem Menusu** — Satir islemleri (Claude, Ekle, Sil, Alt Gorev) ayri butonlar yerine tek dropdown menu
+- **Otomatik Tamamlama** — Tum alt gorevler tamamlaninca ust gorev otomatik olarak tamamlandi olarak isaretlenir
+- **Yaprak Bazli Istatistikler** — Ilerleme hesaplamalari sadece yaprak gorevleri (alt gorevi olmayan) sayar
+
+### Kaldirildi
+- **EkTablo Sistemi** — Hatalar, Degisiklikler ve Degisiklik Gecmisi tablolari kaldirildi (alt gorevler ile degistirildi)
+- **KAIROS.md Parser** — Markdown parse/generate mantigi kaldirildi, dogrudan JSON okuma/yazma
+- **Kisaltma Badge** — 3-harf kisaltma yerine lucide ikonlari kullanilir
+
+### Duzeltildi
+- **Toplu Status Guncelleme** — Alt gorevlerde status secimi tum sutunlari atomik olarak gunceller
+- **Surukleme Korunumu** — Alt gorevli ana gorevlerde drag handle kaybolma sorunu giderildi
+
 ## [1.5.2] - 2026-02-17
 
 ### Duzeltildi

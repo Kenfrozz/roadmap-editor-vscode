@@ -15,7 +15,7 @@ export async function execute(): Promise<BackupEntry[]> {
     const backups: BackupEntry[] = [];
 
     for (const [name, type] of entries) {
-      if (type !== vscode.FileType.File || !name.startsWith('KAIROS.md.backup-')) continue;
+      if (type !== vscode.FileType.File || !name.startsWith('data.json.backup-')) continue;
       const match = name.match(/backup-(\d+)$/);
       const timestamp = match ? parseInt(match[1], 10) : 0;
       const filePath = path.join(backupDir, name);

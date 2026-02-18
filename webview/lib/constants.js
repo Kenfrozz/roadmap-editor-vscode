@@ -26,6 +26,32 @@ export const DEFAULT_COLUMNS = [
   { key: 'not', label: 'Not', type: 'text' },
 ]
 
+export const DEFAULT_GOREV_TURLERI = [
+  { key: 'gelistirme', label: 'Gelistirme', color: 'emerald', icon: 'Code2' },
+  { key: 'hata', label: 'Hata', color: 'red', icon: 'Bug' },
+  { key: 'iyilestirme', label: 'Iyilestirme', color: 'violet', icon: 'Sparkles' },
+  { key: 'arastirma', label: 'Arastirma', color: 'cyan', icon: 'Search' },
+  { key: 'tasarim', label: 'Tasarim', color: 'pink', icon: 'Palette' },
+  { key: 'test', label: 'Test', color: 'amber', icon: 'FlaskConical' },
+  { key: 'diger', label: 'Diger', color: 'slate', icon: 'Circle' },
+]
+
+export const GOREV_TURU_ICON_OPTIONS = [
+  'Code2', 'Bug', 'Sparkles', 'Search', 'Palette', 'FlaskConical',
+  'Circle', 'Wrench', 'BookOpen', 'MessageSquare', 'Shield',
+  'Zap', 'Globe', 'Database', 'Layout', 'Package',
+]
+
+export const GOREV_TURU_COLORS = {
+  emerald: { bg: 'bg-emerald-500/15', text: 'text-emerald-600 dark:text-emerald-400', dot: 'bg-emerald-500' },
+  red: { bg: 'bg-red-500/15', text: 'text-red-600 dark:text-red-400', dot: 'bg-red-500' },
+  violet: { bg: 'bg-violet-500/15', text: 'text-violet-600 dark:text-violet-400', dot: 'bg-violet-500' },
+  cyan: { bg: 'bg-cyan-500/15', text: 'text-cyan-600 dark:text-cyan-400', dot: 'bg-cyan-500' },
+  pink: { bg: 'bg-pink-500/15', text: 'text-pink-600 dark:text-pink-400', dot: 'bg-pink-500' },
+  amber: { bg: 'bg-amber-500/15', text: 'text-amber-600 dark:text-amber-400', dot: 'bg-amber-500' },
+  slate: { bg: 'bg-slate-500/15', text: 'text-slate-600 dark:text-slate-400', dot: 'bg-slate-500' },
+}
+
 export const DEFAULT_FAZ_CONFIG = {
   faz1: { name: 'PLANLAMA & ALTYAPI', ...FAZ_COLORS[0] },
   faz2: { name: 'TEMEL GELİŞTİRME', ...FAZ_COLORS[1] },

@@ -232,6 +232,7 @@ export const api = {
     if (!response.success) throw new Error(response.error)
     return true
   },
+
 }
 
 export const state = {

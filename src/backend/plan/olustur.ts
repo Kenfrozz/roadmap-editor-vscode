@@ -1,17 +1,32 @@
-﻿import { writeFile, readFile } from '../_core/db';
-import { execute as uret } from './uret';
-import { execute as parsele } from './parsele';
+import { writeFile } from '../_core/db';
 import { execute as ayarYukle } from '../ayarlar/yukle';
+import { KairosData } from '../../types';
 
-// Varsayilan bos KAIROS.md dosyasi olusturur
+const DEFAULT_FAZ_NAMES: Record<string, string> = {
+  faz1: 'PLANLAMA & ALTYAPI',
+  faz2: 'TEMEL GELİŞTİRME',
+  faz3: 'İLERİ ÖZELLİKLER',
+  faz4: 'TEST & YAYIN',
+};
+
+// Varsayilan bos data.json dosyasi olusturur
 export async function execute(): Promise<Record<string, unknown>> {
   const settings = ayarYukle();
   const columns = settings.roadmap.columns;
-  const defaultData = { faz1: [], faz2: [], faz3: [], faz4: [], _hatalar: [], _degisiklikler: [] };
-  const md = uret(defaultData, undefined, columns);
-  await writeFile('kairos/KAIROS.md', md);
 
-  const content = await readFile('kairos/KAIROS.md');
-  const { data, fazNames, fazOrder, hatalar, degisiklikler } = parsele(content, columns);
-  return { ...data, _fazNames: fazNames, _fazOrder: fazOrder, _columns: columns, _hatalar: hatalar, _degisiklikler: degisiklikler };
+  const jsonData: KairosData = {
+    version: 2,
+    fazOrder: ['faz1', 'faz2', 'faz3', 'faz4'],
+    fazNames: { ...DEFAULT_FAZ_NAMES },
+    fazlar: { faz1: [], faz2: [], faz3: [], faz4: [] },
+  };
+
+  await writeFile('kairos/data.json', JSON.stringify(jsonData, null, 2));
+
+  return {
+    ...jsonData.fazlar,
+    _fazNames: jsonData.fazNames,
+    _fazOrder: jsonData.fazOrder,
+    _columns: columns,
+  };
 }

@@ -28,8 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // FileSystemWatcher: KAIROS.md degisikliklerini dinle
-  const watcher = vscode.workspace.createFileSystemWatcher('**/kairos/KAIROS.md');
+  // FileSystemWatcher: data.json degisikliklerini dinle
+  const watcher = vscode.workspace.createFileSystemWatcher('**/kairos/data.json');
 
   const notifyWebviews = () => {
     // Kendi yazmamiz tetiklediyse yoksay

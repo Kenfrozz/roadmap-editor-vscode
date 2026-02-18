@@ -23,18 +23,34 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { cn } from '../lib/utils'
-import { SortableRow } from './SortableRow'
+import { state } from '../vscodeApi'
+import { SubtaskTree } from './SubtaskTree'
 
-export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, onAddBelow, onReorder, onPrdClick, onFazNameChange, onFazDelete, index, isFilterActive, phaseDragHandleProps, isCompact, columns, claudeFeatureCmd, isDropTarget }) {
+function countLeafItems(items, statusCols) {
+  let total = 0, done = 0
+  for (const item of items) {
+    if (item.children?.length > 0) {
+      const sub = countLeafItems(item.children, statusCols)
+      total += sub.total
+      done += sub.done
+    } else {
+      total++
+      if (statusCols.every(sc => item[sc.key] === '\u2705')) done++
+    }
+  }
+  return { total, done }
+}
+
+export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, onAddBelow, onAddSubtask, onReorder, onPrdClick, onFazNameChange, onFazDelete, index, isFilterActive, phaseDragHandleProps, isCompact, columns, claudeFeatureCmd, gorevTurleri, isDropTarget }) {
   const { setNodeRef: setDroppableRef } = useDroppable({ id: `droppable-${fazKey}`, data: { type: 'phase-container', fazKey } })
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState(fazConfig.name)
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => state.get(`faz_${fazKey}_collapsed`, true))
   const inputRef = useRef(null)
 
   const statusCols = columns.filter(c => c.type === 'status')
-  const done = statusCols.length > 0 ? items.filter(i => statusCols.every(sc => i[sc.key] === '✅')).length : 0
-  const pct = items.length > 0 ? Math.round((done / items.length) * 100) : 0
+  const { total: leafTotal, done: leafDone } = countLeafItems(items, statusCols)
+  const pct = leafTotal > 0 ? Math.round((leafDone / leafTotal) * 100) : 0
 
   const handleNameSave = () => {
     if (tempName.trim()) onFazNameChange(fazKey, tempName.trim())
@@ -75,7 +91,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
               </button>
             )}
             <button
-              onClick={() => setCollapsed(!collapsed)}
+              onClick={() => { const next = !collapsed; setCollapsed(next); state.set(`faz_${fazKey}_collapsed`, next) }}
               className="p-0.5 rounded-md hover:bg-muted transition-colors"
             >
               {collapsed
@@ -117,7 +133,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
               'text-[10px] font-mono-code font-bold px-2 py-0.5 rounded-full',
               fazConfig.tag
             )}>
-              {done}/{items.length}
+              {leafDone}/{leafTotal}
             </span>
           </div>
 
@@ -178,7 +194,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
             }
             return <div key={col.key} className="hidden lg:block flex-1 min-w-0 px-2 py-2">{col.label}</div>
           })}
-          <div className="w-8 md:w-[72px] shrink-0"></div>
+          <div className="w-8 shrink-0"></div>
         </div>
       )}
 
@@ -187,19 +203,22 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
         <div>
           <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
             {items.map((item, idx) => (
-              <SortableRow
+              <SubtaskTree
                 key={item.id}
                 item={item}
                 fazKey={fazKey}
+                depth={0}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
                 onAddBelow={onAddBelow}
+                onAddSubtask={onAddSubtask}
                 onPrdClick={onPrdClick}
                 index={idx}
                 isFilterActive={isFilterActive}
                 isCompact={isCompact}
                 columns={columns}
                 claudeFeatureCmd={claudeFeatureCmd}
+                gorevTurleri={gorevTurleri}
               />
             ))}
           </SortableContext>

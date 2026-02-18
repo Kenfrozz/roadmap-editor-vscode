@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { arrayMove } from '@dnd-kit/sortable'
@@ -17,8 +17,6 @@ import {
   FileCode,
   FileDown,
   Sparkles,
-  Bug,
-  RefreshCw,
 } from 'lucide-react'
 import { Button } from './components/ui/button'
 import { Input } from './components/ui/input'
@@ -43,7 +41,7 @@ import { cn } from './lib/utils'
 import { api, state, onMessage } from './vscodeApi'
 import { useTheme } from './lib/theme'
 import { useContainerWidth } from './lib/hooks'
-import { DEFAULT_COLUMNS, DEFAULT_FAZ_CONFIG, FAZ_COLORS } from './lib/constants'
+import { DEFAULT_COLUMNS, DEFAULT_FAZ_CONFIG, FAZ_COLORS, DEFAULT_GOREV_TURLERI } from './lib/constants'
 import { ClaudeIcon } from './components/ClaudeIcon'
 import { SortablePhase } from './components/SortableRow'
 import { FazTable } from './components/FazTable'
@@ -54,7 +52,90 @@ import { PrdModal } from './components/PrdModal'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
 import { GitStatusBadge, GitPanel } from './components/GitPanel'
-import { EkTablo } from './components/EkTablo'
+
+// === Recursive tree helpers ===
+function generateId() {
+  return Date.now().toString() + Math.random().toString(36).substr(2, 9)
+}
+
+function updateItemDeep(items, itemId, field, value) {
+  return items.map(item => {
+    if (item.id === itemId) return { ...item, [field]: value }
+    if (item.children?.length > 0) return { ...item, children: updateItemDeep(item.children, itemId, field, value) }
+    return item
+  })
+}
+
+function deleteItemDeep(items, itemId) {
+  return items.filter(i => i.id !== itemId).map(i =>
+    i.children?.length > 0 ? { ...i, children: deleteItemDeep(i.children, itemId) } : i
+  )
+}
+
+function addBelowDeep(items, itemId, newItem) {
+  const result = []
+  for (const item of items) {
+    result.push(item.children?.length > 0
+      ? { ...item, children: addBelowDeep(item.children, itemId, newItem) }
+      : item)
+    if (item.id === itemId) result.push(newItem)
+  }
+  return result
+}
+
+function addChildDeep(items, parentId, newItem) {
+  return items.map(item => {
+    if (item.id === parentId) return { ...item, children: [...(item.children || []), newItem] }
+    if (item.children?.length > 0) return { ...item, children: addChildDeep(item.children, parentId, newItem) }
+    return item
+  })
+}
+
+function isItemComplete(item, statusKeys) {
+  if (item.children?.length > 0) return item.children.every(c => isItemComplete(c, statusKeys))
+  return statusKeys.every(k => item[k] === '\u2705')
+}
+
+function propagateCompletion(items, statusKeys) {
+  return items.map(item => {
+    if (!item.children?.length) return item
+    const updatedChildren = propagateCompletion(item.children, statusKeys)
+    const allDone = updatedChildren.every(c => isItemComplete(c, statusKeys))
+    if (allDone) {
+      const updated = { ...item, children: updatedChildren }
+      statusKeys.forEach(k => { updated[k] = '\u2705' })
+      return updated
+    }
+    return { ...item, children: updatedChildren }
+  })
+}
+
+function filterItemsDeep(items, search) {
+  return items.reduce((acc, item) => {
+    const matchesSelf = (item.ozellik || '').toLowerCase().includes(search)
+      || (item.detay || '').toLowerCase().includes(search)
+      || (item.not || '').toLowerCase().includes(search)
+    const filteredChildren = item.children?.length > 0
+      ? filterItemsDeep(item.children, search)
+      : []
+    if (matchesSelf || filteredChildren.length > 0) {
+      acc.push({ ...item, children: filteredChildren })
+    }
+    return acc
+  }, [])
+}
+
+function flattenLeafItems(items) {
+  const result = []
+  for (const item of items) {
+    if (item.children?.length > 0) {
+      result.push(...flattenLeafItems(item.children))
+    } else {
+      result.push(item)
+    }
+  }
+  return result
+}
 
 export default function App() {
   const dark = useTheme()
@@ -63,6 +144,7 @@ export default function App() {
   const [fazConfig, setFazConfig] = useState(DEFAULT_FAZ_CONFIG)
   const [fazOrder, setFazOrder] = useState(['faz1', 'faz2', 'faz3', 'faz4'])
   const [columns, setColumns] = useState(DEFAULT_COLUMNS)
+  const [gorevTurleri, setGorevTurleri] = useState(DEFAULT_GOREV_TURLERI)
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('saved')
   const [prdModal, setPrdModal] = useState(null)
@@ -84,12 +166,8 @@ export default function App() {
   const [firstRunProcessing, setFirstRunProcessing] = useState(false)
   const [gitPanelOpen, setGitPanelOpen] = useState(false)
   const [gitDurum, setGitDurum] = useState(null)
-  const [hatalar, setHatalar] = useState([])
-  const [degisiklikler, setDegisiklikler] = useState([])
   const saveTimer = useRef(null)
   const fazOrderRef = useRef(fazOrder)
-  const hatalarRef = useRef(hatalar)
-  const degisikliklerRef = useRef(degisiklikler)
 
   const loadData = useCallback(async () => {
     try {
@@ -103,12 +181,10 @@ export default function App() {
       if (loadedData._firstRun) {
         setFirstRunDialog(true)
       }
-      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, _version, _hatalar, _degisiklikler, ...fazData } = loadedData
+      const { _fazNames, _fazOrder: loadedFazOrder, _columns: loadedColumns, _firstRun, _projectName, _version, ...fazData } = loadedData
       if (_projectName) setProjectName(_projectName)
       if (_version) setAppVersion(_version)
       setData(fazData)
-      if (_hatalar) { setHatalar(_hatalar); hatalarRef.current = _hatalar }
-      if (_degisiklikler) { setDegisiklikler(_degisiklikler); degisikliklerRef.current = _degisiklikler }
       if (loadedColumns) setColumns(loadedColumns)
       if (_fazNames) {
         const newConfig = { ...DEFAULT_FAZ_CONFIG }
@@ -139,7 +215,10 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    api.loadSettings().then(s => setSettingsData(s)).catch(() => {})
+    api.loadSettings().then(s => {
+      setSettingsData(s)
+      if (s?.roadmap?.gorevTurleri) setGorevTurleri(s.roadmap.gorevTurleri)
+    }).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -149,14 +228,6 @@ export default function App() {
   useEffect(() => {
     fazOrderRef.current = fazOrder
   }, [fazOrder])
-
-  useEffect(() => {
-    hatalarRef.current = hatalar
-  }, [hatalar])
-
-  useEffect(() => {
-    degisikliklerRef.current = degisiklikler
-  }, [degisiklikler])
 
   useEffect(() => {
     const cleanup = onMessage('fileChanged', () => {
@@ -187,7 +258,7 @@ export default function App() {
       setSaveStatus('saving')
       try {
         const orderToSave = newFazOrder || fazOrderRef.current
-        await api.save({ ...newData, _fazConfig: newFazConfig, _fazOrder: orderToSave, _hatalar: hatalarRef.current, _degisiklikler: degisikliklerRef.current })
+        await api.save({ ...newData, _fazConfig: newFazConfig, _fazOrder: orderToSave })
         setSaveStatus('saved')
       } catch {
         setSaveStatus('unsaved')
@@ -195,34 +266,36 @@ export default function App() {
     }, 800)
   }, [])
 
-  const updateItem = (fazKey, itemId, field, value) => {
-    const statusKeys = columns.filter(c => c.type === 'status').map(c => c.key)
-    const oldItem = data[fazKey].find(item => item.id === itemId)
-    const newData = { ...data, [fazKey]: data[fazKey].map(item => item.id === itemId ? { ...item, [field]: value } : item) }
+  const statusKeys = useMemo(() => columns.filter(c => c.type === 'status').map(c => c.key), [columns])
+
+  const updateItem = (fazKey, itemId, fieldOrObj, value) => {
+    let newItems = data[fazKey] || []
+    let needsPropagation = false
+    if (typeof fieldOrObj === 'object') {
+      for (const [f, v] of Object.entries(fieldOrObj)) {
+        newItems = updateItemDeep(newItems, itemId, f, v)
+        if (statusKeys.includes(f)) needsPropagation = true
+      }
+    } else {
+      newItems = updateItemDeep(newItems, itemId, fieldOrObj, value)
+      needsPropagation = statusKeys.includes(fieldOrObj)
+    }
+    if (needsPropagation) newItems = propagateCompletion(newItems, statusKeys)
+    const newData = { ...data, [fazKey]: newItems }
     setData(newData)
     autoSave(newData, fazConfig)
-
-    // Tüm status sütunları ✅ olduğunda bildirim göster
-    if (statusKeys.length > 0 && oldItem) {
-      const wasComplete = statusKeys.every(k => oldItem[k] === '✅')
-      const updatedItem = { ...oldItem, [field]: value }
-      const isComplete = statusKeys.every(k => updatedItem[k] === '✅')
-      if (!wasComplete && isComplete) {
-        api.bildirimGoster(`✅ "${oldItem.ozellik || itemId}" tamamlandı!`)
-      }
-    }
   }
 
   const deleteItem = (fazKey, itemId) => {
-    const newData = { ...data, [fazKey]: data[fazKey].filter(item => item.id !== itemId) }
+    const newData = { ...data, [fazKey]: deleteItemDeep(data[fazKey] || [], itemId) }
     setData(newData)
     autoSave(newData, fazConfig)
   }
 
   const addItem = (fazKey) => {
-    const newItem = { id: Date.now().toString() + Math.random().toString(36).substr(2, 9) }
+    const newItem = { id: generateId() }
     columns.forEach(col => {
-      newItem[col.key] = col.type === 'status' ? '❌' : ''
+      newItem[col.key] = col.type === 'status' ? '\u274C' : ''
     })
     const newData = { ...data, [fazKey]: [...(data[fazKey] || []), newItem] }
     setData(newData)
@@ -230,14 +303,21 @@ export default function App() {
   }
 
   const addItemBelow = (fazKey, itemId) => {
-    const newItem = { id: Date.now().toString() + Math.random().toString(36).substr(2, 9) }
+    const newItem = { id: generateId() }
     columns.forEach(col => {
-      newItem[col.key] = col.type === 'status' ? '❌' : ''
+      newItem[col.key] = col.type === 'status' ? '\u274C' : ''
     })
-    const items = data[fazKey] || []
-    const index = items.findIndex(i => i.id === itemId)
-    const newItems = [...items.slice(0, index + 1), newItem, ...items.slice(index + 1)]
-    const newData = { ...data, [fazKey]: newItems }
+    const newData = { ...data, [fazKey]: addBelowDeep(data[fazKey] || [], itemId, newItem) }
+    setData(newData)
+    autoSave(newData, fazConfig)
+  }
+
+  const addSubtask = (fazKey, parentId) => {
+    const newItem = { id: generateId() }
+    columns.forEach(col => {
+      newItem[col.key] = col.type === 'status' ? '\u274C' : ''
+    })
+    const newData = { ...data, [fazKey]: addChildDeep(data[fazKey] || [], parentId, newItem) }
     setData(newData)
     autoSave(newData, fazConfig)
   }
@@ -250,11 +330,7 @@ export default function App() {
     const search = searchText.trim().toLowerCase()
     for (const [fazKey, items] of Object.entries(data)) {
       if (!Array.isArray(items)) continue
-      const filtered = items.filter(item => {
-        return (item.ozellik || '').toLowerCase().includes(search)
-          || (item.not || '').toLowerCase().includes(search)
-      })
-      result[fazKey] = filtered
+      result[fazKey] = filterItemsDeep(items, search)
     }
     return result
   }, [data, searchText, isFilterActive])
@@ -309,45 +385,6 @@ export default function App() {
     autoSave(newData, fazConfig)
   }, [data, fazConfig, autoSave])
 
-  // Ek tablo (Hatalar / Degisiklikler) CRUD
-  const addHata = () => {
-    const updated = [...hatalar, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '', durum: '❌' }]
-    setHatalar(updated)
-    hatalarRef.current = updated
-    autoSave(data, fazConfig)
-  }
-  const updateHata = (itemId, field, value) => {
-    const updated = hatalar.map(i => i.id === itemId ? { ...i, [field]: value } : i)
-    setHatalar(updated)
-    hatalarRef.current = updated
-    autoSave(data, fazConfig)
-  }
-  const deleteHata = (itemId) => {
-    const updated = hatalar.filter(i => i.id !== itemId)
-    setHatalar(updated)
-    hatalarRef.current = updated
-    autoSave(data, fazConfig)
-  }
-
-  const addDegisiklik = () => {
-    const updated = [...degisiklikler, { id: Date.now().toString() + Math.random().toString(36).substr(2, 9), baslik: '', aciklama: '', durum: '❌' }]
-    setDegisiklikler(updated)
-    degisikliklerRef.current = updated
-    autoSave(data, fazConfig)
-  }
-  const updateDegisiklik = (itemId, field, value) => {
-    const updated = degisiklikler.map(i => i.id === itemId ? { ...i, [field]: value } : i)
-    setDegisiklikler(updated)
-    degisikliklerRef.current = updated
-    autoSave(data, fazConfig)
-  }
-  const deleteDegisiklik = (itemId) => {
-    const updated = degisiklikler.filter(i => i.id !== itemId)
-    setDegisiklikler(updated)
-    degisikliklerRef.current = updated
-    autoSave(data, fazConfig)
-  }
-
   // Custom commands
   const addCustomCommand = () => {
     if (!newCmdName.trim() || !newCmdText.trim()) return
@@ -365,32 +402,34 @@ export default function App() {
     state.set('customCommands', updated)
   }
 
-  // Stats
-  const allItems = Object.values(data).flat()
-  const total = allItems.length
+  // Stats — only count leaf items
+  const allLeafItems = useMemo(() => {
+    return Object.values(data).filter(Array.isArray).flatMap(items => flattenLeafItems(items))
+  }, [data])
+  const total = allLeafItems.length
   const statusColumns = columns.filter(c => c.type === 'status')
   const dateColumn = columns.find(c => c.type === 'date')
 
   const statusBreakdowns = useMemo(() => {
     return statusColumns.map(col => ({
       ...col,
-      breakdown: computeStatusBreakdown(allItems, col.key),
+      breakdown: computeStatusBreakdown(allLeafItems, col.key),
     }))
-  }, [allItems, statusColumns])
+  }, [allLeafItems, statusColumns])
 
   const dateStats = useMemo(() => {
     if (!dateColumn) return null
-    return computeDateStats(allItems, dateColumn.key, statusColumns.map(c => c.key))
-  }, [allItems, dateColumn, statusColumns])
+    return computeDateStats(allLeafItems, dateColumn.key, statusColumns.map(c => c.key))
+  }, [allLeafItems, dateColumn, statusColumns])
 
   const overallPct = useMemo(() => {
     if (total === 0 || statusColumns.length === 0) return 0
     let sum = 0
     for (const sc of statusColumns) {
-      sum += allItems.filter(i => i[sc.key] === '✅').length
+      sum += allLeafItems.filter(i => i[sc.key] === '\u2705').length
     }
     return Math.round((sum / (total * statusColumns.length)) * 100)
-  }, [allItems, total, statusColumns])
+  }, [allLeafItems, total, statusColumns])
 
   const claudeMainCmd = settingsData?.claude?.mainCommand || 'claude --dangerously-skip-permissions'
   const claudeFeatureCmd = settingsData?.claude?.featureCommand || 'claude "${ozellik}"'
@@ -416,13 +455,13 @@ export default function App() {
             <FileCode className="w-8 h-8 text-muted-foreground/40" />
           </div>
           <div>
-            <h2 className="text-base font-bold tracking-tight mb-2">Mevcut KAIROS.md Tespit Edildi</h2>
+            <h2 className="text-base font-bold tracking-tight mb-2">Mevcut Proje Verisi Tespit Edildi</h2>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Bu projede zaten bir KAIROS.md dosyasi mevcut. Bu dosya eklentiyle uyumlu olmayabilir.
+              Bu projede zaten proje verisi mevcut. Bu veri eklentiyle uyumlu olmayabilir.
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-              Devam etmek icin mevcut dosya yedeklenecek ve kurulum sihirbaziyla uyumlu yeni bir KAIROS.md olusturulacak.
-              Orijinal dosyaniz Ayarlar &gt; Yedekler sekmesinden geri yuklenebilir.
+              Devam etmek icin mevcut veri yedeklenecek ve kurulum sihirbaziyla uyumlu yeni bir proje olusturulacak.
+              Orijinal verileriniz Ayarlar &gt; Yedekler sekmesinden geri yuklenebilir.
             </p>
           </div>
           <button
@@ -465,10 +504,19 @@ export default function App() {
     return (
       <div ref={containerRef} className="min-h-screen grid-bg">
         <SettingsView
-          onClose={() => setViewMode('main')}
+          onClose={() => {
+            setViewMode('main')
+            api.loadSettings().then(s => {
+              setSettingsData(s)
+              if (s?.roadmap?.gorevTurleri) setGorevTurleri(s.roadmap.gorevTurleri)
+            }).catch(() => {})
+          }}
           onSaved={() => {
             setLoading(true)
-            api.loadSettings().then(s => setSettingsData(s)).catch(() => {})
+            api.loadSettings().then(s => {
+              setSettingsData(s)
+              if (s?.roadmap?.gorevTurleri) setGorevTurleri(s.roadmap.gorevTurleri)
+            }).catch(() => {})
             loadData()
           }}
           isCompact={isCompact}
@@ -651,6 +699,7 @@ export default function App() {
                       onDelete={deleteItem}
                       onAdd={addItem}
                       onAddBelow={addItemBelow}
+                      onAddSubtask={addSubtask}
                       onReorder={reorderItems}
                       onPrdClick={setPrdModal}
                       onFazNameChange={updateFazName}
@@ -661,6 +710,7 @@ export default function App() {
                       isCompact={isCompact}
                       columns={columns}
                       claudeFeatureCmd={claudeFeatureCmd}
+                      gorevTurleri={gorevTurleri}
                       isDropTarget={activeType === 'item' && overContainerId === fazKey}
                     />
                   )}
@@ -669,29 +719,6 @@ export default function App() {
             )
           }
         </DndManager>
-
-        <EkTablo
-          title="Hatalar"
-          icon={Bug}
-          iconColor="text-red-500"
-          borderColor="border-l-red-400/50 dark:border-l-red-700/50"
-          items={hatalar}
-          onAdd={addHata}
-          onUpdate={updateHata}
-          onDelete={deleteHata}
-          isCompact={isCompact}
-        />
-        <EkTablo
-          title="Degisiklikler"
-          icon={RefreshCw}
-          iconColor="text-amber-500"
-          borderColor="border-l-amber-400/50 dark:border-l-amber-700/50"
-          items={degisiklikler}
-          onAdd={addDegisiklik}
-          onUpdate={updateDegisiklik}
-          onDelete={deleteDegisiklik}
-          isCompact={isCompact}
-        />
 
         {/* Add New Faz */}
         <button
@@ -762,7 +789,7 @@ export default function App() {
           </DialogHeader>
           <div className="py-2">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Mevcut KAIROS.md dosyaniz yedeklenecek ve yeni bos bir kairos olusturulacak.
+              Mevcut verileriniz yedeklenecek ve yeni bos bir proje olusturulacak.
               Yedekler "Ayarlar &gt; Yedekler" sekmesinden geri yuklenebilir.
             </p>
           </div>

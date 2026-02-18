@@ -40,7 +40,7 @@ export async function readFile(filename: string): Promise<string> {
 export async function writeFile(filename: string, content: string): Promise<void> {
   const root = getWorkspaceRoot();
   if (!root) throw new Error('Workspace bulunamadi');
-  if (filename === 'kairos/KAIROS.md') {
+  if (filename === 'kairos/data.json') {
     suppressNextFileChange();
   }
   const filePath = path.join(root, filename);
@@ -95,6 +95,18 @@ export async function writeFileBinary(filename: string, buffer: Buffer): Promise
   const filePath = path.join(root, filename);
   const uri = vscode.Uri.file(filePath);
   await vscode.workspace.fs.writeFile(uri, buffer);
+}
+
+export async function fileExists(filename: string): Promise<boolean> {
+  const root = getWorkspaceRoot();
+  if (!root) return false;
+  const filePath = path.join(root, filename);
+  try {
+    await vscode.workspace.fs.stat(vscode.Uri.file(filePath));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function getRoot(): string {

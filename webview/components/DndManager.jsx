@@ -82,6 +82,10 @@ export function DndManager({
     }
 
     const activeItem = active.data.current
+
+    // Subtask'lar fazlar arasi tasinamaz
+    if (activeItem.depth > 0) return
+
     const sourceFaz = activeItem.fazKey
 
     // Determine target faz
@@ -151,6 +155,9 @@ export function DndManager({
     }
 
     if (type === 'item') {
+      // Subtask'lar fazlar arasi tasinamaz
+      if (active.data.current.depth > 0) return
+
       // Same-faz reorder
       const activeFaz = active.data.current.fazKey
       let targetFaz = null

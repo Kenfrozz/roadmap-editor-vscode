@@ -23,7 +23,6 @@ import { execute as gitDegisiklikler } from '../backend/git/degisiklikler';
 import { execute as gitKaydet } from '../backend/git/kaydet';
 import { execute as gitPaylas } from '../backend/git/paylas';
 import { execute as gitGuncelle } from '../backend/git/guncelle';
-
 // Frontend icin TEK giris noktasi
 // Tum webview mesajlarini ilgili backend modulune yonlendirir
 export async function handleMessage(
@@ -241,5 +240,6 @@ export async function handleMessage(
       }
       break;
     }
+
   }
 }

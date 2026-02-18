@@ -13,7 +13,7 @@ export async function execute(backupFilename: string): Promise<void> {
   const bytes = await vscode.workspace.fs.readFile(vscode.Uri.file(backupPath));
   const content = Buffer.from(bytes).toString('utf8');
 
-  // Mevcut KAIROS.md'yi yedekle
+  // Mevcut data.json'i yedekle
   try {
     await yedekOlustur();
   } catch {
@@ -21,5 +21,5 @@ export async function execute(backupFilename: string): Promise<void> {
   }
 
   suppressNextFileChange();
-  await writeFile('kairos/KAIROS.md', content);
+  await writeFile('kairos/data.json', content);
 }

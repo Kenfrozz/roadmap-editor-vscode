@@ -16,6 +16,23 @@ export const DEFAULT_COLUMNS: ColumnConfig[] = [
   { key: 'not', label: 'Not', type: 'text' },
 ];
 
+export interface GorevTuru {
+  key: string;
+  label: string;
+  color: string;
+  icon?: string;
+}
+
+export const DEFAULT_GOREV_TURLERI: GorevTuru[] = [
+  { key: 'gelistirme', label: 'Gelistirme', color: 'emerald', icon: 'Code2' },
+  { key: 'hata', label: 'Hata', color: 'red', icon: 'Bug' },
+  { key: 'iyilestirme', label: 'Iyilestirme', color: 'violet', icon: 'Sparkles' },
+  { key: 'arastirma', label: 'Arastirma', color: 'cyan', icon: 'Search' },
+  { key: 'tasarim', label: 'Tasarim', color: 'pink', icon: 'Palette' },
+  { key: 'test', label: 'Test', color: 'amber', icon: 'FlaskConical' },
+  { key: 'diger', label: 'Diger', color: 'slate', icon: 'Circle' },
+];
+
 export interface TerminalOption {
   id: string;
   name: string;
@@ -32,7 +49,10 @@ export interface SettingsConfig {
   version: 1;
   terminal: { defaultTerminalId: string | null; availableTerminals: TerminalOption[] };
   claude: ClaudeConfig;
-  roadmap: { columns: ColumnConfig[] };
+  roadmap: {
+    columns: ColumnConfig[];
+    gorevTurleri: GorevTuru[];
+  };
 }
 
 export const DEFAULT_SETTINGS: SettingsConfig = {
@@ -42,12 +62,17 @@ export const DEFAULT_SETTINGS: SettingsConfig = {
     mainCommand: 'claude --dangerously-skip-permissions',
     featureCommand: 'claude "${ozellik}"',
   },
-  roadmap: { columns: [...DEFAULT_COLUMNS] },
+  roadmap: {
+    columns: [...DEFAULT_COLUMNS],
+    gorevTurleri: [...DEFAULT_GOREV_TURLERI],
+  },
 };
 
 export interface RoadmapItem {
   id: string;
-  [columnKey: string]: string;
+  tur?: string;
+  children?: RoadmapItem[];
+  [columnKey: string]: string | RoadmapItem[] | undefined;
 }
 
 export interface FazConfig {
@@ -63,27 +88,17 @@ export interface FazData {
   [fazKey: string]: RoadmapItem[];
 }
 
-export interface EkTabloItem {
-  id: string;
-  baslik: string;
-  aciklama: string;
-  durum: string;
-}
-
-export interface ParseResult {
-  data: FazData;
-  fazNames: Record<string, string>;
+export interface KairosData {
+  version: number;
   fazOrder: string[];
-  hatalar: EkTabloItem[];
-  degisiklikler: EkTabloItem[];
+  fazNames: Record<string, string>;
+  fazlar: Record<string, RoadmapItem[]>;
 }
 
 export interface SavePayload {
-  [fazKey: string]: RoadmapItem[] | Record<string, FazConfig> | string[] | EkTabloItem[] | undefined;
+  [fazKey: string]: RoadmapItem[] | Record<string, FazConfig> | string[] | undefined;
   _fazConfig?: Record<string, FazConfig>;
   _fazOrder?: string[];
-  _hatalar?: EkTabloItem[];
-  _degisiklikler?: EkTabloItem[];
 }
 
 export interface BackupEntry {
