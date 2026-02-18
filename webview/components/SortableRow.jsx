@@ -97,8 +97,8 @@ export function SortableRow({
         className={cn(
           'group flex items-center row-hover border-b border-border/30',
           isDragging && 'opacity-40 bg-muted',
-          depth === 1 && 'bg-muted/5',
-          depth >= 2 && 'bg-muted/10',
+          depth === 1 && 'bg-muted/30',
+          depth >= 2 && 'bg-muted/50',
         )}
       >
         {/* Drag / Chevron */}
@@ -133,7 +133,7 @@ export function SortableRow({
             onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
             placeholder="Alt gorev..."
             className={cn(
-              'h-7 text-xs font-medium bg-transparent border-none px-1',
+              'h-7 text-[11px] font-normal bg-transparent border-none px-1 text-foreground/80',
               'focus-visible:ring-1 focus-visible:ring-primary/30',
               allDone && 'line-through text-muted-foreground/50',
             )}
