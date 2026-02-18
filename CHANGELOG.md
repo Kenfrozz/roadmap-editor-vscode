@@ -2,6 +2,22 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.7.0] - 2026-02-18
+
+### Eklendi
+- **Istatistik Paneli Yeniden Tasarimi** — Radial gauge yerine animasyonlu sayi sayaci, satir ici ilerleme cubulari ve entegre tarih gostergeleri ile kompakt kokpit tasarimi
+- **Durum Ikonlari** — Durum noktalari yerine anlamli ikonlar (Check, Clock, X, Minus) ile gorsel geri bildirim
+
+### Degisti
+- **Faz Basliklari** — Renkli FAZ 04 etiketi yerine sade numara, tamamlama sayaci sag yasli monospace metin
+- **Navbar** — KAIROS yazisi ve tarih gostergesi kaldirildi, sadece Git durumu kaldi
+- **Footer** — "Kairos vX.Y.Z — VS Code" yerine sadece "Kairos vX.Y.Z"
+- **StatusDot Boyutu** — Tiklanabilir alan PRD ikonu ile tutarli hale getirildi
+
+### Kaldirildi
+- **StatusStatCard & DateStatCard** — Kullanilmayan eski istatistik bilesenleri silindi
+- **Eski Stats CSS** — ~300 satir kullanilmayan .stats-* CSS kurallari temizlendi
+
 ## [1.6.0] - 2026-02-18
 
 ### Eklendi

@@ -1,8 +1,8 @@
 export const STATUS_OPTIONS = [
-  { value: '✅', label: 'Tamamlandi', color: 'bg-emerald-500', textColor: 'text-emerald-500', ring: 'ring-emerald-500/30' },
-  { value: '⚠️', label: 'Devam Ediyor', color: 'bg-amber-500', textColor: 'text-amber-500', ring: 'ring-amber-500/30' },
-  { value: '❌', label: 'Yapilmadi', color: 'bg-red-500', textColor: 'text-red-500', ring: 'ring-red-500/30' },
-  { value: '-', label: 'N/A', color: 'bg-slate-300 dark:bg-slate-600', textColor: 'text-slate-400', ring: 'ring-slate-300/50 dark:ring-slate-600/50' },
+  { value: '✅', label: 'Tamamlandi', color: 'bg-emerald-500', textColor: 'text-emerald-500', ring: 'ring-emerald-500/30', icon: 'Check' },
+  { value: '⚠️', label: 'Devam Ediyor', color: 'bg-amber-500', textColor: 'text-amber-500', ring: 'ring-amber-500/30', icon: 'Clock' },
+  { value: '❌', label: 'Yapilmadi', color: 'bg-red-500', textColor: 'text-red-500', ring: 'ring-red-500/30', icon: 'X' },
+  { value: '-', label: 'N/A', color: 'bg-slate-300 dark:bg-slate-600', textColor: 'text-slate-400', ring: 'ring-slate-300/50 dark:ring-slate-600/50', icon: 'Minus' },
 ]
 
 export const FAZ_COLORS = [

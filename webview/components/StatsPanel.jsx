@@ -1,245 +1,203 @@
-import { useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { cn } from '../lib/utils'
-import { CalendarDays, TrendingUp, AlertTriangle } from 'lucide-react'
+import { AlertTriangle, TrendingUp, CalendarDays } from 'lucide-react'
 
-// ── SVG Radial Gauge ──
-function RadialGauge({ percentage, size = 96, strokeWidth = 7 }) {
-  const radius = (size - strokeWidth) / 2
-  const circumference = 2 * Math.PI * radius
-  const offset = circumference - (percentage / 100) * circumference
-  const center = size / 2
+// ── Animated counter (easeOutQuart) ──
+function useAnimatedValue(target, duration = 700) {
+  const [display, setDisplay] = useState(0)
+  const currentRef = useRef(0)
+  const rafRef = useRef(null)
 
-  // Color stops based on percentage
-  const gaugeColor = percentage >= 80
-    ? 'var(--gauge-high)'
-    : percentage >= 40
-      ? 'var(--gauge-mid)'
-      : 'var(--gauge-low)'
+  useEffect(() => {
+    const from = currentRef.current
+    const start = performance.now()
 
-  return (
-    <div className="stats-gauge-wrap" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="stats-gauge-svg">
-        <defs>
-          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={gaugeColor} stopOpacity="1" />
-            <stop offset="100%" stopColor={gaugeColor} stopOpacity="0.5" />
-          </linearGradient>
-        </defs>
+    const animate = (now) => {
+      const elapsed = now - start
+      const t = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - t, 4)
+      const val = Math.round(from + (target - from) * eased)
+      currentRef.current = val
+      setDisplay(val)
+      if (t < 1) rafRef.current = requestAnimationFrame(animate)
+    }
 
-        {/* Track */}
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke="hsl(var(--muted))"
-          strokeWidth={strokeWidth}
-          opacity="0.6"
-        />
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    rafRef.current = requestAnimationFrame(animate)
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
+  }, [target, duration])
 
-        {/* Tick marks */}
-        {[...Array(24)].map((_, i) => {
-          const angle = (i * 360) / 24 - 90
-          const rad = (angle * Math.PI) / 180
-          const isMajor = i % 6 === 0
-          const r1 = radius - (isMajor ? 5 : 3)
-          const r2 = radius + (isMajor ? 5 : 3)
-          return (
-            <line
-              key={i}
-              x1={center + r1 * Math.cos(rad)}
-              y1={center + r1 * Math.sin(rad)}
-              x2={center + r2 * Math.cos(rad)}
-              y2={center + r2 * Math.sin(rad)}
-              stroke="hsl(var(--muted-foreground))"
-              strokeWidth={isMajor ? 1.2 : 0.5}
-              opacity={isMajor ? 0.3 : 0.15}
-            />
-          )
-        })}
-
-        {/* Progress arc */}
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke="url(#gaugeGrad)"
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          transform={`rotate(-90 ${center} ${center})`}
-          className="stats-gauge-arc"
-        />
-      </svg>
-
-      {/* Center text */}
-      <div className="stats-gauge-center">
-        <span className="stats-gauge-pct font-mono-code">{percentage}</span>
-        <span className="stats-gauge-unit font-mono-code">%</span>
-      </div>
-    </div>
-  )
+  return display
 }
 
-// ── Segmented Meter Bar ──
-function MeterBar({ label, breakdown, delay = 0 }) {
-  const { done, inProgress, notDone, na } = breakdown
-  const effective = done + inProgress + notDone
-  const donePct = effective > 0 ? (done / effective) * 100 : 0
-  const inProgressPct = effective > 0 ? (inProgress / effective) * 100 : 0
-  const notDonePct = effective > 0 ? (notDone / effective) * 100 : 0
-
-  return (
-    <div
-      className="stats-meter animate-fade-up"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="stats-meter-header">
-        <span className="stats-meter-label">{label}</span>
-        <span className="stats-meter-count font-mono-code">
-          {done}<span className="stats-meter-sep">/</span>{effective}
-        </span>
-      </div>
-
-      <div className="stats-meter-track">
-        {effective > 0 ? (
-          <>
-            {donePct > 0 && (
-              <div
-                className="stats-meter-fill stats-meter-done"
-                style={{ width: `${donePct}%` }}
-              />
-            )}
-            {inProgressPct > 0 && (
-              <div
-                className="stats-meter-fill stats-meter-wip"
-                style={{ width: `${inProgressPct}%` }}
-              />
-            )}
-            {notDonePct > 0 && (
-              <div
-                className="stats-meter-fill stats-meter-fail"
-                style={{ width: `${notDonePct}%` }}
-              />
-            )}
-          </>
-        ) : (
-          <div className="stats-meter-fill stats-meter-empty" style={{ width: '100%' }} />
-        )}
-      </div>
-
-      {/* Mini legend */}
-      <div className="stats-meter-legend">
-        {done > 0 && (
-          <span className="stats-legend-item stats-legend-done">
-            <span className="stats-legend-dot" />
-            {done}
-          </span>
-        )}
-        {inProgress > 0 && (
-          <span className="stats-legend-item stats-legend-wip">
-            <span className="stats-legend-dot" />
-            {inProgress}
-          </span>
-        )}
-        {notDone > 0 && (
-          <span className="stats-legend-item stats-legend-fail">
-            <span className="stats-legend-dot" />
-            {notDone}
-          </span>
-        )}
-        {na > 0 && (
-          <span className="stats-legend-item stats-legend-na">
-            <span className="stats-legend-dot" />
-            {na}
-          </span>
-        )}
-      </div>
-    </div>
-  )
-}
-
-// ── Date Badge Strip ──
-const DATE_ROWS = [
-  { key: 'overdue', label: 'Gecikmiş', cls: 'stats-date-overdue', icon: AlertTriangle },
-  { key: 'thisWeek', label: 'Bu Hafta', cls: 'stats-date-week', icon: TrendingUp },
-  { key: 'upcoming', label: 'Yaklaşan', cls: 'stats-date-upcoming', icon: CalendarDays },
-  { key: 'noDate', label: 'Tarihi Yok', cls: 'stats-date-nodate', icon: null },
-]
-
-function DateStrip({ dateStats, delay = 0 }) {
-  const hasOverdue = dateStats.overdue > 0
-
-  return (
-    <div
-      className="stats-date-strip animate-fade-up"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      {DATE_ROWS.map(row => {
-        const count = dateStats[row.key]
-        if (count === 0) return null
-        const Icon = row.icon
-        return (
-          <div
-            key={row.key}
-            className={cn('stats-date-badge', row.cls, row.key === 'overdue' && hasOverdue && 'stats-date-pulse')}
-          >
-            {Icon && <Icon className="stats-date-icon" />}
-            <span className="stats-date-count font-mono-code">{count}</span>
-            <span className="stats-date-label">{row.label}</span>
-          </div>
-        )
-      })}
-    </div>
-  )
+// ── Date indicator config ──
+const DATE_CFG = {
+  overdue: { icon: AlertTriangle, label: 'gecikmiş', text: 'text-red-500 dark:text-red-400', dot: 'bg-red-500', pulse: true },
+  thisWeek: { icon: TrendingUp, label: 'bu hafta', text: 'text-amber-600 dark:text-amber-400', dot: 'bg-amber-500', pulse: false },
+  upcoming: { icon: CalendarDays, label: 'yaklaşan', text: 'text-emerald-600/60 dark:text-emerald-400/60', dot: 'bg-emerald-500/50', pulse: false },
 }
 
 // ── Main Panel ──
 export function StatsPanel({ overallPct, statusBreakdowns, dateStats, total, isCompact }) {
   if (total === 0 || (statusBreakdowns.length === 0 && !dateStats)) return null
 
-  return (
-    <div className={cn('stats-panel', isCompact && 'stats-panel-compact')}>
+  const pct = useAnimatedValue(overallPct)
 
-      <div className={cn('stats-body', isCompact && 'stats-body-compact')}>
-        {/* Gauge section */}
-        <div className="stats-gauge-section animate-fade-up" style={{ animationDelay: '0ms' }}>
-          <RadialGauge
-            percentage={overallPct}
-            size={isCompact ? 72 : 96}
-            strokeWidth={isCompact ? 5 : 7}
-          />
-          <span className="stats-gauge-label font-mono-code">GENEL İLERLEME</span>
-        </div>
+  // Accent bar shifts color based on project health
+  const accentGradient = overallPct >= 75
+    ? 'from-emerald-500/70 via-emerald-400/50 to-transparent'
+    : overallPct >= 35
+      ? 'from-amber-500/70 via-amber-400/50 to-transparent'
+      : 'from-red-500/70 via-red-400/50 to-transparent'
 
-        {/* Divider */}
-        {!isCompact && <div className="stats-divider" />}
+  const hasDateInfo = dateStats && (dateStats.overdue > 0 || dateStats.thisWeek > 0 || dateStats.upcoming > 0)
 
-        {/* Meters section */}
-        <div className={cn('stats-meters', isCompact && 'stats-meters-compact')}>
-          {statusBreakdowns.map((col, i) => (
-            <MeterBar
-              key={col.key}
-              label={col.label}
-              breakdown={col.breakdown}
-              delay={80 + i * 60}
-            />
-          ))}
+  // ── COMPACT MODE (sidebar ~300px) ──
+  if (isCompact) {
+    return (
+      <div className="mb-4 rounded-lg border border-border/40 bg-card/80 overflow-hidden hover:border-border/60 transition-colors">
+        <div className="p-3 space-y-2.5">
+          {/* Hero number + count */}
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-px">
+              <span className="text-[26px] font-black font-mono-code tracking-[-0.04em] leading-none">
+                {pct}
+              </span>
+              <span className="text-[9px] font-bold text-muted-foreground/35">%</span>
+            </div>
+            <span className="text-[9px] font-mono-code text-muted-foreground/25 tabular-nums">
+              {total} görev
+            </span>
+          </div>
+
+          {/* Status meters */}
+          <div className="space-y-1.5">
+            {statusBreakdowns.map(col => (
+              <MeterRow key={col.key} col={col} />
+            ))}
+          </div>
+
+          {/* Date chips */}
+          {hasDateInfo && (
+            <div className="flex items-center gap-3 pt-2 border-t border-border/10">
+              {Object.entries(DATE_CFG).map(([key, cfg]) => {
+                const count = dateStats?.[key]
+                if (!count) return null
+                return (
+                  <span key={key} className={cn('flex items-center gap-1', cfg.text)}>
+                    <span className={cn('w-1.5 h-1.5 rounded-full', cfg.dot, cfg.pulse && 'animate-pulse')} />
+                    <span className="text-[9px] font-mono-code font-bold tabular-nums">{count}</span>
+                  </span>
+                )
+              })}
+            </div>
+          )}
         </div>
       </div>
+    )
+  }
 
-      {/* Date strip */}
-      {dateStats && (
-        <>
-          <div className="stats-strip-border" />
-          <DateStrip
-            dateStats={dateStats}
-            delay={80 + statusBreakdowns.length * 60 + 40}
-          />
-        </>
-      )}
+  // ── WIDE MODE (tab) ──
+  return (
+    <div className="mb-5 rounded-xl border border-border/40 bg-card/80 overflow-hidden hover:border-border/60 transition-colors">
+      <div className="flex items-stretch">
+        {/* Left: Hero percentage */}
+        <div className="flex items-center gap-2.5 px-5 py-3 shrink-0">
+          <div className="flex items-baseline gap-px">
+            <span className="text-[34px] font-black font-mono-code tracking-[-0.05em] leading-none">
+              {pct}
+            </span>
+            <span className="text-xs font-bold text-muted-foreground/30">%</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[7px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground/30 leading-none">
+              ilerleme
+            </span>
+            <span className="text-[10px] font-mono-code text-muted-foreground/20 tabular-nums leading-none">
+              {total} görev
+            </span>
+          </div>
+        </div>
+
+        {/* Gradient divider */}
+        <div className="w-px self-stretch my-2.5 bg-gradient-to-b from-transparent via-border/25 to-transparent shrink-0" />
+
+        {/* Center: Status meters */}
+        <div className="flex-1 flex flex-col justify-center gap-1.5 px-5 py-2.5 min-w-0">
+          {statusBreakdowns.map((col, i) => (
+            <MeterRow key={col.key} col={col} delay={i * 40} />
+          ))}
+        </div>
+
+        {/* Right: Date indicators */}
+        {hasDateInfo && (
+          <>
+            <div className="w-px self-stretch my-2.5 bg-gradient-to-b from-transparent via-border/25 to-transparent shrink-0" />
+            <div className="flex flex-col justify-center gap-1.5 px-4 py-2.5 shrink-0">
+              {Object.entries(DATE_CFG).map(([key, cfg]) => {
+                const count = dateStats?.[key]
+                if (!count) return null
+                const Icon = cfg.icon
+                return (
+                  <div key={key} className={cn('flex items-center gap-1.5', cfg.text)}>
+                    <Icon className={cn('w-3 h-3 shrink-0', cfg.pulse && 'animate-pulse')} />
+                    <span className="text-[10px] font-mono-code font-bold tabular-nums">{count}</span>
+                    <span className="text-[9px] font-medium opacity-50">{cfg.label}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Inline Meter Row ──
+function MeterRow({ col, delay = 0 }) {
+  const { done, inProgress, notDone } = col.breakdown
+  const effective = done + inProgress + notDone
+
+  return (
+    <div
+      className="flex items-center gap-2.5 animate-fade-up"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/45 w-16 truncate shrink-0">
+        {col.label}
+      </span>
+
+      <div className="flex-1 h-[5px] rounded-sm bg-muted/25 overflow-hidden flex">
+        {effective > 0 ? (
+          <>
+            {done > 0 && (
+              <div
+                className="h-full bg-emerald-500 dark:bg-emerald-400 transition-all duration-700"
+                style={{ width: `${(done / effective) * 100}%` }}
+              />
+            )}
+            {inProgress > 0 && (
+              <div
+                className="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-700"
+                style={{ width: `${(inProgress / effective) * 100}%` }}
+              />
+            )}
+            {notDone > 0 && (
+              <div
+                className="h-full bg-red-500/30 dark:bg-red-400/30 transition-all duration-700"
+                style={{ width: `${(notDone / effective) * 100}%` }}
+              />
+            )}
+          </>
+        ) : null}
+      </div>
+
+      <div className="shrink-0 tabular-nums">
+        <span className="text-[10px] font-mono-code font-bold text-foreground/60">{done}</span>
+        <span className="text-[10px] font-mono-code text-muted-foreground/15 mx-px">/</span>
+        <span className="text-[10px] font-mono-code text-muted-foreground/30">{effective}</span>
+      </div>
     </div>
   )
 }

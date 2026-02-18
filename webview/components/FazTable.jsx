@@ -81,7 +81,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
       {/* Header */}
       <div className="sticky top-[56px] z-30 bg-card rounded-t-lg border-b border-border/30">
         <div className={cn('flex items-center justify-between py-2.5', isCompact ? 'px-2 gap-1' : 'px-4')}>
-          <div className={cn('flex items-center min-w-0', isCompact ? 'gap-1' : 'gap-2.5')}>
+          <div className={cn('flex items-center min-w-0 flex-1', isCompact ? 'gap-1' : 'gap-2.5')}>
             {phaseDragHandleProps && !isFilterActive && !isCompact && (
               <button
                 className="p-1 cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground transition-colors"
@@ -89,6 +89,11 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
               >
                 <GripVertical className="w-4 h-4" />
               </button>
+            )}
+            {!isCompact && (
+              <span className="text-[10px] font-mono-code text-muted-foreground/30 shrink-0">
+                {String(index + 1).padStart(2, '0')}
+              </span>
             )}
             <button
               onClick={() => { const next = !collapsed; setCollapsed(next); state.set(`faz_${fazKey}_collapsed`, next) }}
@@ -117,27 +122,18 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
                 className="flex items-center gap-2 group/name min-w-0"
                 onClick={() => { setTempName(fazConfig.name); setEditingName(true) }}
               >
-                {!isCompact && (
-                  <span className={cn('text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded shrink-0', fazConfig.tag)}>
-                    FAZ {String(index + 1).padStart(2, '0')}
-                  </span>
-                )}
                 <span className={cn('text-sm font-bold tracking-tight truncate', fazConfig.text)}>
                   {fazConfig.name}
                 </span>
                 <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover/name:opacity-100 transition-opacity shrink-0" />
               </button>
             )}
-
-            <span className={cn(
-              'text-[10px] font-mono-code font-bold px-2 py-0.5 rounded-full',
-              fazConfig.tag
-            )}>
-              {leafDone}/{leafTotal}
-            </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] font-mono-code text-muted-foreground/35 tabular-nums">
+              {leafDone}<span className="opacity-40">/</span>{leafTotal}
+            </span>
             <div className="hidden md:flex items-center gap-2">
               <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
                 <div className={cn('h-full rounded-full transition-all duration-500', fazConfig.bg)} style={{ width: `${pct}%` }} />

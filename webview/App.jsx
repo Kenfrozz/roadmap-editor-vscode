@@ -533,18 +533,7 @@ export default function App() {
         <div className="w-full flex h-14 items-center justify-between px-1">
           {/* Left: Title + Progress */}
           <div className="flex items-center gap-3 min-w-0">
-            {!isCompact && (
-              <div>
-                <h1 className="text-xs font-semibold tracking-tight leading-none text-muted-foreground">KAIROS</h1>
-                <p className="text-[10px] font-mono-code text-muted-foreground leading-none mt-0.5">
-                  {format(new Date(), 'dd.MM.yyyy', { locale: tr })}
-                </p>
-              </div>
-            )}
-
-            <div className="pl-2 border-l border-border/50">
-              <GitStatusBadge durum={gitDurum} onClick={() => setGitPanelOpen(!gitPanelOpen)} />
-            </div>
+            <GitStatusBadge durum={gitDurum} onClick={() => setGitPanelOpen(!gitPanelOpen)} />
           </div>
 
           {/* Right: Actions */}
@@ -732,7 +721,7 @@ export default function App() {
         {/* Footer */}
         <div className="mt-6 pb-4 text-center">
           <p className="text-[10px] font-mono-code text-muted-foreground/60 uppercase tracking-widest">
-            Kairos v{appVersion} — VS Code
+            Kairos v{appVersion}
           </p>
         </div>
       </main>
