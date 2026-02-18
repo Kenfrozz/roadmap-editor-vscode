@@ -2,6 +2,19 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.9.0] - 2026-02-18
+
+### Degisti
+- **Istatistik Paneli Yeniden Tasarimi** — Tum panel sifirdan yeniden yazildi: gradient stroke'lu halka, yatay faz ilerleme cubulari ve alan grafigi (area sparkline)
+- **Faz Gostergesi** — Daire+cizgi stepper yerine yatay ilerleme cubulari; her faz numarasi, isim, ince bar ve done/total sayaci gosteriyor
+- **Tarih Grafigi** — Sabit haftalik kova sistemi yerine projedeki gercek gorev tarihlerinden (ilk gun → son gun) smooth Catmull-Rom egrisi ile alan grafigi
+- **ProgressRing Gradient** — Halka stroke'u artik duz renk yerine gradient gecis kullaniyor (guclu → soluk)
+- **Bugun Isaretcisi** — Tarih grafikte kesikli dikey cizgi + nokta ile bugunun konumu gosteriliyor
+
+### Kaldirildi
+- **FazStepper Bileseni** — Yatay ilerleme cubulari ile degistirildi
+- **Haftalik Kova Sistemi** — computeDateDistribution artik gercek tarih araligina dayali dinamik gruplama kullaniyor
+
 ## [1.8.0] - 2026-02-18
 
 ### Eklendi

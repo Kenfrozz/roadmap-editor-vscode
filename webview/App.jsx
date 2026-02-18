@@ -47,7 +47,7 @@ import { SortablePhase } from './components/SortableRow'
 import { FazTable } from './components/FazTable'
 import { DndManager } from './components/DndManager'
 import { StatsPanel } from './components/StatsPanel'
-import { computeStatusBreakdown, computeDateStats } from './lib/statsUtils'
+import { computeStatusBreakdown, computeDateStats, computeDateDistribution } from './lib/statsUtils'
 import { PrdLinePicker } from './components/PrdLinePicker'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
@@ -422,6 +422,11 @@ export default function App() {
     return computeDateStats(allRootItems, dateColumn.key, statusColumns.map(c => c.key))
   }, [allRootItems, dateColumn, statusColumns])
 
+  const dateDist = useMemo(() => {
+    if (!dateColumn) return null
+    return computeDateDistribution(allRootItems, dateColumn.key, statusColumns.map(c => c.key))
+  }, [allRootItems, dateColumn, statusColumns])
+
   const overallPct = useMemo(() => {
     if (total === 0 || statusColumns.length === 0) return 0
     let sum = 0
@@ -430,6 +435,20 @@ export default function App() {
     }
     return Math.round((sum / (total * statusColumns.length)) * 100)
   }, [allRootItems, total, statusColumns])
+
+  const fazProgress = useMemo(() => {
+    return fazOrder.map(fazKey => {
+      const items = data[fazKey] || []
+      const t = items.length
+      let d = 0
+      if (statusColumns.length > 0) {
+        for (const item of items) {
+          if (statusColumns.every(sc => item[sc.key] === '\u2705')) d++
+        }
+      }
+      return { key: fazKey, name: fazConfig[fazKey]?.name || fazKey, done: d, total: t, pct: t > 0 ? Math.round((d / t) * 100) : 0 }
+    })
+  }, [fazOrder, data, fazConfig, statusColumns])
 
   const claudeMainCmd = settingsData?.claude?.mainCommand || 'claude --dangerously-skip-permissions'
   const claudeFeatureCmd = settingsData?.claude?.featureCommand || 'claude "${ozellik}"'
@@ -660,9 +679,10 @@ export default function App() {
         {/* Stats Panel */}
         <StatsPanel
           overallPct={overallPct}
-          statusBreakdowns={statusBreakdowns}
-          dateStats={dateStats}
+          fazProgress={fazProgress}
+          dateDist={dateDist}
           total={total}
+          done={statusBreakdowns.length > 0 ? statusBreakdowns[0].breakdown.done : 0}
           isCompact={isCompact}
         />
 
