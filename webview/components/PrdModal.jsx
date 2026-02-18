@@ -4,19 +4,19 @@ import { Eye } from 'lucide-react'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog'
 import { api } from '../vscodeApi'
+import { parsePrdRef } from '../lib/utils'
 
 export function PrdModal({ prdRange, open, onClose }) {
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (!prdRange || !open) return
-    setLoading(true)
-    const parts = prdRange.split('-').map(Number)
-    const start = parts[0] || 1
-    const end = parts[1] || start
+  const parsed = useMemo(() => parsePrdRef(prdRange), [prdRange])
 
-    api.prdLines(start, end)
+  useEffect(() => {
+    if (!parsed || !open) return
+    setLoading(true)
+
+    api.prdLines(parsed.start, parsed.end, parsed.filename)
       .then(data => { setContent(data.excerpt || ''); setLoading(false) })
       .catch(() => { setContent('Hata olustu'); setLoading(false) })
   }, [prdRange, open])
@@ -26,13 +26,17 @@ export function PrdModal({ prdRange, open, onClose }) {
     return marked.parse(content, { breaks: true, gfm: true })
   }, [content])
 
+  const displayName = parsed ? parsed.filename : 'PRD.md'
+  const displayRange = parsed ? `${parsed.start}${parsed.end !== parsed.start ? `-${parsed.end}` : ''}` : ''
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-mono-code text-sm">
             <Eye className="w-4 h-4 text-primary" />
-            PRD Satir {prdRange}
+            <span className="text-muted-foreground">{displayName}</span>
+            <span>Satir {displayRange}</span>
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">

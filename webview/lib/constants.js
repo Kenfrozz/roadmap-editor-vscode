@@ -16,14 +16,13 @@ export const FAZ_COLORS = [
   { color: 'border-l-indigo-300/50 dark:border-l-indigo-700/50', bg: 'bg-indigo-500', text: 'text-indigo-700/70 dark:text-indigo-400/70', dim: 'bg-indigo-500/10', tag: 'bg-indigo-500/15 text-indigo-700/70 dark:text-indigo-300/70' },
 ]
 
+export const LOCKED_COLUMN_KEYS = ['ozellik', 'prd', 'durum', 'tarih']
+
 export const DEFAULT_COLUMNS = [
   { key: 'ozellik', label: 'Özellik', type: 'text' },
   { key: 'prd', label: 'PRD', type: 'text' },
-  { key: 'backend', label: 'Backend', type: 'status' },
-  { key: 'frontend', label: 'Frontend', type: 'status' },
-  { key: 'test', label: 'Test', type: 'status' },
+  { key: 'durum', label: 'Durum', type: 'status' },
   { key: 'tarih', label: 'Tarih', type: 'date' },
-  { key: 'not', label: 'Not', type: 'text' },
 ]
 
 export const DEFAULT_GOREV_TURLERI = [

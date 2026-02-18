@@ -37,7 +37,7 @@ import {
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { cn } from '../lib/utils'
-import { GOREV_TURU_COLORS, GOREV_TURU_ICON_OPTIONS } from '../lib/constants'
+import { GOREV_TURU_COLORS, GOREV_TURU_ICON_OPTIONS, LOCKED_COLUMN_KEYS } from '../lib/constants'
 import { getGorevTuruIcon } from '../components/TaskTypeBadge'
 import { ClaudeIcon } from '../components/ClaudeIcon'
 import { api } from '../vscodeApi'
@@ -46,8 +46,8 @@ import { api } from '../vscodeApi'
 // SETTINGS: SORTABLE COLUMN ROW
 // ═══════════════════════════════════════════
 function SortableColumnRow({ col, index, onUpdate, onDelete }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: col.key })
-  const isOzellik = col.key === 'ozellik'
+  const isLocked = LOCKED_COLUMN_KEYS.includes(col.key)
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: col.key, disabled: isLocked })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -63,13 +63,19 @@ function SortableColumnRow({ col, index, onUpdate, onDelete }) {
         isDragging && 'opacity-40 bg-muted',
       )}
     >
-      <button
-        className="p-1 cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground transition-colors shrink-0"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="w-3.5 h-3.5" />
-      </button>
+      <div className="p-1 shrink-0">
+        {isLocked ? (
+          <GripVertical className="w-3.5 h-3.5 text-muted-foreground/10" />
+        ) : (
+          <button
+            className="cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground transition-colors"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
 
       <span className="text-[10px] font-mono-code text-muted-foreground/50 w-5 shrink-0 text-center">{index + 1}</span>
 
@@ -77,17 +83,17 @@ function SortableColumnRow({ col, index, onUpdate, onDelete }) {
         value={col.label}
         onChange={(e) => onUpdate(col.key, 'label', e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-        disabled={isOzellik}
-        className={cn('h-7 text-xs flex-1', isOzellik && 'opacity-60')}
+        disabled={isLocked}
+        className={cn('h-7 text-xs flex-1', isLocked && 'opacity-60')}
       />
 
       <select
         value={col.type}
         onChange={(e) => onUpdate(col.key, 'type', e.target.value)}
-        disabled={isOzellik}
+        disabled={isLocked}
         className={cn(
           'h-7 px-2 rounded-md border text-xs bg-background',
-          isOzellik && 'opacity-60'
+          isLocked && 'opacity-60'
         )}
       >
         <option value="status">Durum</option>
@@ -98,11 +104,11 @@ function SortableColumnRow({ col, index, onUpdate, onDelete }) {
       <button
         className={cn(
           'p-1 rounded-md transition-colors shrink-0',
-          isOzellik ? 'opacity-0 pointer-events-none' : 'text-muted-foreground hover:text-destructive hover:bg-destructive/10'
+          isLocked ? 'opacity-0 pointer-events-none' : 'text-muted-foreground hover:text-destructive hover:bg-destructive/10'
         )}
-        onClick={() => !isOzellik && onDelete(col.key)}
-        disabled={isOzellik}
-        title={isOzellik ? 'Bu sutun silinemez' : 'Sutunu sil'}
+        onClick={() => !isLocked && onDelete(col.key)}
+        disabled={isLocked}
+        title={isLocked ? 'Bu sutun silinemez' : 'Sutunu sil'}
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>
@@ -166,9 +172,12 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
   const handleColumnDragEnd = (event) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
+    if (LOCKED_COLUMN_KEYS.includes(active.id)) return
     const cols = settings.roadmap.columns
     const oldIndex = cols.findIndex(c => c.key === active.id)
     const newIndex = cols.findIndex(c => c.key === over.id)
+    const lockedCount = cols.filter(c => LOCKED_COLUMN_KEYS.includes(c.key)).length
+    if (newIndex < lockedCount) return
     setSettings(prev => ({
       ...prev,
       roadmap: { ...prev.roadmap, columns: arrayMove(prev.roadmap.columns, oldIndex, newIndex) },
@@ -186,6 +195,7 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
   }
 
   const deleteColumn = (key) => {
+    if (LOCKED_COLUMN_KEYS.includes(key)) return
     setSettings(prev => ({
       ...prev,
       roadmap: {

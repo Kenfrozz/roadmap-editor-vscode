@@ -13,9 +13,29 @@
     "faz4": "TEST & YAYIN"
   },
   "fazlar": {
-    "faz1": [],
-    "faz2": [],
-    "faz3": [],
-    "faz4": []
+    "faz1": [
+      {
+        "id": "1771436211290tnocs9fbp",
+        "ozellik": "",
+        "prd": "",
+        "backend": "❌",
+        "frontend": "❌",
+        "test": "❌",
+        "tarih": "",
+        "not": "",
+        "children": [
+          {
+            "id": "1771436278452ku7x3sa31",
+            "ozellik": "",
+            "prd": "",
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "tarih": "",
+            "not": ""
+          }
+        ]
+      }
+    ]
   }
 }

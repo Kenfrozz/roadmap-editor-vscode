@@ -37,7 +37,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from './components/ui/dialog'
-import { cn } from './lib/utils'
+import { cn, buildPrdRef } from './lib/utils'
 import { api, state, onMessage } from './vscodeApi'
 import { useTheme } from './lib/theme'
 import { useContainerWidth } from './lib/hooks'
@@ -48,7 +48,7 @@ import { FazTable } from './components/FazTable'
 import { DndManager } from './components/DndManager'
 import { StatsPanel } from './components/StatsPanel'
 import { computeStatusBreakdown, computeDateStats } from './lib/statsUtils'
-import { PrdModal } from './components/PrdModal'
+import { PrdLinePicker } from './components/PrdLinePicker'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
 import { GitStatusBadge, GitPanel } from './components/GitPanel'
@@ -147,7 +147,7 @@ export default function App() {
   const [gorevTurleri, setGorevTurleri] = useState(DEFAULT_GOREV_TURLERI)
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('saved')
-  const [prdModal, setPrdModal] = useState(null)
+  const [prdPicker, setPrdPicker] = useState(null)
   const [customCommands, setCustomCommands] = useState(() => state.get('customCommands', []))
   const [cmdDialogOpen, setCmdDialogOpen] = useState(false)
   const [newCmdName, setNewCmdName] = useState('')
@@ -402,34 +402,34 @@ export default function App() {
     state.set('customCommands', updated)
   }
 
-  // Stats — only count leaf items
-  const allLeafItems = useMemo(() => {
-    return Object.values(data).filter(Array.isArray).flatMap(items => flattenLeafItems(items))
+  // Stats — only count top-level (root) items
+  const allRootItems = useMemo(() => {
+    return Object.values(data).filter(Array.isArray).flat()
   }, [data])
-  const total = allLeafItems.length
+  const total = allRootItems.length
   const statusColumns = columns.filter(c => c.type === 'status')
   const dateColumn = columns.find(c => c.type === 'date')
 
   const statusBreakdowns = useMemo(() => {
     return statusColumns.map(col => ({
       ...col,
-      breakdown: computeStatusBreakdown(allLeafItems, col.key),
+      breakdown: computeStatusBreakdown(allRootItems, col.key),
     }))
-  }, [allLeafItems, statusColumns])
+  }, [allRootItems, statusColumns])
 
   const dateStats = useMemo(() => {
     if (!dateColumn) return null
-    return computeDateStats(allLeafItems, dateColumn.key, statusColumns.map(c => c.key))
-  }, [allLeafItems, dateColumn, statusColumns])
+    return computeDateStats(allRootItems, dateColumn.key, statusColumns.map(c => c.key))
+  }, [allRootItems, dateColumn, statusColumns])
 
   const overallPct = useMemo(() => {
     if (total === 0 || statusColumns.length === 0) return 0
     let sum = 0
     for (const sc of statusColumns) {
-      sum += allLeafItems.filter(i => i[sc.key] === '\u2705').length
+      sum += allRootItems.filter(i => i[sc.key] === '\u2705').length
     }
     return Math.round((sum / (total * statusColumns.length)) * 100)
-  }, [allLeafItems, total, statusColumns])
+  }, [allRootItems, total, statusColumns])
 
   const claudeMainCmd = settingsData?.claude?.mainCommand || 'claude --dangerously-skip-permissions'
   const claudeFeatureCmd = settingsData?.claude?.featureCommand || 'claude "${ozellik}"'
@@ -690,7 +690,7 @@ export default function App() {
                       onAddBelow={addItemBelow}
                       onAddSubtask={addSubtask}
                       onReorder={reorderItems}
-                      onPrdClick={setPrdModal}
+                      onPrdClick={(fazKey, itemId, prd) => setPrdPicker({ fazKey, itemId, prd: prd || '' })}
                       onFazNameChange={updateFazName}
                       onFazDelete={deleteFaz}
                       index={idx}
@@ -726,8 +726,16 @@ export default function App() {
         </div>
       </main>
 
-      {/* PRD Modal */}
-      <PrdModal prdRange={prdModal} open={!!prdModal} onClose={() => setPrdModal(null)} />
+      {/* PRD Satir Secici */}
+      <PrdLinePicker
+        open={!!prdPicker}
+        onClose={() => setPrdPicker(null)}
+        prdRef={prdPicker?.prd || ''}
+        onConfirm={(filename, start, end) => {
+          updateItem(prdPicker.fazKey, prdPicker.itemId, 'prd', buildPrdRef(filename, start, end))
+          setPrdPicker(null)
+        }}
+      />
 
       {/* Komut Ekle Dialog */}
       <Dialog open={cmdDialogOpen} onOpenChange={setCmdDialogOpen}>

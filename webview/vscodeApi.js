@@ -81,28 +81,36 @@ export const api = {
     return response.success
   },
 
-  async prdLoad() {
+  async prdLoad(filename) {
     const response = await sendAndWait(
-      { command: 'prdLoad' },
+      { command: 'prdLoad', filename },
       'prdLoadResponse'
     )
     return response.data
   },
 
-  async prdLines(start, end) {
+  async prdLines(start, end, filename) {
     const response = await sendAndWait(
-      { command: 'prdLines', start, end },
+      { command: 'prdLines', start, end, filename },
       'prdLinesResponse'
     )
     return response.data
   },
 
-  async prdUpdate(start, end, content) {
+  async prdUpdate(start, end, content, filename) {
     const response = await sendAndWait(
-      { command: 'prdUpdate', start, end, content },
+      { command: 'prdUpdate', start, end, content, filename },
       'prdUpdateResponse'
     )
     return response.success
+  },
+
+  async dosyaSec() {
+    const response = await sendAndWait(
+      { command: 'dosyaSec' },
+      'dosyaSecResponse'
+    )
+    return response.filename
   },
 
   async createRoadmap() {

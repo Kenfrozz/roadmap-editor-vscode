@@ -80,7 +80,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
     >
       {/* Header */}
       <div className="sticky top-[56px] z-30 bg-card rounded-t-lg border-b border-border/30">
-        <div className={cn('flex items-center justify-between py-2.5', isCompact ? 'px-2 gap-1' : 'px-4')}>
+        <div className={cn('group/faz flex items-center justify-between py-2.5', isCompact ? 'px-2 gap-1' : 'px-4')}>
           <div className={cn('flex items-center min-w-0 flex-1', isCompact ? 'gap-1' : 'gap-2.5')}>
             {phaseDragHandleProps && !isFilterActive && !isCompact && (
               <button
@@ -143,7 +143,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
 
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
+                <Button variant="ghost" size="icon" className={cn('h-7 w-7 transition-opacity', collapsed ? 'opacity-0 group-hover/faz:opacity-100' : 'opacity-100')}>
                   <MoreVertical className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -166,6 +166,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
       {!collapsed && !isCompact && (
         <div className="sticky top-[100px] z-20 flex items-center border-b border-border/50 bg-card/95 backdrop-blur-sm shadow-sm text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
           <div className="w-6 shrink-0"></div>
+          <div className="w-5 shrink-0"></div>
           <div className="w-8 shrink-0 flex justify-center py-2">
             <Hash className="w-3 h-3 opacity-40" />
           </div>
@@ -174,7 +175,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
               return <div key={col.key} className="flex-1 min-w-0 px-1 md:px-2 py-2">{col.label}</div>
             }
             if (col.key === 'prd') {
-              return <div key={col.key} className="hidden md:block w-28 shrink-0 px-2 py-2 text-center">{col.label}</div>
+              return <div key={col.key} className="hidden md:block w-36 shrink-0 px-2 py-2 text-center">{col.label}</div>
             }
             if (col.type === 'status') {
               const Icon = STATUS_ICONS[col.key] || Activity

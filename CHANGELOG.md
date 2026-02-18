@@ -2,6 +2,19 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.8.0] - 2026-02-18
+
+### Eklendi
+- **Esnek PRD Dosya Referansi** — PRD sutunu artik sadece PRD.md degil, proje icindeki herhangi bir dosyaya referans gosterebiliyor (`dosya.md:5-10` formati, eski `5-10` geriye uyumlu)
+- **PRD Satir Secici (PrdLinePicker)** — Dosya icerigini satir numaralariyla goruntuleyen, tiklama ile baslangic/bitis satiri secebilen interaktif modal
+- **Dosya Secici Entegrasyonu** — VS Code native dosya secici ile PRD referansi icin dosya secme (`dosyaSec` backend modulu)
+- **Gorev Turleri Ayarlar Destegi** — Gorev turleri artik ayarlardan yuklenip kaydedilebiliyor
+- **Kilitli Sutun Korumasi** — Kilitli sutunlarin (ozellik, prd, durum, tarih) ayarlardan kaybolmasini onleyen `ensureLockedColumns` mekanizmasi
+
+### Degisti
+- **PRD Sutunu UX** — Metin girisi + Eye butonu yerine tek belge ikonu + parantez icinde satir numaralari; tiklayinca satir secici aciliyor
+- **Alt Gorev Gorsel Ayirimi** — Alt gorevler icin iyilestirilmis gorsel hiyerarsi
+
 ## [1.7.0] - 2026-02-18
 
 ### Eklendi

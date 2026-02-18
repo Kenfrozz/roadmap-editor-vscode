@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Trash2, PlusCircle, Eye, MoreVertical, ChevronDown, ChevronRight, ListTree } from 'lucide-react'
+import { GripVertical, Trash2, PlusCircle, FileText, MoreVertical, ChevronDown, ChevronRight, ListTree } from 'lucide-react'
 import { Input } from './ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { cn } from '../lib/utils'
+import { cn, parsePrdRef } from '../lib/utils'
 import { StatusDot } from './StatusDot'
 import { DatePickerCell } from './DatePickerCell'
 import { ClaudeIcon } from './ClaudeIcon'
@@ -237,15 +237,18 @@ export function SortableRow({
         ) : null}
       </div>
 
-      {/* No + Expand Toggle */}
-      <div className={cn('w-8 shrink-0 flex items-center justify-center gap-0.5', editing && 'max-lg:hidden')}>
-        {hasChildren ? (
+      {/* Expand Toggle */}
+      <div className={cn('w-5 shrink-0 flex items-center justify-center', editing && 'max-lg:hidden')}>
+        {hasChildren && (
           <button onClick={onToggleExpand} className="p-0.5 rounded hover:bg-muted transition-colors">
             {expanded ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
           </button>
-        ) : (
-          <span className="text-[10px] font-mono-code text-muted-foreground/70 select-none">{idx}</span>
         )}
+      </div>
+
+      {/* No */}
+      <div className={cn('w-8 shrink-0 flex items-center justify-center', editing && 'max-lg:hidden')}>
+        <span className="text-[10px] font-mono-code text-muted-foreground/70 select-none">{idx}</span>
       </div>
 
       {/* Ozellik */}
@@ -269,36 +272,46 @@ export function SortableRow({
       {/* PRD */}
       {prdCol && (
         <>
-          <div className={cn('hidden md:block w-28 shrink-0 px-1', editing && 'max-lg:!hidden')}>
-            <div className="flex items-center gap-0.5">
-              <Input
-                value={item.prd || ''}
-                onChange={(e) => onUpdate(fazKey, item.id, 'prd', e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-                placeholder="—"
-                className="h-7 w-[72px] text-center font-mono-code text-[11px] bg-transparent border-none focus-visible:ring-1 focus-visible:ring-primary/30"
-              />
-              {item.prd && (
-                <button
-                  onClick={() => onPrdClick(item.prd)}
-                  className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                >
-                  <Eye className="w-3 h-3" />
-                </button>
+          <div className={cn('hidden md:flex w-36 shrink-0 px-1 items-center justify-center', editing && 'max-lg:!hidden')}>
+            <button
+              onClick={() => onPrdClick(fazKey, item.id, item.prd)}
+              className={cn(
+                'flex items-center gap-1.5 h-7 px-2 rounded-md transition-colors max-w-full',
+                item.prd
+                  ? 'text-muted-foreground hover:text-primary hover:bg-primary/10'
+                  : 'text-muted-foreground/30 hover:text-muted-foreground hover:bg-muted'
               )}
-            </div>
+              title={item.prd || 'PRD referansi ekle'}
+            >
+              <FileText className="w-3.5 h-3.5 shrink-0" />
+              {item.prd && (() => {
+                const parsed = parsePrdRef(item.prd)
+                if (!parsed) return null
+                return (
+                  <span className="font-mono-code text-[11px] truncate">
+                    {parsed.filename !== 'PRD.md' && (
+                      <span className="text-muted-foreground/50">{parsed.filename.split('/').pop()} </span>
+                    )}
+                    <span>({parsed.start}{parsed.end !== parsed.start ? `-${parsed.end}` : ''})</span>
+                  </span>
+                )
+              })()}
+            </button>
           </div>
-          {item.prd && (
-            <div className="md:hidden w-6 shrink-0 flex items-center justify-center">
-              <button
-                onClick={() => onPrdClick(item.prd)}
-                className="p-1 rounded-md text-muted-foreground/40 opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-primary/10 transition-all"
-                title={`PRD: ${item.prd}`}
-              >
-                <Eye className="w-3 h-3" />
-              </button>
-            </div>
-          )}
+          <div className="md:hidden w-6 shrink-0 flex items-center justify-center">
+            <button
+              onClick={() => onPrdClick(fazKey, item.id, item.prd)}
+              className={cn(
+                'p-1 rounded-md transition-all',
+                item.prd
+                  ? 'text-muted-foreground/60 opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-primary/10'
+                  : 'text-muted-foreground/20 opacity-0 group-hover:opacity-100 hover:text-muted-foreground hover:bg-muted'
+              )}
+              title={item.prd || 'PRD'}
+            >
+              <FileText className="w-3 h-3" />
+            </button>
+          </div>
         </>
       )}
 

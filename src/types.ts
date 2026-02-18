@@ -6,14 +6,13 @@ export interface ColumnConfig {
   type: ColumnType;
 }
 
+export const LOCKED_COLUMN_KEYS = ['ozellik', 'prd', 'durum', 'tarih'];
+
 export const DEFAULT_COLUMNS: ColumnConfig[] = [
   { key: 'ozellik', label: 'Özellik', type: 'text' },
   { key: 'prd', label: 'PRD', type: 'text' },
-  { key: 'backend', label: 'Backend', type: 'status' },
-  { key: 'frontend', label: 'Frontend', type: 'status' },
-  { key: 'test', label: 'Test', type: 'status' },
+  { key: 'durum', label: 'Durum', type: 'status' },
   { key: 'tarih', label: 'Tarih', type: 'date' },
-  { key: 'not', label: 'Not', type: 'text' },
 ];
 
 export interface GorevTuru {
@@ -140,9 +139,10 @@ export type WebviewMessage =
   | { command: 'resetRoadmap' }
   | { command: 'listBackups' }
   | { command: 'restoreBackup'; filename: string }
-  | { command: 'prdLoad' }
-  | { command: 'prdLines'; start: number; end: number }
-  | { command: 'prdUpdate'; start: number; end: number; content: string }
+  | { command: 'prdLoad'; filename?: string }
+  | { command: 'prdLines'; start: number; end: number; filename?: string }
+  | { command: 'prdUpdate'; start: number; end: number; content: string; filename?: string }
+  | { command: 'dosyaSec' }
   | { command: 'pdfOlustur'; payload: PdfExportPayload }
   | { command: 'runTerminal'; cmd: string; name?: string }
   | { command: 'loadSettings' }
@@ -167,6 +167,7 @@ export type ExtensionMessage =
   | { command: 'prdLoadResponse'; data: { lines: string[]; total: number } }
   | { command: 'prdLinesResponse'; data: { excerpt: string; start: number; end: number } }
   | { command: 'prdUpdateResponse'; success: boolean; error?: string }
+  | { command: 'dosyaSecResponse'; filename: string | null }
   | { command: 'fileChanged' }
   | { command: 'loadSettingsResponse'; settings: SettingsConfig }
   | { command: 'saveSettingsResponse'; success: boolean; error?: string }

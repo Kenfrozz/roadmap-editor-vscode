@@ -14,6 +14,7 @@ import { execute as yedekGeriYukle } from '../backend/yedek/geriYukle';
 import { execute as prdYukle } from '../backend/prd/yukle';
 import { execute as prdSatirOku } from '../backend/prd/satirOku';
 import { execute as prdGuncelle } from '../backend/prd/guncelle';
+import { execute as dosyaSec } from '../backend/prd/dosyaSec';
 import { execute as ayarYukle } from '../backend/ayarlar/yukle';
 import { execute as ayarKaydet } from '../backend/ayarlar/kaydet';
 import { execute as terminalCalistir } from '../backend/terminal/calistir';
@@ -115,7 +116,7 @@ export async function handleMessage(
 
     case 'prdLoad': {
       try {
-        const data = await prdYukle();
+        const data = await prdYukle(message.filename);
         webview.postMessage({ command: 'prdLoadResponse', data });
       } catch {
         webview.postMessage({ command: 'prdLoadResponse', data: { lines: [], total: 0 } });
@@ -125,7 +126,7 @@ export async function handleMessage(
 
     case 'prdLines': {
       try {
-        const data = await prdSatirOku(message.start, message.end);
+        const data = await prdSatirOku(message.start, message.end, message.filename);
         webview.postMessage({ command: 'prdLinesResponse', data });
       } catch {
         webview.postMessage({ command: 'prdLinesResponse', data: { excerpt: '', start: 0, end: 0 } });
@@ -135,11 +136,21 @@ export async function handleMessage(
 
     case 'prdUpdate': {
       try {
-        await prdGuncelle(message.start, message.end, message.content);
+        await prdGuncelle(message.start, message.end, message.content, message.filename);
         webview.postMessage({ command: 'prdUpdateResponse', success: true });
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
         webview.postMessage({ command: 'prdUpdateResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'dosyaSec': {
+      try {
+        const result = await dosyaSec();
+        webview.postMessage({ command: 'dosyaSecResponse', filename: result?.filename || null });
+      } catch {
+        webview.postMessage({ command: 'dosyaSecResponse', filename: null });
       }
       break;
     }
