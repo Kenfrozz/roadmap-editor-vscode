@@ -42,6 +42,7 @@ export interface TerminalOption {
 export interface ClaudeConfig {
   mainCommand: string;
   featureCommand: string;
+  dosyalar: string[];
 }
 
 export interface SettingsConfig {
@@ -60,6 +61,7 @@ export const DEFAULT_SETTINGS: SettingsConfig = {
   claude: {
     mainCommand: 'claude --dangerously-skip-permissions',
     featureCommand: 'claude "${ozellik}"',
+    dosyalar: ['CLAUDE.md', 'ARCHITECTURE.md'],
   },
   roadmap: {
     columns: [...DEFAULT_COLUMNS],
@@ -156,7 +158,9 @@ export type WebviewMessage =
   | { command: 'bildirimGoster'; mesaj: string }
   | { command: 'claudeDosyaYukle'; filename: string }
   | { command: 'claudeDosyaKaydet'; filename: string; content: string }
-  | { command: 'claudePluginKur' };
+  | { command: 'claudePluginKur' }
+  | { command: 'claudeDosyaAc'; filename: string }
+  | { command: 'claudeDosyaEkle' };
 
 // Extension -> Webview mesajlari
 export type ExtensionMessage =
@@ -183,4 +187,6 @@ export type ExtensionMessage =
   | { command: 'pdfOlusturResponse'; success: boolean; filename?: string; error?: string }
   | { command: 'claudeDosyaYukleResponse'; data: { content: string; lines: string[]; total: number } | null }
   | { command: 'claudeDosyaKaydetResponse'; success: boolean; error?: string }
-  | { command: 'claudePluginKurResponse'; success: boolean; created?: string[]; error?: string };
+  | { command: 'claudePluginKurResponse'; success: boolean; created?: string[]; error?: string }
+  | { command: 'claudeDosyaAcResponse'; success: boolean; error?: string }
+  | { command: 'claudeDosyaEkleResponse'; filename: string | null };

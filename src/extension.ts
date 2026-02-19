@@ -28,6 +28,13 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // Yeni pencerede acma komutu
+  context.subscriptions.push(
+    vscode.commands.registerCommand('kairos.openNewWindow', async () => {
+      await KairosPanel.createInNewWindow(context.extensionUri);
+    })
+  );
+
   // FileSystemWatcher: data.json degisikliklerini dinle
   const watcher = vscode.workspace.createFileSystemWatcher('**/kairos/data.json');
 

@@ -27,6 +27,8 @@ import { execute as gitGuncelle } from '../backend/git/guncelle';
 import { execute as claudeDosyaYukle } from '../backend/claude/dosyaYukle';
 import { execute as claudeDosyaKaydet } from '../backend/claude/dosyaKaydet';
 import { execute as claudePluginKur } from '../backend/claude/pluginKur';
+import { execute as claudeDosyaAc } from '../backend/claude/dosyaAc';
+import { execute as claudeDosyaEkle } from '../backend/claude/dosyaEkle';
 // Frontend icin TEK giris noktasi
 // Tum webview mesajlarini ilgili backend modulune yonlendirir
 export async function handleMessage(
@@ -283,6 +285,27 @@ export async function handleMessage(
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
         webview.postMessage({ command: 'claudePluginKurResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'claudeDosyaAc': {
+      try {
+        await claudeDosyaAc(message.filename);
+        webview.postMessage({ command: 'claudeDosyaAcResponse', success: true });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'claudeDosyaAcResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'claudeDosyaEkle': {
+      try {
+        const result = await claudeDosyaEkle();
+        webview.postMessage({ command: 'claudeDosyaEkleResponse', filename: result?.filename || null });
+      } catch {
+        webview.postMessage({ command: 'claudeDosyaEkleResponse', filename: null });
       }
       break;
     }

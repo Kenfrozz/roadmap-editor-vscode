@@ -50,6 +50,7 @@ export function execute(): SettingsConfig {
         claude: {
           mainCommand: parsed.claude?.mainCommand ?? DEFAULT_SETTINGS.claude.mainCommand,
           featureCommand: parsed.claude?.featureCommand ?? DEFAULT_SETTINGS.claude.featureCommand,
+          dosyalar: parsed.claude?.dosyalar ?? DEFAULT_SETTINGS.claude.dosyalar,
         },
         roadmap: {
           columns: ensureLockedColumns(rawColumns),

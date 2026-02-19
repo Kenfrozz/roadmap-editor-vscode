@@ -2,6 +2,17 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.11.0] - 2026-02-19
+
+### Eklendi
+- **Yeni Pencerede Acma** — `Kairos: Open in New Window` komutu ile eklentiyi ayri bir VS Code penceresinde acma
+- **Proje Dosyalari Yonetimi** — Claude Code'un kullandigi proje dosyalarini (CLAUDE.md, ARCHITECTURE.md vb.) ayarlardan yonetme, VS Code'da acma ve listeye dosya ekleme/cikarma
+- **PRD Dokumani** — Kapsamli urun gereksinim dokumani (4 fazli yol haritasi, tum ozellik tanimlari)
+
+### Degisti
+- **Ayarlar Sayfasi Yeniden Tasarimi** — 5 sekmeli yapi yerine 3 sekmeli kompakt tasarim: Araclar (Terminal + Claude), Dosyalar (Proje Dosyalari + Yedekler), Proje (Sutunlar + Gorev Turleri)
+- **Claude Yapilandirmasi** — `dosyalar` alani eklendi, proje baglaminda kullanilan dosyalar yapilandirma uzerinden yonetilebilir
+
 ## [1.10.0] - 2026-02-19
 
 ### Eklendi

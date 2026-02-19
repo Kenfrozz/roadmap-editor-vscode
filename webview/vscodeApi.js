@@ -267,6 +267,23 @@ export const api = {
     return response.created
   },
 
+  async claudeDosyaAc(filename) {
+    const response = await sendAndWait(
+      { command: 'claudeDosyaAc', filename },
+      'claudeDosyaAcResponse'
+    )
+    if (!response.success) throw new Error(response.error)
+    return true
+  },
+
+  async claudeDosyaEkle() {
+    const response = await sendAndWait(
+      { command: 'claudeDosyaEkle' },
+      'claudeDosyaEkleResponse'
+    )
+    return response.filename
+  },
+
 }
 
 export const state = {

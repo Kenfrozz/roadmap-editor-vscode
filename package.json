@@ -2,7 +2,7 @@
   "name": "kairos",
   "displayName": "Kairos",
   "description": "Proje gelistirme kokpiti — PRD, plan, Git ve AI araclari tek arayuzden",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "publisher": "Kenfrozz",
   "engines": {
     "vscode": "^1.85.0"
@@ -26,6 +26,10 @@
       {
         "command": "kairos.openSidebar",
         "title": "Kairos: Open in Sidebar"
+      },
+      {
+        "command": "kairos.openNewWindow",
+        "title": "Kairos: Open in New Window"
       }
     ],
     "viewsContainers": {

@@ -34,6 +34,29 @@ export class KairosPanel {
     KairosPanel.currentPanel = new KairosPanel(panel, extensionUri);
   }
 
+  public static async createInNewWindow(extensionUri: vscode.Uri): Promise<void> {
+    // Mevcut paneli kapat — yeni pencerede temiz acilsin
+    if (KairosPanel.currentPanel) {
+      KairosPanel.currentPanel.dispose();
+    }
+
+    const panel = vscode.window.createWebviewPanel(
+      KairosPanel.viewType,
+      'Kairos',
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'dist')],
+      }
+    );
+
+    KairosPanel.currentPanel = new KairosPanel(panel, extensionUri);
+
+    // Tab'i yeni pencereye tasi
+    await vscode.commands.executeCommand('workbench.action.moveEditorToNewWindow');
+  }
+
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
     this._extensionUri = extensionUri;

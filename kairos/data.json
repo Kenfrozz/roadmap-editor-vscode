@@ -1,41 +1,280 @@
 {
   "version": 2,
   "fazOrder": [
-    "faz1",
     "faz2",
     "faz3",
     "faz4"
   ],
   "fazNames": {
-    "faz1": "PLANLAMA & ALTYAPI",
-    "faz2": "TEMEL GELİŞTİRME",
-    "faz3": "İLERİ ÖZELLİKLER",
-    "faz4": "TEST & YAYIN"
+    "faz2": "TEMEL YAPI VE PLAN EDITORU",
+    "faz3": "ILERI OZELLIKLER",
+    "faz4": "CLAUDE AI ENTEGRASYONU"
   },
   "fazlar": {
-    "faz1": [
+    "faz2": [
       {
-        "id": "1771436211290tnocs9fbp",
-        "ozellik": "",
+        "id": "1771484427569498vdexqw",
+        "ozellik": "Gorsel Plan Editoru",
+        "prd": "29-38",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771484451877d41z2z6s0",
+        "ozellik": "Gorev Yonetimi",
+        "prd": "39-49",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771484459928gpikht3g1",
+        "ozellik": "Alt Gorev Hiyerarsisi",
+        "prd": "50-58",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "17714844687085ydh5pb4z",
+        "ozellik": "Gorev Turleri",
+        "prd": "59-66",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "17714844898064drqo52ft",
+        "ozellik": "Sutun Yapisi ve Ozellestirme",
+        "prd": "67-76",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771484501955qgx1m4amw",
+        "ozellik": "Kurulum Sihirbazi",
         "prd": "",
-        "backend": "✅",
-        "frontend": "✅",
-        "test": "✅",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771484516650rgaaoidzu",
+        "ozellik": "Veri Saklama",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771486768170brsmwp1z3",
+        "ozellik": "Erisim ve Gorunum",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      }
+    ],
+    "faz3": [
+      {
+        "id": "1771486809601677pzv0uy",
+        "ozellik": "Git Entegrasyonu",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771486815398ameyff1p2",
+        "ozellik": "PRD ve Dokumantasyon Yonetimi",
+        "prd": "",
+        "durum": "✅",
         "tarih": "",
+        "children": []
+      },
+      {
+        "id": "1771486856288xovgfmmx6",
+        "ozellik": "Istatistik ve Ilerleme Paneli",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771486880010yzbveilmh",
+        "ozellik": "PDF Ciktisi",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771486905056obynrjqsi",
+        "ozellik": "Arama ve Filtreleme",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771486929380o9x8msvcb",
+        "ozellik": "Yedekleme ve Kurtarma",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "1771486938932gkccs6fgt",
+        "ozellik": "Ayarlar Sayfasi",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "17714869633242ujb8nzg8",
+        "ozellik": "Bildirimler",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      }
+    ],
+    "faz4": [
+      {
+        "id": "1771486989762dyoqzt6j6",
+        "ozellik": "Gorev Bazli Komut Calistirma",
+        "prd": "",
+        "durum": "⚠️",
+        "tarih": ""
+      },
+      {
+        "id": "1771486996870ccodtmt7f",
+        "ozellik": "Plugin Sistemi",
+        "prd": "",
+        "durum": "✅",
+        "tarih": ""
+      },
+      {
+        "id": "17714870100289ywei50ma",
+        "ozellik": "Proje Dokumani Duzenleyicileri",
+        "prd": "",
+        "durum": "⚠️",
+        "tarih": ""
+      },
+      {
+        "id": "1771482437877a39s32kz6",
+        "ozellik": "Özellikleri Cludeye yaptırma",
+        "prd": "",
+        "durum": "❌",
+        "tarih": "",
+        "backend": "❌",
+        "frontend": "❌",
+        "test": "❌",
         "not": "",
         "children": [
           {
-            "id": "1771436278452ku7x3sa31",
-            "ozellik": "",
+            "id": "1771482500254y278zih7v",
+            "ozellik": "Özelliğin satırındaki claude iconuna tıklayarak Claudeye görevi yaptırma.",
             "prd": "",
+            "durum": "❌",
+            "tarih": "",
             "backend": "❌",
             "frontend": "❌",
             "test": "❌",
+            "not": "",
+            "tur": "gelistirme"
+          },
+          {
+            "id": "1771482539065rxss4at81",
+            "ozellik": "Toplu seçiim Yaparak Caludeye yaptırma",
+            "prd": "",
+            "durum": "❌",
             "tarih": "",
-            "not": ""
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "not": "",
+            "tur": "gelistirme"
           }
-        ],
-        "durum": "✅"
+        ]
+      },
+      {
+        "id": "1771482630055mcguylhuw",
+        "ozellik": "Alt Görevleri claudeye yaptırma",
+        "prd": "",
+        "durum": "❌",
+        "tarih": "",
+        "backend": "❌",
+        "frontend": "❌",
+        "test": "❌",
+        "not": "",
+        "children": [
+          {
+            "id": "177148265092419u6e6kti",
+            "ozellik": "Her alt görev türü için bir plugin komutu atayabilme",
+            "prd": "",
+            "durum": "❌",
+            "tarih": "",
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "not": "",
+            "children": [],
+            "tur": "gelistirme"
+          }
+        ]
+      },
+      {
+        "id": "17714827154289iv3euslj",
+        "ozellik": "Özellikleri otomatiğe bağlama paneli",
+        "prd": "",
+        "durum": "❌",
+        "tarih": "",
+        "backend": "❌",
+        "frontend": "❌",
+        "test": "❌",
+        "not": "",
+        "children": [
+          {
+            "id": "177148276307839lx4eesn",
+            "ozellik": "caludeye hızlıca ve görevleri başlatmak için Ai paneli",
+            "prd": "",
+            "durum": "❌",
+            "tarih": "",
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "not": "",
+            "tur": "gelistirme"
+          },
+          {
+            "id": "1771482829826k0b42ebc1",
+            "ozellik": "kalan tüm görevleri ve alt görevleri sırayla yaptıran tam otomatik mod",
+            "prd": "",
+            "durum": "❌",
+            "tarih": "",
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "not": "",
+            "tur": "gelistirme",
+            "children": []
+          },
+          {
+            "id": "1771482880253ehouhxrxv",
+            "ozellik": "alt görev türüne göre sadece ogerev türüne odaklanan mod",
+            "prd": "",
+            "durum": "❌",
+            "tarih": "",
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "not": "",
+            "tur": "gelistirme",
+            "children": []
+          },
+          {
+            "id": "17714829297737l46ikvkt",
+            "ozellik": "Bakım ve onarım modu",
+            "prd": "",
+            "durum": "❌",
+            "tarih": "",
+            "backend": "❌",
+            "frontend": "❌",
+            "test": "❌",
+            "not": "",
+            "tur": "gelistirme"
+          }
+        ]
       }
     ]
   }
