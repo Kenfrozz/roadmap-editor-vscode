@@ -1,0 +1,16 @@
+{
+  "name": "kairos-marketplace",
+  "owner": {
+    "name": "Şaban"
+  },
+  "metadata": {
+    "description": "DiyetKent proje yönetim ve geliştirme araçları"
+  },
+  "plugins": [
+    {
+      "name": "kairos",
+      "source": "./plugins/kairos",
+      "description": "Proje yönetim ve geliştirme araçları - build, status, next, test komutları"
+    }
+  ]
+}

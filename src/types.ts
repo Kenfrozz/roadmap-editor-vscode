@@ -153,7 +153,10 @@ export type WebviewMessage =
   | { command: 'gitKaydet'; mesaj: string }
   | { command: 'gitPaylas' }
   | { command: 'gitGuncelle' }
-  | { command: 'bildirimGoster'; mesaj: string };
+  | { command: 'bildirimGoster'; mesaj: string }
+  | { command: 'claudeDosyaYukle'; filename: string }
+  | { command: 'claudeDosyaKaydet'; filename: string; content: string }
+  | { command: 'claudePluginKur' };
 
 // Extension -> Webview mesajlari
 export type ExtensionMessage =
@@ -177,4 +180,7 @@ export type ExtensionMessage =
   | { command: 'gitKaydetResponse'; success: boolean; error?: string }
   | { command: 'gitPaylasResponse'; success: boolean; error?: string }
   | { command: 'gitGuncelleResponse'; success: boolean; error?: string }
-  | { command: 'pdfOlusturResponse'; success: boolean; filename?: string; error?: string };
+  | { command: 'pdfOlusturResponse'; success: boolean; filename?: string; error?: string }
+  | { command: 'claudeDosyaYukleResponse'; data: { content: string; lines: string[]; total: number } | null }
+  | { command: 'claudeDosyaKaydetResponse'; success: boolean; error?: string }
+  | { command: 'claudePluginKurResponse'; success: boolean; created?: string[]; error?: string };

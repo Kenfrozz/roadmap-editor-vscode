@@ -2,6 +2,21 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.10.0] - 2026-02-19
+
+### Eklendi
+- **Claude Code Plugin Sistemi** — `/kairos:build` ve `/kairos:test` komutlarini projeye kuran plugin altyapisi (marketplace.json, plugin.json, komut sablonlari)
+- **Plugin Yonetimi (Ayarlar)** — Claude sekmesinde tek tikla plugin kurulum/guncelleme butonu ve durum gostergesi
+- **CLAUDE.md Duzenleyici** — Ayarlar icerisinden CLAUDE.md dosyasini dogrudan okuma ve yazma
+- **ARCHITECTURE.md Duzenleyici** — Ayarlar icerisinden ARCHITECTURE.md dosyasini dogrudan okuma ve yazma
+- **Kurulum Sihirbazi Claude Adimi** — Yeni proje olusturulurken plugin kurulumunu acip kapatabilme secenegi
+- **Claude Backend Modulu** — `dosyaYukle`, `dosyaKaydet`, `pluginKur` backend islemleri
+- **Claude Runner Plani** — Otonom gorev calistirma icin detayli 4 fazli yol haritasi dokumani
+
+### Degisti
+- **Claude Ayarlar Sekmesi** — Sadece komut ayarlari yerine 4 bolumlu tam sayfa: Komut Ayarlari, Plugin Yonetimi, CLAUDE.md, ARCHITECTURE.md
+- **SetupWizard Adimlari** — 3 adimdan 4 adima genisledi (Hosgeldin → Terminal → Sutunlar → Claude → Olustur)
+
 ## [1.9.0] - 2026-02-18
 
 ### Degisti

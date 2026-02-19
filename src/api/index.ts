@@ -24,6 +24,9 @@ import { execute as gitDegisiklikler } from '../backend/git/degisiklikler';
 import { execute as gitKaydet } from '../backend/git/kaydet';
 import { execute as gitPaylas } from '../backend/git/paylas';
 import { execute as gitGuncelle } from '../backend/git/guncelle';
+import { execute as claudeDosyaYukle } from '../backend/claude/dosyaYukle';
+import { execute as claudeDosyaKaydet } from '../backend/claude/dosyaKaydet';
+import { execute as claudePluginKur } from '../backend/claude/pluginKur';
 // Frontend icin TEK giris noktasi
 // Tum webview mesajlarini ilgili backend modulune yonlendirir
 export async function handleMessage(
@@ -248,6 +251,38 @@ export async function handleMessage(
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
         webview.postMessage({ command: 'gitGuncelleResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'claudeDosyaYukle': {
+      try {
+        const data = await claudeDosyaYukle(message.filename);
+        webview.postMessage({ command: 'claudeDosyaYukleResponse', data });
+      } catch {
+        webview.postMessage({ command: 'claudeDosyaYukleResponse', data: null });
+      }
+      break;
+    }
+
+    case 'claudeDosyaKaydet': {
+      try {
+        await claudeDosyaKaydet(message.filename, message.content);
+        webview.postMessage({ command: 'claudeDosyaKaydetResponse', success: true });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'claudeDosyaKaydetResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'claudePluginKur': {
+      try {
+        const result = await claudePluginKur();
+        webview.postMessage({ command: 'claudePluginKurResponse', success: true, created: result.created });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'claudePluginKurResponse', success: false, error: errorMessage });
       }
       break;
     }

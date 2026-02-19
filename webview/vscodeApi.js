@@ -241,6 +241,32 @@ export const api = {
     return true
   },
 
+  async claudeDosyaYukle(filename) {
+    const response = await sendAndWait(
+      { command: 'claudeDosyaYukle', filename },
+      'claudeDosyaYukleResponse'
+    )
+    return response.data
+  },
+
+  async claudeDosyaKaydet(filename, content) {
+    const response = await sendAndWait(
+      { command: 'claudeDosyaKaydet', filename, content },
+      'claudeDosyaKaydetResponse'
+    )
+    if (!response.success) throw new Error(response.error)
+    return true
+  },
+
+  async claudePluginKur() {
+    const response = await sendAndWait(
+      { command: 'claudePluginKur' },
+      'claudePluginKurResponse'
+    )
+    if (!response.success) throw new Error(response.error)
+    return response.created
+  },
+
 }
 
 export const state = {

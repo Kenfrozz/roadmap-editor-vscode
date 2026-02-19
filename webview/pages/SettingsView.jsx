@@ -33,6 +33,10 @@ import {
   Download,
   RotateCcw,
   Tag,
+  FileCode2,
+  Puzzle,
+  Check,
+  X,
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -216,6 +220,60 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
     }))
   }
 
+  // Claude dosya duzenleyicileri
+  const [claudeMd, setClaudeMd] = useState(null)
+  const [archMd, setArchMd] = useState(null)
+  const [claudeMdLoading, setClaudeMdLoading] = useState(false)
+  const [archMdLoading, setArchMdLoading] = useState(false)
+  const [claudeMdSaving, setClaudeMdSaving] = useState(false)
+  const [archMdSaving, setArchMdSaving] = useState(false)
+  const [pluginInstalling, setPluginInstalling] = useState(false)
+  const [pluginResult, setPluginResult] = useState(null)
+
+  const loadClaudeFiles = async () => {
+    setClaudeMdLoading(true)
+    setArchMdLoading(true)
+    try {
+      const c = await api.claudeDosyaYukle('CLAUDE.md')
+      setClaudeMd(c ? c.content : '')
+    } catch { setClaudeMd('') }
+    finally { setClaudeMdLoading(false) }
+    try {
+      const a = await api.claudeDosyaYukle('ARCHITECTURE.md')
+      setArchMd(a ? a.content : '')
+    } catch { setArchMd('') }
+    finally { setArchMdLoading(false) }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'claude' && claudeMd === null) loadClaudeFiles()
+  }, [activeTab])
+
+  const handleClaudeMdSave = async () => {
+    setClaudeMdSaving(true)
+    try { await api.claudeDosyaKaydet('CLAUDE.md', claudeMd) } catch (e) { console.error(e) }
+    finally { setClaudeMdSaving(false) }
+  }
+
+  const handleArchMdSave = async () => {
+    setArchMdSaving(true)
+    try { await api.claudeDosyaKaydet('ARCHITECTURE.md', archMd) } catch (e) { console.error(e) }
+    finally { setArchMdSaving(false) }
+  }
+
+  const handlePluginInstall = async () => {
+    setPluginInstalling(true)
+    setPluginResult(null)
+    try {
+      const created = await api.claudePluginKur()
+      setPluginResult({ success: true, created })
+    } catch (e) {
+      setPluginResult({ success: false, error: e.message })
+    } finally {
+      setPluginInstalling(false)
+    }
+  }
+
   const [backups, setBackups] = useState([])
   const [loadingBackups, setLoadingBackups] = useState(false)
   const [restoringBackup, setRestoringBackup] = useState(null)
@@ -353,34 +411,156 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
 
         {/* -- Claude Code Sekmesi -- */}
         {activeTab === 'claude' && (
-          <div className="space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Claude Code Ayarlari</h2>
-
-            <div className="rounded-lg border bg-card p-4 space-y-4">
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Ana Claude Komutu</label>
-                <Input
-                  value={settings.claude.mainCommand}
-                  onChange={(e) => setSettings(prev => ({ ...prev, claude: { ...prev.claude, mainCommand: e.target.value } }))}
-                  className="h-8 text-xs font-mono-code"
-                  placeholder="claude --dangerously-skip-permissions"
-                />
-                <p className="text-[10px] text-muted-foreground/60 mt-1">
-                  Header'daki Claude butonuna tiklandiginda calistirilacak komut
-                </p>
+          <div className="space-y-6">
+            {/* Komut Ayarlari */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Komut Ayarlari</h2>
+              <div className="rounded-lg border bg-card p-4 space-y-4">
+                <div>
+                  <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Ana Claude Komutu</label>
+                  <Input
+                    value={settings.claude.mainCommand}
+                    onChange={(e) => setSettings(prev => ({ ...prev, claude: { ...prev.claude, mainCommand: e.target.value } }))}
+                    className="h-8 text-xs font-mono-code"
+                    placeholder="claude --dangerously-skip-permissions"
+                  />
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    Header'daki Claude butonuna tiklandiginda calistirilacak komut
+                  </p>
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Ozellik Claude Komutu</label>
+                  <Input
+                    value={settings.claude.featureCommand}
+                    onChange={(e) => setSettings(prev => ({ ...prev, claude: { ...prev.claude, featureCommand: e.target.value } }))}
+                    className="h-8 text-xs font-mono-code"
+                    placeholder='claude "${ozellik}"'
+                  />
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    Satirdaki Claude butonuna tiklandiginda calistirilacak komut. <code className="px-1 py-0.5 rounded bg-muted text-[10px]">{'${ozellik}'}</code> ozellik adiyla degistirilir.
+                  </p>
+                </div>
               </div>
+            </div>
 
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Ozellik Claude Komutu</label>
-                <Input
-                  value={settings.claude.featureCommand}
-                  onChange={(e) => setSettings(prev => ({ ...prev, claude: { ...prev.claude, featureCommand: e.target.value } }))}
-                  className="h-8 text-xs font-mono-code"
-                  placeholder='claude "${ozellik}"'
-                />
-                <p className="text-[10px] text-muted-foreground/60 mt-1">
-                  Satirdaki Claude butonuna tiklandiginda calistirilacak komut. <code className="px-1 py-0.5 rounded bg-muted text-[10px]">{'${ozellik}'}</code> ozellik adiyla degistirilir.
-                </p>
+            {/* Plugin Yonetimi */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Plugin Yonetimi</h2>
+              <div className="rounded-lg border bg-card p-4 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Puzzle className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold">Kairos Plugin</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      /kairos:build ve /kairos:test komutlarini projeye kurar
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs gap-1.5 shrink-0"
+                    onClick={handlePluginInstall}
+                    disabled={pluginInstalling}
+                  >
+                    {pluginInstalling ? <Loader2 className="w-3 h-3 animate-spin" /> : <Puzzle className="w-3 h-3" />}
+                    Kur / Guncelle
+                  </Button>
+                </div>
+                {pluginResult && (
+                  <div className={cn(
+                    'flex items-center gap-2 px-3 py-2 rounded-md text-[11px]',
+                    pluginResult.success ? 'bg-emerald-500/10 text-emerald-600' : 'bg-destructive/10 text-destructive'
+                  )}>
+                    {pluginResult.success ? <Check className="w-3.5 h-3.5 shrink-0" /> : <X className="w-3.5 h-3.5 shrink-0" />}
+                    {pluginResult.success ? `Plugin kuruldu (${pluginResult.created.length} dosya)` : pluginResult.error}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* CLAUDE.md Duzenleme */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <FileCode2 className="w-3.5 h-3.5" />
+                  CLAUDE.md
+                </span>
+              </h2>
+              <div className="rounded-lg border bg-card overflow-hidden">
+                {claudeMdLoading ? (
+                  <div className="p-8 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <>
+                    <textarea
+                      value={claudeMd || ''}
+                      onChange={(e) => setClaudeMd(e.target.value)}
+                      className="w-full min-h-[200px] p-3 text-xs font-mono-code bg-background resize-y focus:outline-none"
+                      placeholder="# CLAUDE.md&#10;&#10;Proje kurallari, mimari yapilandirma ve konvansiyonlari buraya yazin.&#10;Claude Code bu dosyayi okuyarak projenize uygun calisir."
+                      spellCheck={false}
+                    />
+                    <div className="flex items-center justify-between px-3 py-2 border-t border-border/40 bg-muted/30">
+                      <p className="text-[10px] text-muted-foreground/60">
+                        Claude Code bu dosyayi proje baglaminda kullanir
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-[10px] gap-1 px-2"
+                        onClick={handleClaudeMdSave}
+                        disabled={claudeMdSaving}
+                      >
+                        {claudeMdSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                        Kaydet
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* ARCHITECTURE.md Duzenleme */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <FileCode2 className="w-3.5 h-3.5" />
+                  ARCHITECTURE.md
+                </span>
+              </h2>
+              <div className="rounded-lg border bg-card overflow-hidden">
+                {archMdLoading ? (
+                  <div className="p-8 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <>
+                    <textarea
+                      value={archMd || ''}
+                      onChange={(e) => setArchMd(e.target.value)}
+                      className="w-full min-h-[200px] p-3 text-xs font-mono-code bg-background resize-y focus:outline-none"
+                      placeholder="# ARCHITECTURE.md&#10;&#10;Projenin mimari yapisini, katman izolasyonunu ve onemli dosya yollarini buraya yazin."
+                      spellCheck={false}
+                    />
+                    <div className="flex items-center justify-between px-3 py-2 border-t border-border/40 bg-muted/30">
+                      <p className="text-[10px] text-muted-foreground/60">
+                        Proje mimarisini tanimlar, opsiyoneldir
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-[10px] gap-1 px-2"
+                        onClick={handleArchMdSave}
+                        disabled={archMdSaving}
+                      >
+                        {archMdSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                        Kaydet
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

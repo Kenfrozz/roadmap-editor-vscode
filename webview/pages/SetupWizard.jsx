@@ -30,6 +30,10 @@ import {
   CircleDot,
   Type,
   CalendarDays,
+  Bot,
+  Puzzle,
+  FileCode2,
+  FolderTree,
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -114,6 +118,7 @@ export function SetupWizard({ onCreated }) {
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [pluginEnabled, setPluginEnabled] = useState(true)
 
   useEffect(() => {
     api.loadSettings().then(s => {
@@ -196,6 +201,9 @@ export function SetupWizard({ onCreated }) {
     setCreating(true)
     try {
       await api.createRoadmapWithSettings(settings)
+      if (pluginEnabled) {
+        try { await api.claudePluginKur() } catch (e) { console.error('Plugin kurulum hatasi:', e) }
+      }
       onCreated()
     } catch (err) {
       console.error('Create kairos error:', err)
@@ -216,6 +224,7 @@ export function SetupWizard({ onCreated }) {
     { label: 'Hosgeldin', icon: Rocket },
     { label: 'Terminal', icon: Terminal },
     { label: 'Sutunlar', icon: Columns3 },
+    { label: 'Claude', icon: Bot },
     { label: 'Olustur', icon: Check },
   ]
 
@@ -391,8 +400,96 @@ export function SetupWizard({ onCreated }) {
             </div>
           )}
 
-          {/* -- Step 3: Confirm & Create -- */}
+          {/* -- Step 3: Claude Plugin -- */}
           {step === 3 && (
+            <div className="space-y-4">
+              <div className="text-center mb-6">
+                <h2 className="text-base font-bold tracking-tight mb-1">Claude Plugin</h2>
+                <p className="text-xs text-muted-foreground">Claude Code ile entegrasyon icin plugin kurulumu</p>
+              </div>
+
+              <div className="rounded-lg border bg-card p-4 space-y-4">
+                {/* Toggle */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Puzzle className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold">Kairos Plugin Kur</p>
+                      <p className="text-[10px] text-muted-foreground">Claude Code'da /kairos:build ve /kairos:test komutlarini aktif eder</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setPluginEnabled(!pluginEnabled)}
+                    className={cn(
+                      'relative w-9 h-5 rounded-full transition-colors shrink-0',
+                      pluginEnabled ? 'bg-primary' : 'bg-muted-foreground/20'
+                    )}
+                  >
+                    <div className={cn(
+                      'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform',
+                      pluginEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'
+                    )} />
+                  </button>
+                </div>
+
+                {pluginEnabled && (
+                  <>
+                    <div className="border-t border-border/40" />
+
+                    {/* Aciklama */}
+                    <div className="space-y-3">
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        Plugin kurulumu su dosyalari olusturur:
+                      </p>
+
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 text-[10px] font-mono-code text-muted-foreground/80">
+                          <FolderTree className="w-3 h-3 shrink-0" />
+                          <span>kairos/.claude-plugin/marketplace.json</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] font-mono-code text-muted-foreground/80">
+                          <FolderTree className="w-3 h-3 shrink-0" />
+                          <span>kairos/plugins/kairos/.claude-plugin/plugin.json</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] font-mono-code text-muted-foreground/80">
+                          <FileCode2 className="w-3 h-3 shrink-0" />
+                          <span>kairos/plugins/kairos/commands/build.md</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] font-mono-code text-muted-foreground/80">
+                          <FileCode2 className="w-3 h-3 shrink-0" />
+                          <span>kairos/plugins/kairos/commands/test.md</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] font-mono-code text-muted-foreground/80">
+                          <FileCode2 className="w-3 h-3 shrink-0" />
+                          <span>.claude/settings.json (marketplace referansi)</span>
+                        </div>
+                      </div>
+
+                      <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
+                        Kurulumdan sonra Claude Code terminalinde /kairos:build komutu ile gorev gelistirme, /kairos:test ile test calistirma yapabilirsiniz.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="flex justify-between pt-4">
+                <Button variant="outline" size="sm" onClick={() => setStep(2)} className="gap-1.5 text-xs">
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Geri
+                </Button>
+                <Button size="sm" onClick={() => setStep(4)} className="gap-1.5 text-xs">
+                  Devam
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* -- Step 4: Confirm & Create -- */}
+          {step === 4 && (
             <div className="space-y-4">
               <div className="text-center mb-6">
                 <h2 className="text-base font-bold tracking-tight mb-1">Ozet & Olustur</h2>
@@ -437,10 +534,23 @@ export function SetupWizard({ onCreated }) {
                     </div>
                   </div>
                 </div>
+
+                <div className="border-t border-border/40" />
+
+                {/* Claude Plugin */}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Bot className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium text-muted-foreground">Claude Plugin</p>
+                    <p className="text-xs font-bold">{pluginEnabled ? 'Kurulacak' : 'Kurulmayacak'}</p>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-between pt-4">
-                <Button variant="outline" size="sm" onClick={() => setStep(2)} className="gap-1.5 text-xs">
+                <Button variant="outline" size="sm" onClick={() => setStep(3)} className="gap-1.5 text-xs">
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Geri
                 </Button>

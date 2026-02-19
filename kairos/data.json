@@ -18,9 +18,9 @@
         "id": "1771436211290tnocs9fbp",
         "ozellik": "",
         "prd": "",
-        "backend": "❌",
-        "frontend": "❌",
-        "test": "❌",
+        "backend": "✅",
+        "frontend": "✅",
+        "test": "✅",
         "tarih": "",
         "not": "",
         "children": [
@@ -34,7 +34,8 @@
             "tarih": "",
             "not": ""
           }
-        ]
+        ],
+        "durum": "✅"
       }
     ]
   }
