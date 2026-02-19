@@ -37,6 +37,8 @@ import {
   Puzzle,
   Check,
   X,
+  FileText,
+  Pencil,
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -247,6 +249,36 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
 
   const [pluginInstalling, setPluginInstalling] = useState(false)
   const [pluginResult, setPluginResult] = useState(null)
+  const [pluginDurum, setPluginDurum] = useState(null)
+  const [pluginLoading, setPluginLoading] = useState(false)
+  const [configEditing, setConfigEditing] = useState(null)
+  const [configSaving, setConfigSaving] = useState(false)
+  const [showNewCommand, setShowNewCommand] = useState(false)
+  const [newCmdName, setNewCmdName] = useState('')
+  const [newCmdContent, setNewCmdContent] = useState('')
+  const [newCmdSaving, setNewCmdSaving] = useState(false)
+
+  const loadPluginDurum = async () => {
+    setPluginLoading(true)
+    try {
+      const durum = await api.pluginDurumYukle()
+      setPluginDurum(durum)
+      if (durum.installed && durum.pluginJson && durum.marketplaceJson) {
+        setConfigEditing({
+          pluginJson: { ...durum.pluginJson },
+          marketplaceJson: { ...durum.marketplaceJson },
+        })
+      }
+    } catch {
+      setPluginDurum(null)
+    } finally {
+      setPluginLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'araclar') loadPluginDurum()
+  }, [activeTab])
 
   const handlePluginInstall = async () => {
     setPluginInstalling(true)
@@ -254,10 +286,57 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
     try {
       const created = await api.claudePluginKur()
       setPluginResult({ success: true, created })
+      await loadPluginDurum()
     } catch (e) {
       setPluginResult({ success: false, error: e.message })
     } finally {
       setPluginInstalling(false)
+    }
+  }
+
+  const handleConfigSave = async () => {
+    if (!configEditing) return
+    setConfigSaving(true)
+    try {
+      await api.pluginYapilandirmaKaydet(configEditing.pluginJson, configEditing.marketplaceJson)
+      await loadPluginDurum()
+    } catch (e) {
+      console.error('Config save error:', e)
+    } finally {
+      setConfigSaving(false)
+    }
+  }
+
+  const handleEditCommand = async (name) => {
+    try {
+      await api.claudeDosyaAc(`kairos/plugins/kairos/commands/${name}.md`)
+    } catch (e) {
+      console.error('Command open error:', e)
+    }
+  }
+
+  const handleDeleteCommand = async (name) => {
+    try {
+      await api.pluginKomutSil(name)
+      await loadPluginDurum()
+    } catch (e) {
+      console.error('Command delete error:', e)
+    }
+  }
+
+  const handleCreateCommand = async () => {
+    if (!newCmdName.trim()) return
+    setNewCmdSaving(true)
+    try {
+      await api.pluginKomutKaydet(newCmdName.trim(), newCmdContent)
+      setShowNewCommand(false)
+      setNewCmdName('')
+      setNewCmdContent('')
+      await loadPluginDurum()
+    } catch (e) {
+      console.error('Command create error:', e)
+    } finally {
+      setNewCmdSaving(false)
     }
   }
 
@@ -441,8 +520,28 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold">Kairos Plugin</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">
-                        /kairos:build ve /kairos:test komutlarini projeye kurar
+                        {pluginDurum?.installed
+                          ? `v${pluginDurum.pluginJson?.version || '?'} · ${pluginDurum.komutlar.length} komut`
+                          : '/kairos:build ve /kairos:test komutlarini projeye kurar'
+                        }
                       </p>
+                      <div className="mt-1">
+                        {pluginLoading ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <Loader2 className="w-3 h-3 animate-spin" /> Kontrol ediliyor...
+                          </span>
+                        ) : pluginDurum?.installed ? (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Kurulu
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground">
+                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                            Kurulu degil
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <Button
                       variant="outline"
@@ -466,6 +565,185 @@ export function SettingsView({ onClose, onSaved, isCompact, onReset }) {
                   )}
                 </div>
               </div>
+
+              {/* Yapilandirma — sadece kuruluysa */}
+              {pluginDurum?.installed && configEditing && (
+                <div className="space-y-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Yapilandirma</h2>
+                  <div className="rounded-lg border bg-card p-4 space-y-3">
+                    <div>
+                      <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Plugin Adi</label>
+                      <Input
+                        value={configEditing.pluginJson.name}
+                        onChange={(e) => setConfigEditing(prev => ({ ...prev, pluginJson: { ...prev.pluginJson, name: e.target.value } }))}
+                        className="h-8 text-xs font-mono-code"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Plugin Aciklama</label>
+                      <Input
+                        value={configEditing.pluginJson.description}
+                        onChange={(e) => setConfigEditing(prev => ({ ...prev, pluginJson: { ...prev.pluginJson, description: e.target.value } }))}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Plugin Versiyon</label>
+                      <Input
+                        value={configEditing.pluginJson.version}
+                        onChange={(e) => setConfigEditing(prev => ({ ...prev, pluginJson: { ...prev.pluginJson, version: e.target.value } }))}
+                        className="h-8 text-xs font-mono-code"
+                      />
+                    </div>
+                    <div className="border-t border-border/40 pt-3">
+                      <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Marketplace Adi</label>
+                      <Input
+                        value={configEditing.marketplaceJson.name}
+                        onChange={(e) => setConfigEditing(prev => ({ ...prev, marketplaceJson: { ...prev.marketplaceJson, name: e.target.value } }))}
+                        className="h-8 text-xs font-mono-code"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Marketplace Aciklama</label>
+                      <Input
+                        value={configEditing.marketplaceJson.description}
+                        onChange={(e) => setConfigEditing(prev => ({ ...prev, marketplaceJson: { ...prev.marketplaceJson, description: e.target.value } }))}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="flex justify-end pt-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1.5"
+                        onClick={handleConfigSave}
+                        disabled={configSaving}
+                      >
+                        {configSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                        Kaydet
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Komutlar — sadece kuruluysa */}
+              {pluginDurum?.installed && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Komutlar</h2>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1.5"
+                      onClick={() => { setShowNewCommand(true); setNewCmdName(''); setNewCmdContent('---\ndescription: Aciklama\n---\n\nKomut icerigi...\n'); }}
+                    >
+                      <Plus className="w-3 h-3" />
+                      Yeni Komut
+                    </Button>
+                  </div>
+
+                  {pluginDurum.komutlar.length === 0 && !showNewCommand && (
+                    <div className="rounded-lg border bg-card p-6 text-center">
+                      <p className="text-xs text-muted-foreground/60">Henuz komut bulunmuyor</p>
+                    </div>
+                  )}
+
+                  {pluginDurum.komutlar.length > 0 && (
+                    <div className="rounded-lg border bg-card overflow-hidden divide-y divide-border/40">
+                      {pluginDurum.komutlar.map((komut) => (
+                        <div key={komut.name}>
+                          <div className="px-4 py-3">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                                  <p className="text-xs font-bold font-mono-code">/kairos:{komut.name}</p>
+                                </div>
+                                {komut.description && (
+                                  <p className="text-[11px] text-muted-foreground mt-1 ml-5">{komut.description}</p>
+                                )}
+                                {komut.argumentHint && (
+                                  <p className="text-[10px] text-muted-foreground/60 font-mono-code mt-0.5 ml-5">hint: {komut.argumentHint}</p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleEditCommand(komut.name)}
+                                  title="VS Code'da Ac"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                  onClick={() => handleDeleteCommand(komut.name)}
+                                  title="Sil"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Yeni Komut Formu */}
+                  {showNewCommand && (
+                    <div className="rounded-lg border bg-card p-4 space-y-3">
+                      <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Yeni Komut Ekle</h3>
+                      <div>
+                        <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Komut Adi</label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={newCmdName}
+                            onChange={(e) => setNewCmdName(e.target.value)}
+                            className="h-8 text-xs font-mono-code"
+                            placeholder="deploy"
+                          />
+                          <span className="text-[10px] text-muted-foreground/60 shrink-0">orn: deploy</span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-medium text-muted-foreground mb-1.5 block">Icerik</label>
+                        <textarea
+                          value={newCmdContent}
+                          onChange={(e) => setNewCmdContent(e.target.value)}
+                          className="w-full h-40 px-3 py-2 rounded-md border border-input bg-background text-xs font-mono-code resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
+                          spellCheck={false}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => { setShowNewCommand(false); setNewCmdName(''); setNewCmdContent(''); }}
+                        >
+                          Iptal
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs gap-1.5"
+                          onClick={handleCreateCommand}
+                          disabled={newCmdSaving || !newCmdName.trim()}
+                        >
+                          {newCmdSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
+                          Olustur
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}

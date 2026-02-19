@@ -2,6 +2,17 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.12.0] - 2026-02-19
+
+### Eklendi
+- **Plugin Durum Gostergesi** — Ayarlarda plugin kurulum durumu, versiyon ve komut sayisi gosterimi
+- **Plugin Yapilandirma Editorü** — Plugin ve marketplace JSON ayarlarini arayuzden duzenleme ve kaydetme
+- **Plugin Komut Yonetimi** — Mevcut komutlari listeleme, VS Code'da acma, silme ve yeni komut olusturma formu
+- **Dosya Silme Destegi** — `db.ts`'ye `deleteFile()` fonksiyonu eklendi
+
+### Degisti
+- **Plugin Bolumu Genisletildi** — Tek butonlu kurulum yerine tam kapsamli plugin yonetim paneli (durum + yapilandirma + komutlar)
+
 ## [1.11.0] - 2026-02-19
 
 ### Eklendi

@@ -97,6 +97,13 @@ export async function writeFileBinary(filename: string, buffer: Buffer): Promise
   await vscode.workspace.fs.writeFile(uri, buffer);
 }
 
+export async function deleteFile(filename: string): Promise<void> {
+  const root = getWorkspaceRoot();
+  if (!root) throw new Error('Workspace bulunamadi');
+  const filePath = path.join(root, filename);
+  await vscode.workspace.fs.delete(vscode.Uri.file(filePath));
+}
+
 export async function fileExists(filename: string): Promise<boolean> {
   const root = getWorkspaceRoot();
   if (!root) return false;

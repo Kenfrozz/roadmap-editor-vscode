@@ -108,6 +108,30 @@ export interface BackupEntry {
   size: number;
 }
 
+export interface PluginKomut {
+  name: string;
+  description: string;
+  argumentHint?: string;
+}
+
+export interface PluginYapilandirma {
+  name: string;
+  description: string;
+  version: string;
+}
+
+export interface MarketplaceYapilandirma {
+  name: string;
+  description: string;
+}
+
+export interface PluginDurum {
+  installed: boolean;
+  pluginJson: PluginYapilandirma | null;
+  marketplaceJson: MarketplaceYapilandirma | null;
+  komutlar: PluginKomut[];
+}
+
 export interface GitDurum {
   branch: string;
   changedCount: number;
@@ -160,7 +184,11 @@ export type WebviewMessage =
   | { command: 'claudeDosyaKaydet'; filename: string; content: string }
   | { command: 'claudePluginKur' }
   | { command: 'claudeDosyaAc'; filename: string }
-  | { command: 'claudeDosyaEkle' };
+  | { command: 'claudeDosyaEkle' }
+  | { command: 'pluginDurumYukle' }
+  | { command: 'pluginKomutKaydet'; name: string; content: string }
+  | { command: 'pluginKomutSil'; name: string }
+  | { command: 'pluginYapilandirmaKaydet'; pluginJson: PluginYapilandirma; marketplaceJson: MarketplaceYapilandirma };
 
 // Extension -> Webview mesajlari
 export type ExtensionMessage =
@@ -189,4 +217,8 @@ export type ExtensionMessage =
   | { command: 'claudeDosyaKaydetResponse'; success: boolean; error?: string }
   | { command: 'claudePluginKurResponse'; success: boolean; created?: string[]; error?: string }
   | { command: 'claudeDosyaAcResponse'; success: boolean; error?: string }
-  | { command: 'claudeDosyaEkleResponse'; filename: string | null };
+  | { command: 'claudeDosyaEkleResponse'; filename: string | null }
+  | { command: 'pluginDurumYukleResponse'; durum: PluginDurum }
+  | { command: 'pluginKomutKaydetResponse'; success: boolean; error?: string }
+  | { command: 'pluginKomutSilResponse'; success: boolean; error?: string }
+  | { command: 'pluginYapilandirmaKaydetResponse'; success: boolean; error?: string };

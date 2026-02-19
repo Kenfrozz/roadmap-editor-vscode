@@ -301,6 +301,38 @@ export const api = {
     return response.filename
   },
 
+  async pluginDurumYukle() {
+    const response = await sendAndWait(
+      { command: 'pluginDurumYukle' },
+      'pluginDurumYukleResponse'
+    )
+    return response.durum
+  },
+
+  async pluginKomutKaydet(name, content) {
+    const response = await sendAndWait(
+      { command: 'pluginKomutKaydet', name, content },
+      'pluginKomutKaydetResponse'
+    )
+    if (!response.success) throw new Error(response.error)
+  },
+
+  async pluginKomutSil(name) {
+    const response = await sendAndWait(
+      { command: 'pluginKomutSil', name },
+      'pluginKomutSilResponse'
+    )
+    if (!response.success) throw new Error(response.error)
+  },
+
+  async pluginYapilandirmaKaydet(pluginJson, marketplaceJson) {
+    const response = await sendAndWait(
+      { command: 'pluginYapilandirmaKaydet', pluginJson, marketplaceJson },
+      'pluginYapilandirmaKaydetResponse'
+    )
+    if (!response.success) throw new Error(response.error)
+  },
+
 }
 
 export const state = {

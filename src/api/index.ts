@@ -29,6 +29,10 @@ import { execute as claudeDosyaKaydet } from '../backend/claude/dosyaKaydet';
 import { execute as claudePluginKur } from '../backend/claude/pluginKur';
 import { execute as claudeDosyaAc } from '../backend/claude/dosyaAc';
 import { execute as claudeDosyaEkle } from '../backend/claude/dosyaEkle';
+import { execute as pluginDurumYukle } from '../backend/claude/pluginDurumYukle';
+import { execute as pluginKomutKaydet } from '../backend/claude/pluginKomutKaydet';
+import { execute as pluginKomutSil } from '../backend/claude/pluginKomutSil';
+import { execute as pluginYapilandirmaKaydet } from '../backend/claude/pluginYapilandirmaKaydet';
 // Frontend icin TEK giris noktasi
 // Tum webview mesajlarini ilgili backend modulune yonlendirir
 export async function handleMessage(
@@ -306,6 +310,49 @@ export async function handleMessage(
         webview.postMessage({ command: 'claudeDosyaEkleResponse', filename: result?.filename || null });
       } catch {
         webview.postMessage({ command: 'claudeDosyaEkleResponse', filename: null });
+      }
+      break;
+    }
+
+    case 'pluginDurumYukle': {
+      try {
+        const durum = await pluginDurumYukle();
+        webview.postMessage({ command: 'pluginDurumYukleResponse', durum });
+      } catch {
+        webview.postMessage({ command: 'pluginDurumYukleResponse', durum: { installed: false, pluginJson: null, marketplaceJson: null, komutlar: [] } });
+      }
+      break;
+    }
+
+    case 'pluginKomutKaydet': {
+      try {
+        await pluginKomutKaydet(message.name, message.content);
+        webview.postMessage({ command: 'pluginKomutKaydetResponse', success: true });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'pluginKomutKaydetResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'pluginKomutSil': {
+      try {
+        await pluginKomutSil(message.name);
+        webview.postMessage({ command: 'pluginKomutSilResponse', success: true });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'pluginKomutSilResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'pluginYapilandirmaKaydet': {
+      try {
+        await pluginYapilandirmaKaydet(message.pluginJson, message.marketplaceJson);
+        webview.postMessage({ command: 'pluginYapilandirmaKaydetResponse', success: true });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'pluginYapilandirmaKaydetResponse', success: false, error: errorMessage });
       }
       break;
     }
