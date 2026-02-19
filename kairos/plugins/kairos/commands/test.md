@@ -1,31 +1,32 @@
 ---
-description: Flutter testlerini çalıştır ve sonuçları raporla
-argument-hint: "[dosya-yolu veya modül-adı] (boş bırakılırsa tümü)"
+description: Testleri calistir ve sonuclari raporla
+argument-hint: "[dosya-yolu veya modul-adi] (bos birakilirsa tumu)"
 disable-model-invocation: true
 ---
 
 # Kairos Test
 
-Flutter testlerini çalıştır ve sonuçları raporla.
+Testleri calistir ve sonuclari raporla.
 
-## Çalıştırma
+## Calistirma
 
-Argüman verilmişse: `$ARGUMENTS`
+Arguman verilmisse: `$ARGUMENTS`
 
-- Argüman boşsa: `flutter test` ile tüm testleri çalıştır
-- Argüman bir dosya yoluysa: `flutter test $ARGUMENTS`
-- Argüman bir modül adıysa (örn: "sohbetler"): `test/` altında o modülle ilgili test dosyalarını bul ve çalıştır
+- CLAUDE.md'den projenin test komutunu belirle
+- Arguman bossa: tum testleri calistir
+- Arguman bir dosya yoluysa: o dosyanin testlerini calistir
+- Arguman bir modul adiysa: ilgili test dosyalarini bul ve calistir
 
 ## Hata Durumunda
 
-Testler başarısız olursa:
-1. Hata mesajlarını analiz et
-2. Başarısız olan test dosyalarını ve ilgili kaynak dosyaları oku
-3. Sorunun kaynağını tespit et
-4. Düzeltme önerisi sun
+Testler basarisiz olursa:
+1. Hata mesajlarini analiz et
+2. Basarisiz olan test dosyalarini ve ilgili kaynak dosyalari oku
+3. Sorunun kaynagini tespit et
+4. Duzeltme onerisi sun
 
-## Rapor Formatı
+## Rapor Formati
 
-- Toplam test sayısı
-- Başarılı / Başarısız / Atlanan
-- Başarısız testlerin listesi ve hata özeti
+- Toplam test sayisi
+- Basarili / Basarisiz / Atlanan
+- Basarisiz testlerin listesi ve hata ozeti

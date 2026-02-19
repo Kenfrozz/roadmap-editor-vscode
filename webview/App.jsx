@@ -52,6 +52,7 @@ import { PrdLinePicker } from './components/PrdLinePicker'
 import { SettingsView } from './pages/SettingsView'
 import { SetupWizard } from './pages/SetupWizard'
 import { GitStatusBadge, GitPanel } from './components/GitPanel'
+import { AiKokpit } from './components/AiKokpit'
 
 // === Recursive tree helpers ===
 function generateId() {
@@ -691,6 +692,16 @@ export default function App() {
           total={total}
           done={statusBreakdowns.length > 0 ? statusBreakdowns[0].breakdown.done : 0}
           isCompact={isCompact}
+        />
+
+        <AiKokpit
+          data={data}
+          fazConfig={fazConfig}
+          fazOrder={fazOrder}
+          columns={columns}
+          gorevTurleri={gorevTurleri}
+          isCompact={isCompact}
+          onTaskStatusUpdate={updateItem}
         />
 
         <DndManager

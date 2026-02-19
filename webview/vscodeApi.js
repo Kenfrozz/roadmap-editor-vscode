@@ -333,6 +333,40 @@ export const api = {
     if (!response.success) throw new Error(response.error)
   },
 
+  async kokpitBaslat(kuyruk) {
+    const response = await sendAndWait(
+      { command: 'kokpitBaslat', kuyruk },
+      'kokpitBaslatResponse',
+      30000
+    )
+    if (!response.success) throw new Error(response.error)
+    return true
+  },
+
+  async kokpitDurdur() {
+    const response = await sendAndWait(
+      { command: 'kokpitDurdur' },
+      'kokpitDurdurResponse'
+    )
+    return response.success
+  },
+
+  async kokpitAtla() {
+    const response = await sendAndWait(
+      { command: 'kokpitAtla' },
+      'kokpitAtlaResponse'
+    )
+    return response.success
+  },
+
+  async kokpitDurumAl() {
+    const response = await sendAndWait(
+      { command: 'kokpitDurumAl' },
+      'kokpitDurumAlResponse'
+    )
+    return response.durum
+  },
+
 }
 
 export const state = {

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { KairosPanel } from './KairosPanel';
 import { KairosSidebarProvider } from './KairosSidebarProvider';
 import { consumeSuppression } from './backend/_core/db';
+import { KokpitYonetici } from './backend/kokpit/yonetici';
 
 export function activate(context: vscode.ExtensionContext) {
   // Sidebar provider
@@ -46,6 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
       KairosPanel.currentPanel.postFileChanged();
     }
     sidebarProvider.postFileChanged();
+    // Kokpit: aktif gorev data.json'da tamamlandi mi kontrol et
+    KokpitYonetici.getInstance().dosyaDegisti();
   };
 
   watcher.onDidChange(notifyWebviews);
@@ -54,4 +57,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(watcher);
 }
 
-export function deactivate() {}
+export function deactivate() {
+  KokpitYonetici.getInstance().durdur();
+}

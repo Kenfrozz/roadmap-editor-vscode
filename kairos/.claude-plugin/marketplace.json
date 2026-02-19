@@ -4,13 +4,13 @@
     "name": "Kairos"
   },
   "metadata": {
-    "description": "DiyetKent proje yönetim ve geliştirme araçları"
+    "description": "Kairos proje yonetim plugin marketplace"
   },
   "plugins": [
     {
       "name": "kairos",
       "source": "./plugins/kairos",
-      "description": "Proje yönetim ve geliştirme araçları"
+      "description": "Proje yonetim ve gelistirme araclari - build, test komutlari"
     }
   ]
 }

@@ -156,6 +156,32 @@ export interface PdfExportPayload {
   projectDate: string;
 }
 
+// === AI Kokpit Tipleri ===
+export type KokpitDurum = 'bosta' | 'calisiyor' | 'tamamlandi';
+
+export interface KuyrukGorevi {
+  id: string;
+  fazKey: string;
+  ozellik: string;
+  prd?: string;
+  tur?: string;
+}
+
+export interface TamamlananGorev {
+  id: string;
+  fazKey: string;
+  ozellik: string;
+  basarili: boolean;
+}
+
+export interface KokpitDurumBilgi {
+  durum: KokpitDurum;
+  kuyruk: KuyrukGorevi[];
+  aktifGorevIndex: number;
+  tamamlananlar: TamamlananGorev[];
+  toplam: number;
+}
+
 // Webview -> Extension mesajlari
 export type WebviewMessage =
   | { command: 'load' }
@@ -188,7 +214,11 @@ export type WebviewMessage =
   | { command: 'pluginDurumYukle' }
   | { command: 'pluginKomutKaydet'; name: string; content: string }
   | { command: 'pluginKomutSil'; name: string }
-  | { command: 'pluginYapilandirmaKaydet'; pluginJson: PluginYapilandirma; marketplaceJson: MarketplaceYapilandirma };
+  | { command: 'pluginYapilandirmaKaydet'; pluginJson: PluginYapilandirma; marketplaceJson: MarketplaceYapilandirma }
+  | { command: 'kokpitBaslat'; kuyruk: KuyrukGorevi[] }
+  | { command: 'kokpitDurdur' }
+  | { command: 'kokpitAtla' }
+  | { command: 'kokpitDurumAl' };
 
 // Extension -> Webview mesajlari
 export type ExtensionMessage =
@@ -221,4 +251,10 @@ export type ExtensionMessage =
   | { command: 'pluginDurumYukleResponse'; durum: PluginDurum }
   | { command: 'pluginKomutKaydetResponse'; success: boolean; error?: string }
   | { command: 'pluginKomutSilResponse'; success: boolean; error?: string }
-  | { command: 'pluginYapilandirmaKaydetResponse'; success: boolean; error?: string };
+  | { command: 'pluginYapilandirmaKaydetResponse'; success: boolean; error?: string }
+  | { command: 'kokpitBaslatResponse'; success: boolean; error?: string }
+  | { command: 'kokpitDurdurResponse'; success: boolean }
+  | { command: 'kokpitAtlaResponse'; success: boolean }
+  | { command: 'kokpitDurumAlResponse'; durum: KokpitDurumBilgi }
+  | { command: 'kokpitDurumDegisti'; durum: KokpitDurumBilgi }
+  | { command: 'kokpitGorevTamamlandi'; gorevId: string; fazKey: string; basarili: boolean };

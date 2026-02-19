@@ -2,6 +2,20 @@
 
 Tum onemli degisiklikler bu dosyada belgelenir.
 
+## [1.13.0] - 2026-02-20
+
+### Eklendi
+- **AI Kokpit** — Secilen gorevleri Claude CLI uzerinden sirayla otonom calistiran kuyruk sistemi (baslat, durdur, atla kontrolleri)
+- **data.json Tabanli Gorev Tamamlama** — Claude gorev bitirip data.json'i guncellediginde kokpit otomatik algilar ve siradaki goreve gecer (terminal kapanma yerine dosya izleme)
+- **Alt Gorev ve PRD Miras Destegi** — Kokpit 3 seviye derinlikteki alt gorevleri tarar, alt gorevin PRD'si yoksa ust gorevin PRD referansini kullanir
+- **Kokpit Backend Modulu** — `baslat`, `durdur`, `atla`, `durumAl` execute dosyalari ve `KokpitYonetici` singleton sinifi
+- **AiKokpit Bileseni** — Gorev secimi, ilerleme cubugu, tamamlanan gorev listesi ve kontrol butonlari
+
+### Degisti
+- **Plugin Komut Dosyalari** — `build.md` ve `test.md` Turkce karakter sorunlari duzeltildi, test komutu projeye ozgu hale getirildi
+- **PRD Referans Formati** — Kokpit artik eski (`5-20`) ve yeni (`dosya.md:5-20`) PRD formatlarini dogru isliyor
+- **Gorev Tamamlama Davranisi** — Gorev bittiginde terminal acik kaliyor, kullanici inceleyebiliyor
+
 ## [1.12.0] - 2026-02-19
 
 ### Eklendi

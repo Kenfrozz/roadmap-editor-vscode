@@ -1,8 +1,5 @@
 {
   "name": "kairos",
-  "description": "Proje yönetim ve geliştirme araçları",
-  "version": "1.0.0",
-  "author": {
-    "name": "Kairos"
-  }
+  "description": "Proje yonetim ve gelistirme araclari",
+  "version": "1.0.0"
 }

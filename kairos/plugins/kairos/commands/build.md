@@ -1,57 +1,57 @@
 ---
-description: Özellik geliştirme - 3 katmanlı agent team oluşturur
-argument-hint: "[özellik açıklaması] | PRD: [dosya:satır-aralığı]"
+description: Ozellik gelistirme - 3 katmanli agent team olusturur
+argument-hint: "[ozellik aciklamasi] | PRD: [dosya:satir-araligi]"
 disable-model-invocation: true
 ---
 
 # Kairos Build
 
-Kullanıcı bir özellik geliştirmek istiyor: **$ARGUMENTS**
+Kullanici bir ozellik gelistirmek istiyor: **$ARGUMENTS**
 
-## Bağlam Toplama
+## Baglam Toplama
 
-1. `CLAUDE.md` dosyasını oku (proje kuralları, mimari, konvansiyonlar)
-2. `ARCHITECTURE.md` dosyasını oku (varsa)
-3. Proje yapısını anlamak için kök dizini ve ana kaynak klasörlerini tara
+1. `CLAUDE.md` dosyasini oku (proje kurallari, mimari, konvansiyonlar)
+2. `ARCHITECTURE.md` dosyasini oku (varsa)
+3. Proje yapisini anlamak icin kok dizini ve ana kaynak klasorlerini tara
 
-> **NOT:** PRD dosya yolu ve satır aralığı argümanda verilmişse o dosyanın o satırlarını oku. Bu, gereksinim bağlamını içerir — önceliğin bu satırlarda olsun.
+> **NOT:** PRD dosya yolu ve satir araligi argumanda verilmisse o dosyanin o satirlarini oku. Bu, gereksinim baglamini icerir — onceligin bu satirlarda olsun.
 
-## Agent Team Oluştur
+## Agent Team Olustur
 
-3 teammate'li bir agent team kur. Görev bağımlılıkları: backend → api → frontend
+3 teammate'li bir agent team kur. Gorev bagimliliklari: backend → api → frontend
 
-CLAUDE.md'deki mimari kurallara ve proje yapısına göre her teammate'in çalışma alanını ve kurallarını belirle.
+CLAUDE.md'deki mimari kurallara ve proje yapisina gore her teammate'in calisma alanini ve kurallarini belirle.
 
 ### "backend" teammate
-- **Çalışma alanı:** Projenin backend/iş mantığı katmanı
-- CLAUDE.md'deki backend konvansiyonlarına uyar (dosya yapısı, isimlendirme, veri erişim kuralları)
-- API ve frontend katmanlarına DOKUNMAZ
-- İşi bitince "api" teammate'ine haber verir
+- **Calisma alani:** Projenin backend/is mantigi katmani
+- CLAUDE.md'deki backend konvansiyonlarina uyar (dosya yapisi, isimlendirme, veri erisim kurallari)
+- API ve frontend katmanlarina DOKUNMAZ
+- Isi bitince "api" teammate'ine haber verir
 
 ### "api" teammate
-- **Çalışma alanı:** Projenin API / köprü katmanı (backend ile frontend arasındaki bağlantı)
-- Yeni endpoint, route, mesaj tipi veya arayüz tanımlarını ekler
-- Backend dosyalarını okur ama DEĞİŞTİRMEZ
+- **Calisma alani:** Projenin API / kopru katmani (backend ile frontend arasindaki baglanti)
+- Yeni endpoint, route, mesaj tipi veya arayuz tanimlarini ekler
+- Backend dosyalarini okur ama DEGISTIRMEZ
 - Backend'de eksik/hata varsa "backend" teammate'ine bildirir
-- Hazır olduğunda "frontend" teammate'ine bildirir
-- Backend ve frontend katmanlarına DOKUNMAZ (sadece okur)
+- Hazir oldugunda "frontend" teammate'ine bildirir
+- Backend ve frontend katmanlarina DOKUNMAZ (sadece okur)
 
 ### "frontend" teammate
-- **Çalışma alanı:** Projenin frontend / UI katmanı
-- API katmanı üzerinden çağrı yapar, backend'i doğrudan import ETMEZ
-- CLAUDE.md'deki frontend konvansiyonlarına uyar (bileşen yapısı, stil, state yönetimi)
-- İhtiyacı olan API yoksa "api" teammate'ine söyler
-- Backend katmanına DOKUNMAZ
+- **Calisma alani:** Projenin frontend / UI katmani
+- API katmani uzerinden cagri yapar, backend'i dogrudan import ETMEZ
+- CLAUDE.md'deki frontend konvansiyonlarina uyar (bilesen yapisi, stil, state yonetimi)
+- Ihtiyaci olan API yoksa "api" teammate'ine soyler
+- Backend katmanina DOKUNMAZ
 
-## İletişim Akışı
+## Iletisim Akisi
 
 ```
-backend biter → api'ye bildirir → api günceller → frontend'e bildirir → frontend kullanır
-frontend eksik API bulursa → api'ye söyler → api kontrol eder → gerekirse backend'e söyler
+backend biter → api'ye bildirir → api gunceller → frontend'e bildirir → frontend kullanir
+frontend eksik API bulursa → api'ye soyler → api kontrol eder → gerekirse backend'e soyler
 ```
 
 ## Tamamlanma
 
-Tüm işler bittiğinde:
-1. `kairos/data.json`'daki ilgili görevin durum sütununu güncelle
-2. Team'i kapat ve kullanıcıya özet ver
+Tum isler bittiginde:
+1. `kairos/data.json`'daki ilgili gorevin durum sutununu guncelle
+2. Team'i kapat ve kullaniciya ozet ver

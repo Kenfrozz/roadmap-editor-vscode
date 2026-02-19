@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { WebviewMessage } from './types';
 import { handleMessage } from './api';
+import { KokpitYonetici } from './backend/kokpit/yonetici';
 
 export class KairosPanel {
   public static currentPanel: KairosPanel | undefined;
@@ -63,6 +64,8 @@ export class KairosPanel {
 
     this._panel.webview.html = this._getHtmlForWebview();
 
+    KokpitYonetici.getInstance().registerWebview(this._panel.webview);
+
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this._panel.webview.onDidReceiveMessage(
@@ -82,6 +85,7 @@ export class KairosPanel {
   }
 
   public dispose(): void {
+    KokpitYonetici.getInstance().unregisterWebview(this._panel.webview);
     KairosPanel.currentPanel = undefined;
     this._panel.dispose();
     while (this._disposables.length) {

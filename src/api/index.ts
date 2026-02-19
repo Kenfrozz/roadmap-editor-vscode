@@ -33,6 +33,10 @@ import { execute as pluginDurumYukle } from '../backend/claude/pluginDurumYukle'
 import { execute as pluginKomutKaydet } from '../backend/claude/pluginKomutKaydet';
 import { execute as pluginKomutSil } from '../backend/claude/pluginKomutSil';
 import { execute as pluginYapilandirmaKaydet } from '../backend/claude/pluginYapilandirmaKaydet';
+import { execute as kokpitBaslat } from '../backend/kokpit/baslat';
+import { execute as kokpitDurdur } from '../backend/kokpit/durdur';
+import { execute as kokpitAtla } from '../backend/kokpit/atla';
+import { execute as kokpitDurumAl } from '../backend/kokpit/durumAl';
 // Frontend icin TEK giris noktasi
 // Tum webview mesajlarini ilgili backend modulune yonlendirir
 export async function handleMessage(
@@ -354,6 +358,43 @@ export async function handleMessage(
         const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
         webview.postMessage({ command: 'pluginYapilandirmaKaydetResponse', success: false, error: errorMessage });
       }
+      break;
+    }
+
+    case 'kokpitBaslat': {
+      try {
+        await kokpitBaslat(message.kuyruk);
+        webview.postMessage({ command: 'kokpitBaslatResponse', success: true });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+        webview.postMessage({ command: 'kokpitBaslatResponse', success: false, error: errorMessage });
+      }
+      break;
+    }
+
+    case 'kokpitDurdur': {
+      try {
+        await kokpitDurdur();
+        webview.postMessage({ command: 'kokpitDurdurResponse', success: true });
+      } catch {
+        webview.postMessage({ command: 'kokpitDurdurResponse', success: false });
+      }
+      break;
+    }
+
+    case 'kokpitAtla': {
+      try {
+        await kokpitAtla();
+        webview.postMessage({ command: 'kokpitAtlaResponse', success: true });
+      } catch {
+        webview.postMessage({ command: 'kokpitAtlaResponse', success: false });
+      }
+      break;
+    }
+
+    case 'kokpitDurumAl': {
+      const durum = kokpitDurumAl();
+      webview.postMessage({ command: 'kokpitDurumAlResponse', durum });
       break;
     }
 

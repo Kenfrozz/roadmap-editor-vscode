@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { WebviewMessage } from './types';
 import { handleMessage } from './api';
+import { KokpitYonetici } from './backend/kokpit/yonetici';
 
 export class KairosSidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'kairos.sidebar';
@@ -30,6 +31,8 @@ export class KairosSidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
+    KokpitYonetici.getInstance().registerWebview(webviewView.webview);
+
     webviewView.webview.onDidReceiveMessage(
       (message: WebviewMessage) => this._handleMessage(webviewView.webview, message),
       null,
@@ -42,6 +45,7 @@ export class KairosSidebarProvider implements vscode.WebviewViewProvider {
     }, 0);
 
     webviewView.onDidDispose(() => {
+      KokpitYonetici.getInstance().unregisterWebview(webviewView.webview);
       this._view = undefined;
       while (this._disposables.length) {
         const d = this._disposables.pop();
