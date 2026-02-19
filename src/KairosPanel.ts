@@ -70,6 +70,11 @@ export class KairosPanel {
       null,
       this._disposables
     );
+
+    // Webview'a extension hazir sinyali gonder
+    setTimeout(() => {
+      this._panel.webview.postMessage({ command: 'extensionReady' });
+    }, 0);
   }
 
   public postFileChanged(): void {

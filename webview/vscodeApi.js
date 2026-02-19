@@ -64,11 +64,27 @@ function sendAndWait(message, responseCommand, timeoutMs = 10000) {
   })
 }
 
+// Ilk yukleme icin retry mekanizmasi — extension host hazir olmayabilir
+async function sendWithRetry(message, responseCommand, { timeoutMs = 10000, retries = 2, retryDelay = 1000 } = {}) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await sendAndWait(message, responseCommand, timeoutMs)
+    } catch (err) {
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, retryDelay))
+      } else {
+        throw err
+      }
+    }
+  }
+}
+
 export const api = {
   async load() {
-    const response = await sendAndWait(
+    const response = await sendWithRetry(
       { command: 'load' },
-      'loadResponse'
+      'loadResponse',
+      { timeoutMs: 10000, retries: 2, retryDelay: 1500 }
     )
     return response.data
   },
@@ -140,9 +156,10 @@ export const api = {
   },
 
   async loadSettings() {
-    const response = await sendAndWait(
+    const response = await sendWithRetry(
       { command: 'loadSettings' },
-      'loadSettingsResponse'
+      'loadSettingsResponse',
+      { timeoutMs: 10000, retries: 2, retryDelay: 1500 }
     )
     return response.settings
   },

@@ -36,6 +36,11 @@ export class KairosSidebarProvider implements vscode.WebviewViewProvider {
       this._disposables
     );
 
+    // Webview'a extension hazir sinyali gonder
+    setTimeout(() => {
+      webviewView.webview.postMessage({ command: 'extensionReady' });
+    }, 0);
+
     webviewView.onDidDispose(() => {
       this._view = undefined;
       while (this._disposables.length) {

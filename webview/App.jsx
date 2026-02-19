@@ -215,14 +215,21 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    api.loadSettings().then(s => {
-      setSettingsData(s)
-      if (s?.roadmap?.gorevTurleri) setGorevTurleri(s.roadmap.gorevTurleri)
-    }).catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    loadData()
+    let loaded = false
+    const doInit = () => {
+      if (loaded) return
+      loaded = true
+      loadData()
+      api.loadSettings().then(s => {
+        setSettingsData(s)
+        if (s?.roadmap?.gorevTurleri) setGorevTurleri(s.roadmap.gorevTurleri)
+      }).catch(() => {})
+    }
+    // Extension hazir sinyali gelirse hemen yukle
+    const cleanup = onMessage('extensionReady', doInit)
+    // Sinyal gelmese bile 500ms sonra yukle (fallback)
+    const fallback = setTimeout(doInit, 500)
+    return () => { cleanup(); clearTimeout(fallback) }
   }, [loadData])
 
   useEffect(() => {
