@@ -1,0 +1,258 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── LIGHT — Anthracite & Obsidian Teal ── */
+    --background: 42 20% 97%;
+    --foreground: 232 15% 13%;
+
+    --card: 42 14% 99%;
+    --card-foreground: 232 15% 13%;
+
+    --popover: 42 14% 99%;
+    --popover-foreground: 232 15% 13%;
+
+    --primary: 176 65% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 232 10% 94%;
+    --secondary-foreground: 232 12% 20%;
+
+    --muted: 232 10% 93%;
+    --muted-foreground: 232 6% 48%;
+
+    --accent: 176 25% 93%;
+    --accent-foreground: 176 55% 28%;
+
+    --destructive: 0 68% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 232 8% 88%;
+    --input: 232 8% 88%;
+
+    --ring: 176 65% 38%;
+    --radius: 0.5rem;
+    --grid-color: 232 6% 86%;
+  }
+
+  .dark {
+    /* ── DARK — Anthracite & Obsidian Teal ── */
+    --background: 232 16% 11%;
+    --foreground: 40 8% 85%;
+
+    --card: 232 14% 14%;
+    --card-foreground: 40 8% 85%;
+
+    --popover: 232 14% 16%;
+    --popover-foreground: 40 8% 85%;
+
+    --primary: 176 60% 44%;
+    --primary-foreground: 232 16% 11%;
+
+    --secondary: 232 12% 18%;
+    --secondary-foreground: 40 6% 76%;
+
+    --muted: 232 12% 18%;
+    --muted-foreground: 232 6% 50%;
+
+    --accent: 232 12% 20%;
+    --accent-foreground: 176 55% 52%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 232 12% 22%;
+    --input: 232 12% 22%;
+
+    --ring: 176 60% 44%;
+    --grid-color: 232 12% 14%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  html {
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(hsl(var(--grid-color) / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--grid-color) / 0.4) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.font-mono-code {
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.corner-marks {
+  position: relative;
+}
+.corner-marks::before,
+.corner-marks::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: hsl(var(--primary));
+  pointer-events: none;
+  opacity: 0.2;
+}
+.corner-marks::before {
+  top: -1px; left: -1px;
+  border-top: 2px solid; border-left: 2px solid;
+}
+.corner-marks::after {
+  bottom: -1px; right: -1px;
+  border-bottom: 2px solid; border-right: 2px solid;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* Theme toggle animation */
+@keyframes theme-spin {
+  from { transform: rotate(0deg) scale(0.8); opacity: 0; }
+  to { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+.theme-icon-enter {
+  animation: theme-spin 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scrollbar gizle */
+* {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge */
+}
+*::-webkit-scrollbar {
+  display: none;                  /* Chrome/Safari/VS Code webview */
+}
+
+.row-hover {
+  transition: background-color 0.15s ease;
+}
+.row-hover:hover {
+  background-color: hsl(var(--muted) / 0.8) !important;
+}
+
+.diagonal-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    hsl(var(--border) / 0.4) 4px,
+    hsl(var(--border) / 0.4) 8px
+  );
+}
+
+/* PRD Markdown prose */
+.prd-prose {
+  line-height: 1.7;
+  color: hsl(var(--foreground));
+}
+.prd-prose h1, .prd-prose h2, .prd-prose h3, .prd-prose h4 {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  color: hsl(var(--foreground));
+}
+.prd-prose h1 { font-size: 1.4em; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.3em; }
+.prd-prose h2 { font-size: 1.2em; border-bottom: 1px solid hsl(var(--border) / 0.5); padding-bottom: 0.25em; }
+.prd-prose h3 { font-size: 1.05em; }
+.prd-prose h4 { font-size: 0.95em; color: hsl(var(--muted-foreground)); }
+.prd-prose p { margin: 0.6em 0; }
+.prd-prose ul, .prd-prose ol { margin: 0.5em 0; padding-left: 1.5em; }
+.prd-prose li { margin: 0.25em 0; }
+.prd-prose li::marker { color: hsl(var(--primary)); }
+.prd-prose code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.85em;
+  background: hsl(var(--muted));
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+.prd-prose pre {
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  padding: 0.8em 1em;
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+.prd-prose pre code { background: none; padding: 0; font-size: 0.82em; }
+.prd-prose blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding-left: 1em;
+  margin: 0.6em 0;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+.prd-prose strong { font-weight: 700; color: hsl(var(--foreground)); }
+.prd-prose em { font-style: italic; }
+.prd-prose a { color: hsl(var(--primary)); text-decoration: underline; }
+.prd-prose hr { border: none; border-top: 1px solid hsl(var(--border)); margin: 1em 0; }
+.prd-prose table { width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 0.9em; }
+.prd-prose th { text-align: left; font-weight: 700; padding: 0.4em 0.6em; border-bottom: 2px solid hsl(var(--border)); }
+.prd-prose td { padding: 0.35em 0.6em; border-bottom: 1px solid hsl(var(--border) / 0.5); }
+.prd-prose tr:hover td { background: hsl(var(--muted) / 0.5); }
+.prd-prose img { max-width: 100%; border-radius: 6px; }
+.prd-prose > *:first-child { margin-top: 0; }
+
+/* Titlebar drag region */
+.drag-region {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* Kanban scroll — ince scrollbar goster */
+.kanban-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+.kanban-scroll::-webkit-scrollbar {
+  display: block;
+  width: 4px;
+  height: 4px;
+}
+.kanban-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kanban-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+.kanban-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* Smooth theme transitions on key elements */
+.dark header,
+header,
+.dark .bg-card,
+.bg-card,
+.dark .bg-background,
+.bg-background {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}

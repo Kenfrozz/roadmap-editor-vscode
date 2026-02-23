@@ -1,0 +1,45 @@
+appId: com.kairos.app
+productName: Kairos
+copyright: Copyright (C) 2024 Kairos
+
+directories:
+  output: release
+  buildResources: media
+
+files:
+  - packages/shared/dist/**/*
+  - packages/electron/dist/**/*
+  - packages/renderer/dist/**/*
+  - packages/electron/package.json
+  - packages/shared/package.json
+
+extraMetadata:
+  main: packages/electron/dist/main.js
+
+win:
+  target:
+    - nsis
+    - portable
+  icon: media/icon.png
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+
+mac:
+  target:
+    - dmg
+  icon: media/icon.png
+  category: public.app-category.developer-tools
+
+linux:
+  target:
+    - AppImage
+    - deb
+  icon: media/icon.png
+  category: Development
+
+publish:
+  provider: github
+  owner: Kenfrozz
+  repo: kairos

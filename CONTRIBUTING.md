@@ -7,13 +7,13 @@ Kairos'a katkida bulunmak istediginiz icin tesekkurler!
 ### Gereksinimler
 
 - [Node.js](https://nodejs.org/) 18+
-- [VS Code](https://code.visualstudio.com/) 1.85.0+
+- [Git](https://git-scm.com/)
 
 ### Kurulum
 
 ```bash
-git clone https://github.com/Kenfrozz/roadmap-editor-vscode.git
-cd roadmap-editor-vscode
+git clone https://github.com/Kenfrozz/kairos.git
+cd kairos
 npm install
 npm run build
 ```
@@ -21,10 +21,28 @@ npm run build
 ### Gelistirme
 
 ```bash
-# Watch modunda gelistirme
-npm run watch
+# Electron + Vite dev (onerilen)
+npm run dev:electron
 
-# F5 ile VS Code Extension Development Host baslatilir
+# Sadece frontend dev server (:5173)
+npm run dev:renderer
+
+# Tek paket build
+npm run build:shared
+npm run build:renderer
+npm run build:electron
+```
+
+## Monorepo Yapisi
+
+Proje npm workspaces ile 4 paketten olusur:
+
+```
+packages/
+├── shared/     (@kairos/shared)    — Platform-agnostic backend + tipler
+├── electron/   (@kairos/electron)  — Electron main process
+├── renderer/   (@kairos/renderer)  — React frontend (Vite)
+└── web-server/ (@kairos/web-server)— Express + WebSocket sunucu
 ```
 
 ## Mimari Kurallar
@@ -32,22 +50,23 @@ npm run watch
 Kairos 3-katmanli izole mimari kullanir. Katkida bulunurken bu kurallara uyulmalidir:
 
 ```
-webview/ (Frontend) --> postMessage --> src/api/ (Router) --> src/backend/ (Is Mantigi)
+renderer/ (Frontend) → IPC → electron/ (Main) → shared/api/ (Router) → shared/backend/ (Is Mantigi)
 ```
 
 ### Yeni Ozellik Ekleme Sirasi
 
-1. `src/backend/[modul]/[islem].ts` — `execute()` fonksiyonu yaz
-2. `src/types.ts` — Mesaj tipi ekle
-3. `src/api/index.ts` — Switch/case ekle
-4. `webview/vscodeApi.js` — API metodu ekle
-5. `webview/components/` veya `webview/pages/` — UI bileseni ekle
+1. `packages/shared/src/[modul]/[islem].ts` — `execute()` fonksiyonu yaz
+2. `packages/shared/src/types.ts` — Mesaj tipi ekle
+3. `packages/shared/src/api/index.ts` — Switch/case ekle
+4. `packages/renderer/src/api.js` — API metodu ekle
+5. `packages/renderer/src/components/` veya `pages/` — UI bileseni ekle
 
 ### Kurallar
 
-- Frontend (`webview/`) asla `src/` dosyalarini import etmez
+- Frontend (`packages/renderer/`) asla `@kairos/shared` veya `electron/` dosyalarini import etmez
 - Backend dosyalari tek bir `execute()` fonksiyonu export eder
-- Dosya I/O icin `_core/db.ts` kullanilir
+- Dosya I/O icin `_core/db.ts` kullanilir, dogrudan `fs` cagirilmaz
+- Shared kodda platform-spesifik import yapilmaz (Electron, VS Code vb.)
 - Yeni UI mantigi `App.jsx`'e eklenmez, ayri bilesen dosyasi olusturulur
 
 Detaylar icin [ARCHITECTURE.md](ARCHITECTURE.md) dosyasina bakin.
@@ -58,9 +77,12 @@ Detaylar icin [ARCHITECTURE.md](ARCHITECTURE.md) dosyasina bakin.
 [katman/modul]: aciklama
 
 Ornekler:
-[backend/plan]: faz siralama destegi eklendi
-[api]: yeni mesaj tipi eklendi
-[frontend/components]: FazTable collapse animasyonu duzeltildi
+[shared/plan]: faz siralama destegi eklendi
+[shared/api]: yeni mesaj tipi eklendi
+[electron/platform]: terminal saglayici guncellendi
+[renderer/components]: FazTable collapse animasyonu duzeltildi
+[renderer/pages]: SettingsView yedek sekmesi eklendi
+[web-server]: WebSocket baglanti hatasi duzeltildi
 ```
 
 ## Pull Request Sureci
@@ -73,4 +95,4 @@ Ornekler:
 
 ## Sorun Bildirme
 
-Hata raporlari ve ozellik istekleri icin [GitHub Issues](https://github.com/Kenfrozz/roadmap-editor-vscode/issues) kullanin.
+Hata raporlari ve ozellik istekleri icin [GitHub Issues](https://github.com/Kenfrozz/kairos/issues) kullanin.

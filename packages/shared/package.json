@@ -1,0 +1,21 @@
+{
+  "name": "@kairos/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch"
+  },
+  "dependencies": {
+    "marked": "^17.0.1",
+    "pdfkit": "^0.15.2",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/pdfkit": "^0.17.5",
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.3.3"
+  }
+}

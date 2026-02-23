@@ -1,0 +1,22 @@
+{
+  "name": "@kairos/web-server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@kairos/shared": "*",
+    "chokidar": "^4.0.3",
+    "express": "^5.0.1",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.3.3"
+  }
+}

@@ -3,68 +3,34 @@
   "displayName": "Kairos",
   "description": "Proje gelistirme kokpiti — PRD, plan, Git ve AI araclari tek arayuzden",
   "version": "1.13.0",
-  "publisher": "Kenfrozz",
-  "engines": {
-    "vscode": "^1.85.0"
-  },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kenfrozz/kairos"
   },
-  "icon": "media/icon.png",
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./dist/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "kairos.open",
-        "title": "Kairos: Open (Tab)"
-      },
-      {
-        "command": "kairos.openSidebar",
-        "title": "Kairos: Open in Sidebar"
-      },
-      {
-        "command": "kairos.openNewWindow",
-        "title": "Kairos: Open in New Window"
-      }
-    ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "kairos",
-          "title": "Kairos",
-          "icon": "media/sidebar-icon.svg"
-        }
-      ]
-    },
-    "views": {
-      "kairos": [
-        {
-          "type": "webview",
-          "id": "kairos.sidebar",
-          "name": "Kairos"
-        }
-      ]
-    }
-  },
   "scripts": {
-    "build": "node esbuild.mjs",
-    "watch": "node esbuild.mjs --watch",
-    "package": "npx vsce package"
+    "build": "npm run build:shared && npm run build:renderer && npm run build:electron",
+    "build:shared": "npm -w @kairos/shared run build",
+    "build:renderer": "npm -w @kairos/renderer run build",
+    "build:electron": "npm -w @kairos/electron run build",
+    "dev:renderer": "npm -w @kairos/renderer run dev",
+    "dev:electron": "concurrently \"npm run dev:renderer\" \"wait-on tcp:5173 && npm -w @kairos/electron run start\"",
+    "package:electron": "npm run build && electron-builder"
   },
   "devDependencies": {
     "@types/pdfkit": "^0.17.5",
-    "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.18.1",
     "autoprefixer": "^10.4.17",
-    "esbuild": "^0.20.0",
+    "concurrently": "^9.1.2",
+    "electron-builder": "^25.1.8",
     "postcss": "^8.4.35",
     "postcss-cli": "^11.0.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "wait-on": "^8.0.3"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
@@ -84,6 +50,7 @@
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ws": "^8.19.0"
   }
 }
