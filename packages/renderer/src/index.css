@@ -38,36 +38,36 @@
   }
 
   .dark {
-    /* ── DARK — Anthracite & Obsidian Teal ── */
-    --background: 232 16% 11%;
-    --foreground: 40 8% 85%;
+    /* ── DARK — Cool Obsidian ── */
+    --background: 0 0% 5%;
+    --foreground: 210 8% 88%;
 
-    --card: 232 14% 14%;
-    --card-foreground: 40 8% 85%;
+    --card: 0 0% 7%;
+    --card-foreground: 210 8% 88%;
 
-    --popover: 232 14% 16%;
-    --popover-foreground: 40 8% 85%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 210 8% 88%;
 
     --primary: 176 60% 44%;
-    --primary-foreground: 232 16% 11%;
+    --primary-foreground: 206 12% 11%;
 
-    --secondary: 232 12% 18%;
-    --secondary-foreground: 40 6% 76%;
+    --secondary: 212 10% 18%;
+    --secondary-foreground: 210 6% 76%;
 
-    --muted: 232 12% 18%;
-    --muted-foreground: 232 6% 50%;
+    --muted: 218 9% 17%;
+    --muted-foreground: 215 6% 50%;
 
-    --accent: 232 12% 20%;
+    --accent: 212 10% 20%;
     --accent-foreground: 176 55% 52%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 232 12% 22%;
-    --input: 232 12% 22%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
 
     --ring: 176 60% 44%;
-    --grid-color: 232 12% 14%;
+    --grid-color: 0 0% 10%;
   }
 }
 
@@ -84,12 +84,6 @@
   }
 }
 
-.grid-bg {
-  background-image:
-    linear-gradient(hsl(var(--grid-color) / 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--grid-color) / 0.4) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
 
 .font-mono-code {
   font-family: 'Consolas', 'Courier New', monospace;

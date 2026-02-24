@@ -117,14 +117,14 @@ export function DashboardView({
   // Bos durum
   if (total === 0) {
     return (
-      <main className="flex-1 overflow-auto grid-bg p-4">
+      <main className="flex-1 overflow-auto p-4">
         <DashboardEmptyState onNavigate={onNavigate} />
       </main>
     )
   }
 
   return (
-    <main className="flex-1 overflow-auto grid-bg p-4">
+    <main className="flex-1 overflow-auto p-4">
       <div className={cn(
         'flex flex-col gap-4 mx-auto w-full',
         isWide ? 'max-w-5xl' : 'max-w-2xl',

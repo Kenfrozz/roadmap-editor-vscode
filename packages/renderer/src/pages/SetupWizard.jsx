@@ -214,7 +214,7 @@ export function SetupWizard({ onCreated }) {
 
   if (loading || !settings) {
     return (
-      <div className="min-h-screen flex items-center justify-center grid-bg">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     )
@@ -229,7 +229,7 @@ export function SetupWizard({ onCreated }) {
   ]
 
   return (
-    <div className="min-h-screen grid-bg flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Step Indicator */}
       <div className="flex items-center justify-center gap-0 py-6 px-4">
         {steps.map((s, i) => (

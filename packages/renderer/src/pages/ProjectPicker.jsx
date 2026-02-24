@@ -37,7 +37,7 @@ export function ProjectPicker({ onProjectSelected }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 grid-bg">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
           <Activity className="w-5 h-5 text-primary-foreground animate-pulse" />
         </div>
@@ -47,7 +47,7 @@ export function ProjectPicker({ onProjectSelected }) {
   }
 
   return (
-    <div className="min-h-screen grid-bg flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md flex flex-col items-center text-center gap-8">
         {/* Logo / Baslik */}
         <div className="flex flex-col items-center gap-3">

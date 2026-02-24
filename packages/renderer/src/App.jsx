@@ -40,6 +40,7 @@ import { ProjectPicker } from './pages/ProjectPicker'
 import { KokpitView } from './pages/KokpitView'
 import { DashboardView } from './pages/DashboardView'
 import { GitView } from './pages/GitView'
+import { TaskDetailModal } from './components/TaskDetailModal'
 import { projectApi } from './bridge'
 
 // === Recursive tree helpers ===
@@ -158,6 +159,7 @@ export default function App() {
   const [projectChecked, setProjectChecked] = useState(false)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   const [projectLogo, setProjectLogo] = useState(null)
+  const [detailModal, setDetailModal] = useState({ open: false, itemId: null, fazKey: null })
   const saveTimer = useRef(null)
   const fazOrderRef = useRef(fazOrder)
 
@@ -472,6 +474,10 @@ export default function App() {
     setNeedsProject(true)
   }, [])
 
+  const handleItemClick = useCallback((fazKey, item) => {
+    setDetailModal({ open: true, itemId: item.id, fazKey })
+  }, [])
+
   const claudeMainCmd = settingsData?.claude?.mainCommand || 'claude --dangerously-skip-permissions'
   const claudeFeatureCmd = settingsData?.claude?.featureCommand || 'claude "${ozellik}"'
 
@@ -535,7 +541,7 @@ export default function App() {
     return (
       <div className="flex flex-col h-screen overflow-hidden">
         <Titlebar />
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 grid-bg">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
             <Activity className="w-5 h-5 text-primary-foreground animate-pulse" />
           </div>
@@ -550,7 +556,7 @@ export default function App() {
     return (
       <div className="flex flex-col h-screen overflow-hidden">
         <Titlebar />
-        <div className="flex-1 grid-bg flex flex-col items-center justify-center px-4">
+        <div className="flex-1 flex flex-col items-center justify-center px-4">
           <div className="w-full max-w-sm flex flex-col items-center text-center gap-6">
             <div className="w-16 h-16 rounded-2xl bg-muted/50 border-2 border-dashed border-border flex items-center justify-center">
               <FileCode className="w-8 h-8 text-muted-foreground/40" />
@@ -611,7 +617,7 @@ export default function App() {
     switch (viewMode) {
       case 'settings':
         return (
-          <div className="flex-1 overflow-auto grid-bg">
+          <div className="flex-1 overflow-auto">
             <SettingsView
               onClose={() => {
                 setViewMode('dashboard')
@@ -674,7 +680,7 @@ export default function App() {
         return (
           <>
             <main className={cn(
-              'flex-1 grid-bg w-full',
+              'flex-1 w-full',
               isWide ? 'flex flex-col overflow-hidden' : 'overflow-auto px-3 py-5'
             )}>
               <DndManager
@@ -725,6 +731,7 @@ export default function App() {
                               gorevTurleri={gorevTurleri}
                               isDropTarget={activeType === 'item' && overContainerId === fazKey}
                               kanban={isWide}
+                              onItemClick={handleItemClick}
                             />
                           )}
                         </SortablePhase>
@@ -759,6 +766,21 @@ export default function App() {
                 </div>
               )}
             </main>
+
+            <TaskDetailModal
+              itemId={detailModal.itemId}
+              fazKey={detailModal.fazKey}
+              data={data}
+              columns={columns}
+              gorevTurleri={gorevTurleri}
+              open={detailModal.open}
+              onClose={() => setDetailModal({ open: false, itemId: null, fazKey: null })}
+              onUpdate={updateItem}
+              onPrdClick={(fazKey, itemId, prd) => setPrdPicker({ fazKey, itemId, prd: prd || '' })}
+              saveStatus={saveStatus}
+              onAddSubtask={addSubtask}
+              onDelete={deleteItem}
+            />
 
             <PrdLinePicker
               open={!!prdPicker}

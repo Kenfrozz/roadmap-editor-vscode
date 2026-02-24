@@ -16,8 +16,8 @@ let projectRoot: string | null = null;
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
-    width: 1400,
-    height: 900,
+    width: 1280,
+    height: 960,
     minWidth: 800,
     minHeight: 600,
     title: 'Kairos',

@@ -67,7 +67,6 @@ function KanbanCard({ item, fazKey, onUpdate, onDelete, onAddBelow, onAddSubtask
       className={cn(
         'group rounded-lg border bg-card/80 hover:bg-card p-2.5 mb-2 transition-colors',
         isDragging && 'opacity-40 shadow-lg',
-        allDone && 'opacity-50',
       )}
     >
       <div className="flex items-start gap-1.5 mb-2">
@@ -80,15 +79,7 @@ function KanbanCard({ item, fazKey, onUpdate, onDelete, onAddBelow, onAddSubtask
             <GripVertical className="w-3 h-3" />
           </button>
         )}
-        {gorevTurleri && (
-          <div className="shrink-0 mt-0.5">
-            <TaskTypeBadge value={item.tur} gorevTurleri={gorevTurleri} onChange={(v) => onUpdate(fazKey, item.id, 'tur', v)} />
-          </div>
-        )}
-        <span className={cn(
-          'text-xs font-medium leading-tight line-clamp-2 flex-1 min-w-0',
-          allDone && 'line-through text-muted-foreground/50',
-        )}>
+        <span className="text-xs font-medium leading-tight line-clamp-2 flex-1 min-w-0">
           {item.ozellik || 'Isimsiz'}
         </span>
       </div>
@@ -135,7 +126,7 @@ function KanbanCard({ item, fazKey, onUpdate, onDelete, onAddBelow, onAddSubtask
   )
 }
 
-export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, onAddBelow, onAddSubtask, onReorder, onPrdClick, onPrdRefUpdate, onFazNameChange, onFazDelete, index, isFilterActive, phaseDragHandleProps, isCompact, columns, claudeFeatureCmd, gorevTurleri, isDropTarget, kanban }) {
+export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, onAddBelow, onAddSubtask, onReorder, onPrdClick, onPrdRefUpdate, onFazNameChange, onFazDelete, index, isFilterActive, phaseDragHandleProps, isCompact, columns, claudeFeatureCmd, gorevTurleri, isDropTarget, kanban, onItemClick }) {
   const { setNodeRef: setDroppableRef } = useDroppable({ id: `droppable-${fazKey}`, data: { type: 'phase-container', fazKey } })
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState(fazConfig.name)
@@ -168,8 +159,6 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
         ref={setDroppableRef}
         className={cn(
           'rounded-lg border bg-card/50 flex flex-col h-full min-w-0 animate-fade-up',
-          'border-t-[3px]',
-          fazConfig.color,
           isDropTarget && 'ring-2 ring-primary/40 ring-inset'
         )}
         style={{ animationDelay: `${index * 60}ms` }}
@@ -280,6 +269,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
                 claudeFeatureCmd={claudeFeatureCmd}
                 gorevTurleri={gorevTurleri}
                 kanban
+                onItemClick={onItemClick}
               />
             ))}
           </SortableContext>
@@ -311,8 +301,6 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
       ref={setDroppableRef}
       className={cn(
         'rounded-lg border bg-card mb-5 animate-fade-up',
-        'border-l-[3px]',
-        fazConfig.color,
         isDropTarget && 'ring-2 ring-primary/40 ring-inset'
       )}
       style={{ animationDelay: `${index * 80}ms` }}
@@ -409,26 +397,15 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
           <div className="w-8 shrink-0 flex justify-center py-2">
             <Hash className="w-3 h-3 opacity-40" />
           </div>
-          {columns.map(col => {
-            if (col.key === 'ozellik') {
-              return <div key={col.key} className="flex-1 min-w-0 px-1 md:px-2 py-2">{col.label}</div>
-            }
-            if (col.key === 'prd') {
-              return <div key={col.key} className="hidden md:block w-36 shrink-0 px-2 py-2 text-center">{col.label}</div>
-            }
-            if (col.type === 'status') {
-              const Icon = STATUS_ICONS[col.key] || Activity
-              return (
-                <div key={col.key} className="shrink-0 py-2 flex items-center justify-center gap-1 w-7 md:w-20">
-                  <Icon className="w-3 h-3 opacity-50" />
-                  <span className="hidden md:inline">{col.label}</span>
-                </div>
-              )
-            }
-            if (col.type === 'date') {
-              return <div key={col.key} className="hidden lg:block w-20 shrink-0 px-2 py-2">{col.label}</div>
-            }
-            return <div key={col.key} className="hidden lg:block flex-1 min-w-0 px-2 py-2">{col.label}</div>
+          <div className="flex-1 min-w-0 px-1 md:px-2 py-2">Ozellik</div>
+          {statusCols.map(col => {
+            const Icon = STATUS_ICONS[col.key] || Activity
+            return (
+              <div key={col.key} className="shrink-0 py-2 flex items-center justify-center gap-1 w-7 md:w-20">
+                <Icon className="w-3 h-3 opacity-50" />
+                <span className="hidden md:inline">{col.label}</span>
+              </div>
+            )
           })}
           <div className="w-8 shrink-0"></div>
         </div>
@@ -456,6 +433,7 @@ export function FazTable({ fazKey, fazConfig, items, onUpdate, onDelete, onAdd, 
                 columns={columns}
                 claudeFeatureCmd={claudeFeatureCmd}
                 gorevTurleri={gorevTurleri}
+                onItemClick={onItemClick}
               />
             ))}
           </SortableContext>

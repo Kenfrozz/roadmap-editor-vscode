@@ -8,7 +8,7 @@ const MAX_DEPTH = 2
 export function SubtaskTree({
   item, fazKey, depth = 0, onUpdate, onDelete, onAddBelow,
   onAddSubtask, onReorderSubtasks, onPrdClick, onPrdRefUpdate, index, isFilterActive,
-  isCompact, columns, claudeFeatureCmd, gorevTurleri, parentIndex, kanban,
+  isCompact, columns, claudeFeatureCmd, gorevTurleri, parentIndex, kanban, onItemClick,
 }) {
   const [expanded, setExpanded] = useState(() => state.get(`subtask_${item.id}_expanded`, false))
   const prevChildrenLen = useRef(item.children?.length || 0)
@@ -51,6 +51,7 @@ export function SubtaskTree({
         onToggleExpand={() => { const next = !expanded; setExpanded(next); state.set(`subtask_${item.id}_expanded`, next) }}
         displayIndex={displayIndex}
         kanban={kanban}
+        onItemClick={onItemClick}
       />
 
       {hasChildren && expanded && (
@@ -84,6 +85,7 @@ export function SubtaskTree({
                 gorevTurleri={gorevTurleri}
                 parentIndex={displayIndex}
                 kanban={kanban}
+                onItemClick={onItemClick}
               />
             ))}
           </SortableContext>
